@@ -1,0 +1,15 @@
+{
+  "name": "jobaroo-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Christopher Moon, Matt Koerner, Matthew Evanego, Edward Yaroslavsky, and Mark Pipko",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
