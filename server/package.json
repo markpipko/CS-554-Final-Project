@@ -10,6 +10,11 @@
   "author": "Christopher Moon, Matt Koerner, Matthew Evanego, Edward Yaroslavsky, and Mark Pipko",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "axios": "^0.24.0",
+    "bluebird": "^3.7.2",
+    "express": "^4.17.1",
+    "indeed-scraper": "^3.1.3",
+    "redis": "^3.1.2",
+    "zipcode": "^0.1.1"
   }
 }
