@@ -76,7 +76,7 @@ const exportedMethods = {
 		// 	params: { query: "Software Engineer", state: "NY", page: page },
 		// 	headers: {
 		// 		"x-rapidapi-host": "job-search4.p.rapidapi.com",
-		// 		"x-rapidapi-key": "c1b44a409bmsha146882b19525ecp1d72d9jsn58632c2532d8",
+		// 		,
 		// 	},
 		// };
 
