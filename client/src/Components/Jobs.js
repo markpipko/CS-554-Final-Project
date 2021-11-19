@@ -7,7 +7,15 @@ import {
 	Grid,
 	makeStyles,
 } from "@material-ui/core";
-import { FormControl, InputLabel, Input, TextField } from "@material-ui/core";
+import {
+	FormControl,
+	InputLabel,
+	TextField,
+	Select,
+	MenuItem,
+	Button,
+} from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
 const useStyles = makeStyles({
 	card: {
 		maxWidth: 250,
@@ -46,6 +54,7 @@ const Jobs = (props) => {
 	});
 	const [jobsData, setJobsData] = useState(undefined);
 	const [loading, setLoading] = useState(false);
+	const { handleSubmit, control } = useForm();
 	const classes = useStyles();
 	let jobsList = [];
 
@@ -112,44 +121,44 @@ const Jobs = (props) => {
 
 	return (
 		<div>
-			<br />
-			<form>
-				Search for Jobs
+			<h2>Search for Jobs</h2>
+			<FormControl>
+				<InputLabel id="query" htmlFor="query"></InputLabel>
+				<TextField
+					id="outlined-basic"
+					label="Query"
+					name="query"
+					onChange={(e) => handleChange(e)}
+					required
+				/>
 				<br />
-				<label>
-					Query:{" "}
-					<input
-						type="text"
-						name="query"
-						id="query"
-						placeholder="Query..."
-						onChange={(e) => handleChange(e)}
-					/>
-				</label>
+				<InputLabel id="zip" htmlFor="zip"></InputLabel>
+				<TextField
+					id="outlined-basic"
+					label="Zip Code"
+					name="zip"
+					onChange={(e) => handleChange(e)}
+					pattern="[0-9]{5}"
+					required
+				/>
 				<br />
-				<label>
-					Zip Code:{" "}
-					<input
-						type="text"
-						pattern="[0-9]{5}"
-						name="zip"
-						id="zip"
-						placeholder="Zip code"
-						onChange={(e) => handleChange(e)}
-					/>
-				</label>
+				<InputLabel id="job-type-label"></InputLabel>
+				<Select
+					labelId="job-type-label"
+					id="jobType"
+					value={formData.jobType}
+					name="jobType"
+					onChange={(e) => handleChange(e)}
+				>
+					<MenuItem value="entry_level">Entry Level</MenuItem>
+					<MenuItem value="mid_level">Mid Level</MenuItem>
+					<MenuItem value="senior_level">Senior Level</MenuItem>
+				</Select>
 				<br />
-				<label>
-					Job Type:{" "}
-					<select id="jobType" name="jobType" onChange={(e) => handleChange(e)}>
-						<option value="entry_level">Entry Level</option>
-						<option value="mid_level">Mid Level</option>
-						<option value="senior_level">Senior Level</option>
-					</select>
-				</label>
-				<br />
-				<button onClick={(e) => search(e)}>Search</button>
-			</form>
+				<Button type="submit" onClick={(e) => search(e)}>
+					Search
+				</Button>
+			</FormControl>
 			<br />
 			{loading ? (
 				<div>Loading...</div>
