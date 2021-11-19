@@ -6,6 +6,7 @@ import {
 	Typography,
 	Grid,
 	makeStyles,
+	FormHelperText,
 } from "@material-ui/core";
 import {
 	FormControl,
@@ -15,7 +16,6 @@ import {
 	MenuItem,
 	Button,
 } from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
 const useStyles = makeStyles({
 	card: {
 		maxWidth: 250,
@@ -54,7 +54,12 @@ const Jobs = (props) => {
 	});
 	const [jobsData, setJobsData] = useState(undefined);
 	const [loading, setLoading] = useState(false);
-	const { handleSubmit, control } = useForm();
+	const [queryError, setQueryError] = useState(false);
+	const [queryErrorMessage, setQueryErrorMessage] = useState("");
+	const [zipError, setZipError] = useState(false);
+	const [zipErrorMessage, setZipErrorMessage] = useState("");
+	const [typeError, setTypeError] = useState(false);
+	const [typeErrorMessage, setTypeErrorMessage] = useState("");
 	const classes = useStyles();
 	let jobsList = [];
 
@@ -66,12 +71,40 @@ const Jobs = (props) => {
 	const search = async (e) => {
 		setLoading(true);
 		e.preventDefault();
+		if (!formData.query || !formData.query.trim()) {
+			setQueryError(true);
+			setQueryErrorMessage("Query must be provided");
+			setLoading(false);
+			return;
+		}
+		setQueryError(false);
+		setQueryErrorMessage("");
+		if (!formData.zip || !formData.zip.trim()) {
+			setZipError(true);
+			setZipErrorMessage("Zip code must be provided");
+			setLoading(false);
+			return;
+		} else if (!/(^\d{5}$)|(^\d{5}-\d{4}$)/.test(formData.zip.trim())) {
+			setZipError(true);
+			setZipErrorMessage("Zip code is not of proper format");
+			setLoading(false);
+			return;
+		}
+		setZipError(false);
+		setZipErrorMessage("");
+		if (!formData.jobType) {
+			setTypeError(true);
+			setTypeErrorMessage("Job type must be provided");
+			setLoading(false);
+			return;
+		}
+		setTypeError(false);
+		setTypeErrorMessage("");
 		const { data } = await axios.post("/jobs/page/1", formData);
 		setJobsData(data);
 		setLoading(false);
 		console.log(data);
 	};
-	console.log(formData);
 
 	const handleApply = (url) => {
 		window.open(url);
@@ -125,10 +158,13 @@ const Jobs = (props) => {
 			<FormControl>
 				<InputLabel id="query" htmlFor="query"></InputLabel>
 				<TextField
-					id="outlined-basic"
+					id="query"
+					variant="outlined"
 					label="Query"
-					name="query"
 					onChange={(e) => handleChange(e)}
+					name="query"
+					error={!!queryError}
+					helperText={queryErrorMessage}
 					required
 				/>
 				<br />
@@ -140,11 +176,14 @@ const Jobs = (props) => {
 					onChange={(e) => handleChange(e)}
 					pattern="[0-9]{5}"
 					required
+					error={!!zipError}
+					helperText={zipErrorMessage}
 				/>
 				<br />
 				<InputLabel id="job-type-label"></InputLabel>
 				<Select
 					labelId="job-type-label"
+					error={!!typeError}
 					id="jobType"
 					value={formData.jobType}
 					name="jobType"
@@ -154,11 +193,13 @@ const Jobs = (props) => {
 					<MenuItem value="mid_level">Mid Level</MenuItem>
 					<MenuItem value="senior_level">Senior Level</MenuItem>
 				</Select>
+				<FormHelperText>{typeErrorMessage}</FormHelperText>
 				<br />
 				<Button type="submit" onClick={(e) => search(e)}>
-					Search
+					Submit
 				</Button>
 			</FormControl>
+			<br />
 			<br />
 			{loading ? (
 				<div>Loading...</div>
