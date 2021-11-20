@@ -2,21 +2,7 @@ const axios = require("axios");
 const indeed = require("indeed-scraper");
 const zipcode = require("zipcode");
 const exportedMethods = {
-	async getPage(page, query, zip, jobType) {
-		if (!page) {
-			throw "Page not provided";
-		}
-		if (typeof page !== "string") {
-			throw "Page not of type string";
-		}
-		page = page.trim();
-		if (!page) {
-			throw "Page is empty";
-		}
-		if (page < 0) {
-			throw "Page cannot be negative";
-		}
-
+	async searchJobs(query, zip, jobType) {
 		if (!query) {
 			throw "Query not provided";
 		}
@@ -61,7 +47,7 @@ const exportedMethods = {
 			jobType: "fulltime",
 			maxAge: "7",
 			sort: "date",
-			limit: 20,
+			limit: 100,
 		};
 
 		let res = await indeed.query(queryOptions);
@@ -69,31 +55,6 @@ const exportedMethods = {
 			throw "No results found";
 		}
 		return JSON.stringify(res);
-
-		// let options = {
-		// 	method: "GET",
-		// 	url: "https://job-search4.p.rapidapi.com/monster/search",
-		// 	params: { query: "Software Engineer", state: "NY", page: page },
-		// 	headers: {
-		// 		"x-rapidapi-host": "job-search4.p.rapidapi.com",
-		// 		,
-		// 	},
-		// };
-
-		// const { data } = await axios.request(options);
-		// .then(function (response) {
-		// 	const { data } = response;
-		// 	if (data.status === "success") {
-		// 		// console.log(data.jobs);
-		// 		return data;
-		// 	} else {
-		// 		return [];
-		// 	}
-		// })
-		// .catch(function (error) {
-		// 	console.log(error);
-		// });
-		// return data;
 	},
 };
 

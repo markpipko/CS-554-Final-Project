@@ -28,6 +28,10 @@
 	color: #61dafb;
 }
 
+.nav {
+	padding: 5px;
+}
+
 .navlink {
 	color: lightgray;
 }

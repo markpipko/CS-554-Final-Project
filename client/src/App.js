@@ -9,7 +9,7 @@ function App() {
 					<h1>Jobaroo</h1>
 					<nav className="nav">
 						<NavLink className="navlink" exact to="/jobs">
-							Search for Jobs
+							Indeed Job Search
 						</NavLink>
 					</nav>
 				</header>

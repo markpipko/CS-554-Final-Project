@@ -15,6 +15,8 @@ import {
 	Select,
 	MenuItem,
 	Button,
+	CircularProgress,
+	Pagination,
 } from "@mui/material";
 const useStyles = makeStyles({
 	card: {
@@ -44,9 +46,13 @@ const useStyles = makeStyles({
 		fontWeight: "bold",
 		fontSize: 12,
 	},
+	paginator: {
+		justifyContent: "center",
+		padding: "10px",
+	},
 });
 
-const Jobs = (props) => {
+const Jobs = () => {
 	const [formData, setFormData] = useState({
 		query: "",
 		zip: "",
@@ -54,6 +60,10 @@ const Jobs = (props) => {
 	});
 	const [jobsData, setJobsData] = useState(undefined);
 	const [loading, setLoading] = useState(false);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [totalPages, setTotalPages] = useState(0);
+	const [searchError, setSearchError] = useState(false);
+	// Client side validation
 	const [queryError, setQueryError] = useState(false);
 	const [queryErrorMessage, setQueryErrorMessage] = useState("");
 	const [zipError, setZipError] = useState(false);
@@ -64,8 +74,11 @@ const Jobs = (props) => {
 	let jobsList = [];
 
 	const handleChange = (e) => {
-		console.log(e);
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+	};
+
+	const handlePageChange = (e, value) => {
+		setCurrentPage(value);
 	};
 
 	const search = async (e) => {
@@ -100,14 +113,26 @@ const Jobs = (props) => {
 		}
 		setTypeError(false);
 		setTypeErrorMessage("");
-		const { data } = await axios.post("/jobs/page/1", formData);
-		setJobsData(data);
-		setLoading(false);
-		console.log(data);
+		try {
+			const { data } = await axios.post("/jobs/search", formData);
+			setJobsData(data);
+			setTotalPages(Math.ceil(Number(data.length) / 20));
+			setLoading(false);
+		} catch (e) {
+			console.log(e);
+			setSearchError(true);
+			setLoading(false);
+		}
 	};
 
 	const handleApply = (url) => {
-		window.open(url);
+		if (
+			window.confirm(
+				"This will take you to the job listing on Indeed. Do you wish to proceed?"
+			)
+		) {
+			window.open(url);
+		}
 	};
 
 	const buildCards = (job, index) => {
@@ -124,7 +149,7 @@ const Jobs = (props) => {
 							{job.title}
 						</Typography>
 						<Typography
-							style={{ wordWrap: "break-word" }}
+							style={{ whiteSpace: "pre-wrap" }}
 							gutterBottom
 							variant="body1"
 							component="p"
@@ -138,6 +163,7 @@ const Jobs = (props) => {
 							Location: {job.location}
 						</Typography>
 						<div>
+							To see the full job listing:
 							<button onClick={() => handleApply(job.url)}>Apply</button>
 						</div>
 					</CardContent>
@@ -148,9 +174,11 @@ const Jobs = (props) => {
 
 	jobsList =
 		jobsData &&
-		jobsData.map((job, index) => {
-			return buildCards(job, index);
-		});
+		jobsData
+			.slice((currentPage - 1) * 20, currentPage * 20)
+			.map((job, index) => {
+				return buildCards(job, index);
+			});
 
 	return (
 		<div>
@@ -202,16 +230,34 @@ const Jobs = (props) => {
 			<br />
 			<br />
 			{loading ? (
-				<div>Loading...</div>
+				<CircularProgress />
+			) : searchError ? (
+				<div>No search results found</div>
+			) : jobsData ? (
+				<div>
+					<Pagination
+						count={totalPages}
+						page={currentPage}
+						onChange={handlePageChange}
+						defaultPage={1}
+						color="primary"
+						size="large"
+						showFirstButton
+						showLastButton
+						classes={{ ul: classes.paginator }}
+					/>
+					<br />
+					<Grid
+						container
+						className={classes.grid}
+						spacing={5}
+						alignItems="stretch"
+					>
+						{jobsList}
+					</Grid>
+				</div>
 			) : (
-				<Grid
-					container
-					className={classes.grid}
-					spacing={5}
-					alignItems="stretch"
-				>
-					{jobsList}
-				</Grid>
+				<div></div>
 			)}
 		</div>
 	);

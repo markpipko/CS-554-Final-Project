@@ -9,25 +9,9 @@ const jobsData = data.jobs;
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
-// router.get("/page/:page", async (req, res, next) => {
-// 	let page = req.params.page;
-// 	if (!page) {
-// 		return res.status(400).json({ error: "Page number not provided" });
-// 	}
-// 	let cachedPage = await client.getAsync(`job page: ${page}`);
-// 	if (cachedPage) {
-// 		return res.status(200).json(JSON.parse(cachedPage));
-// 	} else {
-// 		next();
-// 	}
-// });
-
-router.post("/page/:page", async (req, res) => {
-	let page = req.params.page;
+router.post("/search", async (req, res, next) => {
 	let searchReq = req.body;
-	if (!page) {
-		return res.status(400).json({ error: "Page number not provided" });
-	}
+
 	if (
 		!searchReq.query ||
 		typeof searchReq.query !== "string" ||
@@ -37,17 +21,78 @@ router.post("/page/:page", async (req, res) => {
 			.status(400)
 			.json({ error: "Query not provided or not of proper type" });
 	}
+	if (
+		!searchReq.zip ||
+		typeof searchReq.zip !== "string" ||
+		!searchReq.zip.trim()
+	) {
+		return res
+			.status(400)
+			.json({ error: "Zip not provided or not of proper type" });
+	}
+	if (
+		!searchReq.jobType ||
+		typeof searchReq.jobType !== "string" ||
+		!searchReq.jobType.trim()
+	) {
+		return res
+			.status(400)
+			.json({ error: "Job Type not provided or not of proper type" });
+	}
+	let cachedPage = await client.getAsync(
+		`query: ${searchReq.query}, zip: ${searchReq.zip}, jobType: ${searchReq.jobType}`
+	);
+	if (cachedPage) {
+		return res.status(200).send(JSON.parse(cachedPage));
+	} else {
+		next();
+	}
+});
+
+router.post("/search", async (req, res) => {
+	let searchReq = req.body;
+
+	if (
+		!searchReq.query ||
+		typeof searchReq.query !== "string" ||
+		!searchReq.query.trim()
+	) {
+		return res
+			.status(400)
+			.json({ error: "Query not provided or not of proper type" });
+	}
+	if (
+		!searchReq.zip ||
+		typeof searchReq.zip !== "string" ||
+		!searchReq.zip.trim()
+	) {
+		return res
+			.status(400)
+			.json({ error: "Zip not provided or not of proper type" });
+	}
+	if (
+		!searchReq.jobType ||
+		typeof searchReq.jobType !== "string" ||
+		!searchReq.jobType.trim()
+	) {
+		return res
+			.status(400)
+			.json({ error: "Job Type not provided or not of proper type" });
+	}
+
 	try {
-		const jobsPage = await jobsData.getPage(
-			page,
+		const jobsPage = await jobsData.searchJobs(
 			searchReq.query,
 			searchReq.zip,
 			searchReq.jobType
 		);
 		let status = await client.setAsync(
-			`job page: ${page}`,
-			JSON.stringify(jobsPage)
+			`query: ${searchReq.query}, zip: ${searchReq.zip}, jobType: ${searchReq.jobType}`,
+			JSON.stringify(jobsPage),
+			"EX",
+			300
 		);
+
 		return res.status(200).send(jobsPage);
 	} catch (e) {
 		console.log(e);
