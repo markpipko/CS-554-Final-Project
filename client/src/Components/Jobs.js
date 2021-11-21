@@ -5,22 +5,19 @@ import {
 	CardContent,
 	Typography,
 	Grid,
-	makeStyles,
-	FormHelperText,
-} from "@material-ui/core";
-import {
 	FormControl,
 	InputLabel,
 	TextField,
-	Select,
 	MenuItem,
 	Button,
 	CircularProgress,
 	Pagination,
+	FormGroup,
 } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 const useStyles = makeStyles({
 	card: {
-		maxWidth: 250,
+		// maxWidth: 500,
 		height: "auto",
 		marginLeft: "auto",
 		marginRight: "auto",
@@ -31,15 +28,11 @@ const useStyles = makeStyles({
 	titleHead: {
 		borderBottom: "1px solid #1e8678",
 		fontWeight: "bold",
-		fontSize: "15px	",
+		fontSize: "16px",
 	},
 	grid: {
 		flexGrow: 1,
 		flexDirection: "row",
-	},
-	media: {
-		height: "100%",
-		width: "100%",
 	},
 	button: {
 		color: "#1e8678",
@@ -63,6 +56,7 @@ const Jobs = () => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(0);
 	const [searchError, setSearchError] = useState(false);
+
 	// Client side validation
 	const [queryError, setQueryError] = useState(false);
 	const [queryErrorMessage, setQueryErrorMessage] = useState("");
@@ -137,7 +131,16 @@ const Jobs = () => {
 
 	const buildCards = (job, index) => {
 		return (
-			<Grid item xs={10} sm={5} md={5} lg={3} xl={2} key={index}>
+			<Grid
+				item
+				xs={10}
+				sm={5}
+				md={5}
+				lg={4}
+				xl={3}
+				key={index}
+				style={{ display: "flex" }}
+			>
 				<Card className={classes.card} variant="outlined">
 					<CardContent>
 						<Typography
@@ -149,12 +152,12 @@ const Jobs = () => {
 							{job.title}
 						</Typography>
 						<Typography
-							style={{ whiteSpace: "pre-wrap" }}
+							// style={{ whiteSpace: "pre-wrap" }}
 							gutterBottom
 							variant="body1"
 							component="p"
 						>
-							Summary: {job.summary}
+							{job.summary}
 						</Typography>
 						<Typography gutterBottom variant="body1" component="p">
 							Company: {job.company}
@@ -162,8 +165,10 @@ const Jobs = () => {
 						<Typography gutterBottom variant="body1" component="p">
 							Location: {job.location}
 						</Typography>
+					</CardContent>
+					<CardContent style={{ marginTop: "auto" }}>
 						<div>
-							To see the full job listing:
+							To see the full job listing on Indeed: <br />
 							<button onClick={() => handleApply(job.url)}>Apply</button>
 						</div>
 					</CardContent>
@@ -182,46 +187,52 @@ const Jobs = () => {
 
 	return (
 		<div>
-			<h2>Search for Jobs</h2>
+			<h1>Search for Jobs</h1>
 			<FormControl>
-				<InputLabel id="query" htmlFor="query"></InputLabel>
-				<TextField
-					id="query"
-					variant="outlined"
-					label="Query"
-					onChange={(e) => handleChange(e)}
-					name="query"
-					error={!!queryError}
-					helperText={queryErrorMessage}
-					required
-				/>
+				<FormGroup>
+					<InputLabel id="query" htmlFor="query"></InputLabel>
+					<TextField
+						id="query"
+						variant="outlined"
+						label="Query"
+						onChange={(e) => handleChange(e)}
+						name="query"
+						error={!!queryError}
+						helperText={queryErrorMessage}
+						required
+					/>
+				</FormGroup>
 				<br />
-				<InputLabel id="zip" htmlFor="zip"></InputLabel>
-				<TextField
-					id="outlined-basic"
-					label="Zip Code"
-					name="zip"
-					onChange={(e) => handleChange(e)}
-					pattern="[0-9]{5}"
-					required
-					error={!!zipError}
-					helperText={zipErrorMessage}
-				/>
+				<FormGroup>
+					<InputLabel id="zip" htmlFor="zip"></InputLabel>
+					<TextField
+						id="outlined-basic"
+						label="Zip Code"
+						name="zip"
+						onChange={(e) => handleChange(e)}
+						pattern="[0-9]{5}"
+						required
+						error={!!zipError}
+						helperText={zipErrorMessage}
+					/>
+				</FormGroup>
 				<br />
-				<InputLabel id="job-type-label"></InputLabel>
-				<Select
-					labelId="job-type-label"
-					error={!!typeError}
-					id="jobType"
-					value={formData.jobType}
-					name="jobType"
-					onChange={(e) => handleChange(e)}
-				>
-					<MenuItem value="entry_level">Entry Level</MenuItem>
-					<MenuItem value="mid_level">Mid Level</MenuItem>
-					<MenuItem value="senior_level">Senior Level</MenuItem>
-				</Select>
-				<FormHelperText>{typeErrorMessage}</FormHelperText>
+				<FormGroup>
+					<TextField
+						select
+						value={formData.jobType}
+						label="Job Type"
+						onChange={(e) => handleChange(e)}
+						name="jobType"
+						id="jobType"
+						error={!!typeError}
+						helperText={typeErrorMessage}
+					>
+						<MenuItem value="entry_level">Entry Level</MenuItem>
+						<MenuItem value="mid_level">Mid Level</MenuItem>
+						<MenuItem value="senior_level">Senior Level</MenuItem>
+					</TextField>
+				</FormGroup>
 				<br />
 				<Button type="submit" onClick={(e) => search(e)}>
 					Submit

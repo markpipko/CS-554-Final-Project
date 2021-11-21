@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 
-import '../App.css';
+import "../App.css";
 
 function Landing() {
-  return (
-    <div>
-      <h2>This is the Landing page</h2>
-    </div>
-  );
+	return (
+		<div>
+			<h1>Welcome to Jobaroo</h1>
+		</div>
+	);
 }
 
 export default Landing;
