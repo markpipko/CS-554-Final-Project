@@ -22,6 +22,7 @@
 	justify-content: center;
 	font-size: calc(10px + 2vmin);
 	color: white;
+	padding: 20px;
 }
 
 .App-link {
@@ -34,6 +35,7 @@
 
 .navlink {
 	color: lightgray;
+	padding: 20px;
 }
 
 @keyframes App-logo-spin {
@@ -43,4 +45,40 @@
 	to {
 		transform: rotate(360deg);
 	}
+}
+
+.navigation {
+	background: #282c34;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+.navigation a:link,
+.navigation a:visited {
+	color: white;
+	text-decoration: none;
+}
+
+.active {
+	font-weight: bold;
+	color: red !important;
+}
+
+.error {
+	font-weight: bold;
+	color: red !important;
+}
+
+.forgotPassword {
+	background: none !important;
+	border: none !important;
+	text-decoration: underline;
+	margin-left: 5px;
+	color: #069;
+}
+
+.forgotPassword:hover {
+	text-decoration: none;
+	color: red;
 }
