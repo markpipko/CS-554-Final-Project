@@ -14,7 +14,7 @@
 }
 
 .App-header {
-	background-color: darkblue;
+	background-color: white;
 	min-height: 10vh;
 	display: flex;
 	flex-direction: column;
@@ -62,7 +62,7 @@
 
 .active {
 	font-weight: bold;
-	color: red !important;
+	color: #1976d2 !important;
 }
 
 .error {
