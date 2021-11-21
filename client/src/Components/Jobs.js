@@ -5,10 +5,7 @@ import {
 	CardContent,
 	Typography,
 	Grid,
-	makeStyles,
 	FormHelperText,
-} from "@material-ui/core";
-import {
 	FormControl,
 	InputLabel,
 	TextField,
@@ -18,9 +15,10 @@ import {
 	CircularProgress,
 	Pagination,
 } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 const useStyles = makeStyles({
 	card: {
-		maxWidth: 250,
+		// maxWidth: 500,
 		height: "auto",
 		marginLeft: "auto",
 		marginRight: "auto",
@@ -31,15 +29,11 @@ const useStyles = makeStyles({
 	titleHead: {
 		borderBottom: "1px solid #1e8678",
 		fontWeight: "bold",
-		fontSize: "15px	",
+		fontSize: "13px",
 	},
 	grid: {
 		flexGrow: 1,
 		flexDirection: "row",
-	},
-	media: {
-		height: "100%",
-		width: "100%",
 	},
 	button: {
 		color: "#1e8678",
@@ -63,6 +57,7 @@ const Jobs = () => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(0);
 	const [searchError, setSearchError] = useState(false);
+
 	// Client side validation
 	const [queryError, setQueryError] = useState(false);
 	const [queryErrorMessage, setQueryErrorMessage] = useState("");
@@ -137,7 +132,16 @@ const Jobs = () => {
 
 	const buildCards = (job, index) => {
 		return (
-			<Grid item xs={10} sm={5} md={5} lg={3} xl={2} key={index}>
+			<Grid
+				item
+				xs={10}
+				sm={5}
+				md={5}
+				lg={4}
+				xl={3}
+				key={index}
+				style={{ display: "flex" }}
+			>
 				<Card className={classes.card} variant="outlined">
 					<CardContent>
 						<Typography
@@ -149,12 +153,12 @@ const Jobs = () => {
 							{job.title}
 						</Typography>
 						<Typography
-							style={{ whiteSpace: "pre-wrap" }}
+							// style={{ whiteSpace: "pre-wrap" }}
 							gutterBottom
 							variant="body1"
 							component="p"
 						>
-							Summary: {job.summary}
+							{job.summary}
 						</Typography>
 						<Typography gutterBottom variant="body1" component="p">
 							Company: {job.company}
@@ -162,8 +166,10 @@ const Jobs = () => {
 						<Typography gutterBottom variant="body1" component="p">
 							Location: {job.location}
 						</Typography>
+					</CardContent>
+					<CardContent style={{ marginTop: "auto" }}>
 						<div>
-							To see the full job listing:
+							To see the full job listing on Indeed: <br />
 							<button onClick={() => handleApply(job.url)}>Apply</button>
 						</div>
 					</CardContent>
