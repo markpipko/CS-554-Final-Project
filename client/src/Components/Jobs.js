@@ -5,15 +5,14 @@ import {
 	CardContent,
 	Typography,
 	Grid,
-	FormHelperText,
 	FormControl,
 	InputLabel,
 	TextField,
-	Select,
 	MenuItem,
 	Button,
 	CircularProgress,
 	Pagination,
+	FormGroup,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 const useStyles = makeStyles({
@@ -29,7 +28,7 @@ const useStyles = makeStyles({
 	titleHead: {
 		borderBottom: "1px solid #1e8678",
 		fontWeight: "bold",
-		fontSize: "13px",
+		fontSize: "16px",
 	},
 	grid: {
 		flexGrow: 1,
@@ -188,46 +187,52 @@ const Jobs = () => {
 
 	return (
 		<div>
-			<h2>Search for Jobs</h2>
+			<h1>Search for Jobs</h1>
 			<FormControl>
-				<InputLabel id="query" htmlFor="query"></InputLabel>
-				<TextField
-					id="query"
-					variant="outlined"
-					label="Query"
-					onChange={(e) => handleChange(e)}
-					name="query"
-					error={!!queryError}
-					helperText={queryErrorMessage}
-					required
-				/>
+				<FormGroup>
+					<InputLabel id="query" htmlFor="query"></InputLabel>
+					<TextField
+						id="query"
+						variant="outlined"
+						label="Query"
+						onChange={(e) => handleChange(e)}
+						name="query"
+						error={!!queryError}
+						helperText={queryErrorMessage}
+						required
+					/>
+				</FormGroup>
 				<br />
-				<InputLabel id="zip" htmlFor="zip"></InputLabel>
-				<TextField
-					id="outlined-basic"
-					label="Zip Code"
-					name="zip"
-					onChange={(e) => handleChange(e)}
-					pattern="[0-9]{5}"
-					required
-					error={!!zipError}
-					helperText={zipErrorMessage}
-				/>
+				<FormGroup>
+					<InputLabel id="zip" htmlFor="zip"></InputLabel>
+					<TextField
+						id="outlined-basic"
+						label="Zip Code"
+						name="zip"
+						onChange={(e) => handleChange(e)}
+						pattern="[0-9]{5}"
+						required
+						error={!!zipError}
+						helperText={zipErrorMessage}
+					/>
+				</FormGroup>
 				<br />
-				<InputLabel id="job-type-label"></InputLabel>
-				<Select
-					labelId="job-type-label"
-					error={!!typeError}
-					id="jobType"
-					value={formData.jobType}
-					name="jobType"
-					onChange={(e) => handleChange(e)}
-				>
-					<MenuItem value="entry_level">Entry Level</MenuItem>
-					<MenuItem value="mid_level">Mid Level</MenuItem>
-					<MenuItem value="senior_level">Senior Level</MenuItem>
-				</Select>
-				<FormHelperText>{typeErrorMessage}</FormHelperText>
+				<FormGroup>
+					<TextField
+						select
+						value={formData.jobType}
+						label="Job Type"
+						onChange={(e) => handleChange(e)}
+						name="jobType"
+						id="jobType"
+						error={!!typeError}
+						helperText={typeErrorMessage}
+					>
+						<MenuItem value="entry_level">Entry Level</MenuItem>
+						<MenuItem value="mid_level">Mid Level</MenuItem>
+						<MenuItem value="senior_level">Senior Level</MenuItem>
+					</TextField>
+				</FormGroup>
 				<br />
 				<Button type="submit" onClick={(e) => search(e)}>
 					Submit
