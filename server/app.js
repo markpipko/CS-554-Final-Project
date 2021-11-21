@@ -4,7 +4,7 @@ const configRoutes = require("./routes");
 
 app.use(express.json());
 
-const port = 5000;
+const port = 4000;
 
 configRoutes(app);
 
