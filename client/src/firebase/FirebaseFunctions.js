@@ -1,5 +1,5 @@
 import firebase from "firebase/compat/app";
-import { firebaseApp } from "./Firebase";
+import { firebaseApp, db } from "./Firebase";
 import {
 	getAuth,
 	signInWithEmailAndPassword,
@@ -14,6 +14,7 @@ import {
 	updateProfile,
 	reauthenticateWithCredential,
 } from "firebase/auth";
+import { collection, setDoc, doc } from "firebase/firestore";
 
 const auth = getAuth(firebaseApp);
 // let currentUser;
@@ -21,8 +22,27 @@ const auth = getAuth(firebaseApp);
 //     currentUser = user
 //    });
 
-async function doCreateUserWithEmailAndPassword(email, password, displayName) {
+async function doCreateUserWithEmailAndPassword(
+	email,
+	password,
+	role,
+	displayName
+) {
 	await createUserWithEmailAndPassword(auth, email, password);
+	if (role == "seeker") {
+		await setDoc(doc(db, "seekers", email), {
+			email: email,
+			role: role,
+			displayName: displayName,
+		});
+	}
+	if (role == "employer") {
+		await setDoc(doc(db, "employer", email), {
+			email: email,
+			role: role,
+			displayName: displayName,
+		});
+	}
 	updateProfile(auth.currentUser, { displayName: displayName });
 }
 

@@ -10,6 +10,7 @@ function SignUp() {
 	const [formData, setFormData] = useState({
 		displayName: "",
 		email: "",
+		role: null,
 		passwordOne: "",
 		passwordTwo: "",
 	});
@@ -34,6 +35,7 @@ function SignUp() {
 			await doCreateUserWithEmailAndPassword(
 				formData.email,
 				formData.passwordOne,
+				formData.role,
 				formData.displayName
 			);
 		} catch (error) {
@@ -75,6 +77,25 @@ function SignUp() {
 							onChange={(e) => handleChange(e)}
 						/>
 					</label>
+				</div>
+				<div className="form-group">
+					<input
+						type="radio"
+						id="seeker"
+						name="role"
+						value="seeker"
+						onChange={(e) => handleChange(e)}
+					/>
+					<label htmlFor="seeker">Job Seeker</label>
+					<br />
+					<input
+						type="radio"
+						id="employer"
+						name="role"
+						value="employer"
+						onChange={(e) => handleChange(e)}
+					/>
+					<label htmlFor="employer">Employer</label>
 				</div>
 				<div className="form-group">
 					<label>
