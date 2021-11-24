@@ -1,23 +1,45 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { AuthContext } from "../firebase/Auth";
 import SignOutButton from "./SignOut";
 import "../App.css";
 import { AppBar, Toolbar, Grid, Tabs, Tab } from "@mui/material";
-
+import { checkEmployer } from "../firebase/FirebaseFunctions";
 const Navigation = () => {
 	const { currentUser } = useContext(AuthContext);
 	return <div>{currentUser ? <NavigationAuth /> : <NavigationNonAuth />}</div>;
 };
 
 const NavigationAuth = () => {
-	const paths = ["/", "/home", "/jobs", "/account"];
+	const [isEmployer, setIsEmployer] = useState(false);
+	const { currentUser } = useContext(AuthContext);
+
+	useEffect(() => {
+		async function check() {
+			let res = await checkEmp(currentUser.uid);
+			if (res) {
+				console.log("I am a employer");
+			} else {
+				console.log("I am a seeker");
+			}
+			setIsEmployer(res);
+		}
+		check();
+	}, [currentUser]);
+
+	const checkEmp = async (uid) => {
+		let res = await checkEmployer(uid);
+		return res;
+	};
+
+	const paths = isEmployer
+		? ["/", "/home", "/postJob", "/account"]
+		: ["/", "/home", "/jobs", "/account"];
 	const [value, setValue] = useState(
 		paths.indexOf(window.location.pathname.toLowerCase()) > 0
 			? paths.indexOf(window.location.pathname.toLowerCase())
 			: 1
 	);
-	
 
 	return (
 		<div>
@@ -53,12 +75,22 @@ const NavigationAuth = () => {
 									to="/home"
 									activeClassName="active"
 								/>
-								<Tab
-									label={"Indeed Job Search"}
-									component={NavLink}
-									to="/jobs"
-									activeClassName="active"
-								/>
+								{isEmployer ? (
+									<Tab
+										label={"Post a Job"}
+										component={NavLink}
+										to="/postJob"
+										activeClassName="active"
+									/>
+								) : (
+									<Tab
+										label={"Job Search"}
+										component={NavLink}
+										to="/jobs"
+										activeClassName="active"
+									/>
+								)}
+
 								<Tab
 									label={"Account"}
 									component={NavLink}
@@ -74,28 +106,6 @@ const NavigationAuth = () => {
 			</AppBar>
 			<Toolbar />
 		</div>
-
-		// <nav className="navigation">
-
-		//     <NavLink className="navlink" exact to="/" activeClassName="active">
-		//         Landing
-		//     </NavLink>
-
-		//     <NavLink className="navlink" exact to="/home" activeClassName="active">
-		//         Home
-		//     </NavLink>
-
-		//     <NavLink className="navlink" exact to="/jobs" activeClassName="active">
-		// 		Indeed Job Search
-		// 	</NavLink>
-
-		//     <NavLink className="navlink" exact to="/account" activeClassName="active">
-		//         Account
-		//     </NavLink>
-
-		//     <SignOutButton />
-
-		// </nav>
 	);
 };
 
@@ -158,22 +168,6 @@ const NavigationNonAuth = () => {
 			<Toolbar />
 		</div>
 	);
-
-	// return (
-	// 	<nav className="navigation">
-	// 		<NavLink className="navlink" exact to="/" activeClassName="active">
-	// 			Landing
-	// 		</NavLink>
-
-	// 		<NavLink className="navlink" exact to="/signup" activeClassName="active">
-	// 			Sign-up
-	// 		</NavLink>
-
-	// 		<NavLink className="navlink" exact to="/signin" activeClassName="active">
-	// 			Sign-In
-	// 		</NavLink>
-	// 	</nav>
-	// );
 };
 
 export default Navigation;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import {
 	Card,
@@ -14,9 +14,9 @@ import {
 	Pagination,
 	FormGroup,
 } from "@mui/material";
-import { makeStyles, propsToClassKey } from "@mui/styles";
-import  { Redirect } from 'react-router-dom'
-
+import { makeStyles } from "@mui/styles";
+import { AuthContext } from "../firebase/Auth";
+import { checkEmployer } from "../firebase/FirebaseFunctions";
 const useStyles = makeStyles({
 	card: {
 		// maxWidth: 500,
@@ -58,7 +58,7 @@ const Jobs = (props) => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(0);
 	const [searchError, setSearchError] = useState(false);
-
+	const [isEmployer, setIsEmployer] = useState(false);
 	// Client side validation
 	const [queryError, setQueryError] = useState(false);
 	const [queryErrorMessage, setQueryErrorMessage] = useState("");
@@ -69,6 +69,26 @@ const Jobs = (props) => {
 	const classes = useStyles();
 	let jobsList = [];
 
+	const { currentUser } = useContext(AuthContext);
+
+	useEffect(() => {
+		async function check() {
+			let res = await checkEmp(currentUser.uid);
+			if (res) {
+				console.log("I am a employer");
+			} else {
+				console.log("I am a seeker");
+			}
+			setIsEmployer(res);
+		}
+		check();
+	}, [currentUser]);
+
+	const checkEmp = async (uid) => {
+		let res = await checkEmployer(uid);
+		return res;
+	};
+
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 	};
@@ -77,8 +97,8 @@ const Jobs = (props) => {
 		setCurrentPage(value);
 	};
 
-	if(props.employer){
-		<Redirect to="/somewhere/else" />
+	if (isEmployer) {
+		window.location.replace("/home");
 	}
 
 	const search = async (e) => {
