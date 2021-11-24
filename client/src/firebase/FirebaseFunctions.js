@@ -14,7 +14,7 @@ import {
 	updateProfile,
 	reauthenticateWithCredential,
 } from "firebase/auth";
-import { collection, setDoc, doc } from "firebase/firestore";
+import { collection, setDoc, doc, getDoc } from "firebase/firestore";
 
 const auth = getAuth(firebaseApp);
 // let currentUser;
@@ -28,24 +28,45 @@ async function doCreateUserWithEmailAndPassword(
 	role,
 	displayName
 ) {
-	await createUserWithEmailAndPassword(auth, email, password);
-	if (role == "seeker") {
-		await setDoc(doc(db, "seekers", email), {
-			email: email,
-			role: role,
-			displayName: displayName,
-			resume: null,
-			applied: [],
-		});
-	}
-	if (role == "employer") {
-		await setDoc(doc(db, "employer", email), {
-			email: email,
-			role: role,
-			displayName: displayName,
-		});
-	}
-	updateProfile(auth.currentUser, { displayName: displayName });
+	await createUserWithEmailAndPassword(auth, email, password).then(
+		async (user) => {
+			if (role === "seeker") {
+				await setDoc(doc(db, "seekers", user.user.uid), {
+					uid: user.user.uid,
+					email: email,
+					role: role,
+					displayName: displayName,
+					resume: null,
+					applied: [],
+				});
+			}
+			if (role === "employer") {
+				await setDoc(doc(db, "employer", user.user.uid), {
+					uid: user.user.uid,
+					email: email,
+					role: role,
+					displayName: displayName,
+				});
+			}
+			updateProfile(auth.currentUser, { displayName: displayName });
+		}
+	);
+	// if (role == "seeker") {
+	// 	await setDoc(doc(db, "seekers", email), {
+	// 		email: email,
+	// 		role: role,
+	// 		displayName: displayName,
+	// 		resume: null,
+	// 		applied: [],
+	// 	});
+	// }
+	// if (role == "employer") {
+	// 	await setDoc(doc(db, "employer", email), {
+	// 		email: email,
+	// 		role: role,
+	// 		displayName: displayName,
+	// 	});
+	// }
 }
 
 async function doChangePassword(email, oldPassword, newPassword) {
@@ -79,6 +100,17 @@ async function doPasswordUpdate(password) {
 
 async function doSignOut() {
 	await signOut(auth);
+	window.location.replace("/signin");
+}
+
+async function checkEmployer(uid) {
+	const docRef = doc(db, "employer", uid);
+	const docSnap = await getDoc(docRef);
+	if (docSnap.exists()) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 export {
@@ -89,4 +121,5 @@ export {
 	doPasswordUpdate,
 	doSignOut,
 	doChangePassword,
+	checkEmployer,
 };
