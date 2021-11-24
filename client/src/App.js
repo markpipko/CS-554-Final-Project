@@ -20,6 +20,7 @@ import PostJob from "./Components/PostJob"
 
  function App() {
 	const [ employer, setEmployer ] = useState(false);
+	const [ loading, setLoading ] = useState(true);
 
 	useEffect(() => {
 		async function fetchUser() {
@@ -32,11 +33,13 @@ import PostJob from "./Components/PostJob"
 				if (docSnap.exists()){
 					setEmployer(true)
 				}
+				setLoading(false)
 			}
 		}
 		fetchUser()
 	}, [])
 
+	// if(loading) return <div>Loading....</div>
 
 	return (
 		<AuthProvider>
