@@ -14,7 +14,9 @@ import {
 	Pagination,
 	FormGroup,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import { makeStyles, propsToClassKey } from "@mui/styles";
+import  { Redirect } from 'react-router-dom'
+
 const useStyles = makeStyles({
 	card: {
 		// maxWidth: 500,
@@ -45,7 +47,7 @@ const useStyles = makeStyles({
 	},
 });
 
-const Jobs = () => {
+const Jobs = (props) => {
 	const [formData, setFormData] = useState({
 		query: "",
 		zip: "",
@@ -74,6 +76,10 @@ const Jobs = () => {
 	const handlePageChange = (e, value) => {
 		setCurrentPage(value);
 	};
+
+	if(props.employer){
+		<Redirect to="/somewhere/else" />
+	}
 
 	const search = async (e) => {
 		setLoading(true);

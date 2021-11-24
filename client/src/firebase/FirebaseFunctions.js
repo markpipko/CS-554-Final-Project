@@ -28,7 +28,9 @@ async function doCreateUserWithEmailAndPassword(email, password, role, displayNa
         await setDoc(doc(db, "seekers", email), {
             email: email,
             role: role,
-            displayName: displayName
+            displayName: displayName,
+            resume: null,
+            applied: []
         });
     }
     if(role == "employer"){
@@ -38,7 +40,7 @@ async function doCreateUserWithEmailAndPassword(email, password, role, displayNa
             displayName: displayName
         });
     }
-	updateProfile(auth.currentUser, { displayName: displayName });
+	updateProfile(auth.currentUser, { displayName: displayName});
 }
 
 async function doChangePassword(email, oldPassword, newPassword) {
