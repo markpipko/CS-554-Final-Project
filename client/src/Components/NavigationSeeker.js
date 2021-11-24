@@ -17,6 +17,7 @@ const NavigationAuth = () => {
 			? paths.indexOf(window.location.pathname.toLowerCase())
 			: 1
 	);
+	
 
 	return (
 		<div>
