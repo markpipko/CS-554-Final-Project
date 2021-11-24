@@ -34,6 +34,8 @@ async function doCreateUserWithEmailAndPassword(
 			email: email,
 			role: role,
 			displayName: displayName,
+			resume: null,
+			applied: [],
 		});
 	}
 	if (role == "employer") {
