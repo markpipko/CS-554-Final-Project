@@ -20,8 +20,13 @@ import  { Redirect } from 'react-router-dom'
 
 
 const PostJob = (props) => {
+    const [formData, setFormData] = useState({
+		title: "",
+		description: "",
+        zip: "",
+		jobType: "entry_level",
+	});
     const {currentUser} = getAuth();
-    const [formData, setFormData] = useState({});
     const [titleError, setTitleError] = useState(false);
 	const [titleErrorMessage, setTitleErrorMessage] = useState("");
 	const [zipError, setZipError] = useState(false);
@@ -75,12 +80,13 @@ const PostJob = (props) => {
 		setTypeError(false);
 		setTypeErrorMessage("");
 		try {
+            console.log(currentUser.email, formData)
             await addDoc(collection(db, "posts"), {
                 email: currentUser.email,
                 title: formData.title,
                 description: formData.description,
-                zipcode: formData.zipcode,
-                type: formData.type,
+                zip: formData.zip,
+                jobType: formData.jobType,
               });
 		} catch (e) {
 			console.log(e);
