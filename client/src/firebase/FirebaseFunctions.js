@@ -28,7 +28,8 @@ async function doCreateUserWithEmailAndPassword(email, password, role, displayNa
         await setDoc(doc(db, "seekers", email), {
             email: email,
             role: role,
-            displayName: displayName
+            displayName: displayName,
+            resume: ""
         });
     }
     if(role == "employer"){

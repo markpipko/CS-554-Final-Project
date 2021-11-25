@@ -36,7 +36,7 @@ function ChangePassword() {
     return (
       <div>
         {pwMatch && <h4 className="error">{pwMatch}</h4>}
-        <h2>Change Password</h2>
+        <h3>Change Password</h3>
         <form onSubmit={submitForm}>
           <div className="form-group">
             <label>
