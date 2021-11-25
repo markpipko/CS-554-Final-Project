@@ -15,11 +15,19 @@ function Account() {
     useEffect(() => {
         async function fetchData() {
             console.log("useEffect fired");
-            let currentUserInfo = await getDoc(doc(db, "seekers", currentUser.email));
+            /*let currentUserInfo = await getDoc(doc(db, "seekers", currentUser.email));
             if (currentUserInfo.exists) {
-                console.log(currentUserInfo.data());
                 setSeeker(true);
-                setResumeData(currentUserInfo.data().resume);
+                if ("resume" in currentUserInfo.data().keys() && currentUserInfo.data().resume != null) {
+                    console.log("Resume: ", currentUserInfo.data().resume)
+                    setResumeData(currentUserInfo.data().resume);
+                }
+            }*/
+            
+            console.log("role: ", currentUser.role);
+            console.log("resume: ", currentUser.resume);
+            if (currentUser.role == "seeker" && currentUser.resume != null) {
+                setResumeData(currentUser.resume);
             }
         }
         fetchData();
@@ -28,7 +36,7 @@ function Account() {
     return (
         <div>
             <h2>Account Page</h2>
-            {seeker && <UploadResume resume={resumeData} />}
+            {seeker && <UploadResume resume={resumeData ? resumeData : "None"} />}
             <ChangePassword />
             <SignOutButton />
         </div>

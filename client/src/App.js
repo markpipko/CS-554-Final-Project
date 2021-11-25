@@ -11,6 +11,9 @@ import { AuthProvider } from "./firebase/Auth";
 import PrivateRoute from "./Components/PrivateRoute";
 import Navigation from "./Components/Navigation";
 import NotFound from "./Components/NotFound";
+import React from "react";
+import PostJob from "./Components/PostJob";
+
 function App() {
 	return (
 		<AuthProvider>
@@ -18,7 +21,6 @@ function App() {
 				<div className="App">
 					<header className="App-header">
 						{/* <h1>Jobaroo</h1> */}
-
 						<Navigation />
 					</header>
 					<div className="App-body">
@@ -26,6 +28,7 @@ function App() {
 							<Route exact path="/" component={Landing} />
 							<PrivateRoute exact path="/home" component={Home} />
 							<PrivateRoute exact path="/jobs" component={Jobs} />
+							<PrivateRoute exact path="/postJob" component={PostJob} />
 							<PrivateRoute exact path="/account" component={Account} />
 							<Route exact path="/signin" component={SignIn} />
 							<Route exact path="/signup" component={SignUp} />

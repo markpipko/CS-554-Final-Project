@@ -6,9 +6,15 @@ const path = require("path");
 function UploadResume(props) {
 
     function uploadResume() {
-        const inputVal = document.getElementById("file").files[0].name;
-        let fileName = path.basename(inputVal);
-        console.log(fileName);
+        try {
+            const inputVal = document.getElementById("file").files[0].name;
+            let fileName = path.basename(inputVal);
+            console.log(fileName);
+        }
+        catch (e) {
+            let error = document.getElementById("uploadError");
+            error.innerHTML = "Please upload a proper file.";
+        }
     }
 
     return (
@@ -19,6 +25,7 @@ function UploadResume(props) {
                     Upload Resume:{" "}
                     <input type="file" id="file" accept="application/msword, application/pdf" />
                 </label><br />
+                <p id="uploadError"></p>
                 <Button onClick={uploadResume}>Upload</Button>
             </form>
         </div>
