@@ -14,7 +14,8 @@ import {
 	updateProfile,
 	reauthenticateWithCredential,
 } from "firebase/auth";
-import { collection, setDoc, doc, getDoc } from "firebase/firestore";
+import { collection, setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 const auth = getAuth(firebaseApp);
 // let currentUser;
 // onAuthStateChanged(auth, (user) => {
@@ -37,6 +38,7 @@ async function doCreateUserWithEmailAndPassword(
 					displayName: displayName,
 					resume: null,
 					applied: [],
+					imageUrl: "",
 				});
 			}
 			if (role === "employer") {
@@ -45,6 +47,7 @@ async function doCreateUserWithEmailAndPassword(
 					email: email,
 					role: role,
 					displayName: displayName,
+					imageUrl: "",
 				});
 			}
 			updateProfile(auth.currentUser, { displayName: displayName });
@@ -95,6 +98,32 @@ async function checkEmployer(uid) {
 	}
 }
 
+async function checkForImage(uid) {
+	const ref = doc(db, "seekers", uid);
+	const docSnap = await getDoc(ref);
+	if (docSnap.exists()) {
+		if (docSnap.data().imageUrl) {
+			return docSnap.data().imageUrl;
+		} else {
+			return "";
+		}
+	} else {
+		return "";
+	}
+}
+
+async function imageUpload(uid, url) {
+	const storage = getStorage();
+	const storageRef = ref(storage, `profileImages/${uid}`);
+	await uploadBytes(storageRef, url);
+	let downloadUrl = await getDownloadURL(ref(storage, `profileImages/${uid}`));
+	const userRef = doc(db, "seekers", uid);
+	await updateDoc(userRef, {
+		imageUrl: downloadUrl,
+	});
+	return downloadUrl;
+}
+
 export {
 	doCreateUserWithEmailAndPassword,
 	doSocialSignIn,
@@ -104,4 +133,6 @@ export {
 	doSignOut,
 	doChangePassword,
 	checkEmployer,
+	checkForImage,
+	imageUpload,
 };
