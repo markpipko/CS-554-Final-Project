@@ -26,6 +26,9 @@ const exportedMethods = {
 		}
 
 		let location = zipcode.lookup(zip);
+		if (!location) {
+			throw "Cannot find your zip code";
+		}
 
 		if (!jobType) {
 			throw "Job type not provided";
