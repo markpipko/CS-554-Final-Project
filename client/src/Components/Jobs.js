@@ -17,6 +17,8 @@ import {
 import { makeStyles } from "@mui/styles";
 import { AuthContext } from "../firebase/Auth";
 import { checkEmployer } from "../firebase/FirebaseFunctions";
+import IndeedApplyModal from "./modals/IndeedApplyModal"
+
 const useStyles = makeStyles({
 	card: {
 		// maxWidth: 500,
@@ -66,8 +68,22 @@ const Jobs = (props) => {
 	const [zipErrorMessage, setZipErrorMessage] = useState("");
 	const [typeError, setTypeError] = useState(false);
 	const [typeErrorMessage, setTypeErrorMessage] = useState("");
+
+	const [showIndeedApplyModal, setShowIndeedApplyModal] = useState(false);
+	const [modalJob, setModalJob] = useState({title:undefined, location:undefined, company:undefined, uri:undefined, description:undefined});
+
 	const classes = useStyles();
 	let jobsList = [];
+
+	const handleOpenIndeedApplyModal = (job) => {
+		setShowIndeedApplyModal(true);
+		setModalJob(job)
+	  };
+
+	  const handleCloseIndeedApplyModal = () => {
+		setShowIndeedApplyModal(false);
+	  };
+
 
 	const { currentUser } = useContext(AuthContext);
 
@@ -145,17 +161,18 @@ const Jobs = (props) => {
 		}
 	};
 
-	const handleApply = (url) => {
-		if (
-			window.confirm(
-				"This will take you to the job listing on Indeed. Do you wish to proceed?"
-			)
-		) {
-			window.open(url);
-		}
-	};
+	// const handleApply = (url) => {
+	// 	if (
+	// 		window.confirm(
+	// 			"This will take you to the job listing on Indeed. Do you wish to proceed?"
+	// 		)
+	// 	) {
+	// 		window.open(url);
+	// 	}
+	// };
 
 	const buildCards = (job, index) => {
+		console.log(job)
 		return (
 			<Grid
 				item
@@ -193,10 +210,14 @@ const Jobs = (props) => {
 						</Typography>
 					</CardContent>
 					<CardContent style={{ marginTop: "auto" }}>
-						<div>
-							To see the full job listing on Indeed: <br />
-							<button onClick={() => handleApply(job.url)}>Apply</button>
-						</div>
+						<button
+						className="button"
+						onClick={() => {
+							handleOpenIndeedApplyModal(job);
+						}}
+						>
+							See More
+						</button>
 					</CardContent>
 				</Card>
 			</Grid>
@@ -209,7 +230,7 @@ const Jobs = (props) => {
 			.slice((currentPage - 1) * 20, currentPage * 20)
 			.map((job, index) => {
 				return buildCards(job, index);
-			});
+			})
 
 	return (
 		<div>
@@ -292,6 +313,13 @@ const Jobs = (props) => {
 					>
 						{jobsList}
 					</Grid>
+
+					<IndeedApplyModal 
+						 show={showIndeedApplyModal}
+						 onHide={handleCloseIndeedApplyModal}
+						 modaljob = {modalJob}
+						//  apply = {handleApply}
+						 />
 				</div>
 			) : (
 				<div></div>

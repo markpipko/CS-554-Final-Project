@@ -40,7 +40,6 @@ const exportedMethods = {
 		if (!jobType) {
 			throw "Job type is empty";
 		}
-
 		const queryOptions = {
 			host: "www.indeed.com",
 			query: query,
