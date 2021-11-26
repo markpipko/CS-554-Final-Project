@@ -15,7 +15,6 @@ import {
 	reauthenticateWithCredential,
 } from "firebase/auth";
 import { collection, setDoc, doc, getDoc } from "firebase/firestore";
-
 const auth = getAuth(firebaseApp);
 // let currentUser;
 // onAuthStateChanged(auth, (user) => {
@@ -51,22 +50,6 @@ async function doCreateUserWithEmailAndPassword(
 			updateProfile(auth.currentUser, { displayName: displayName });
 		}
 	);
-	// if (role == "seeker") {
-	// 	await setDoc(doc(db, "seekers", email), {
-	// 		email: email,
-	// 		role: role,
-	// 		displayName: displayName,
-	// 		resume: null,
-	// 		applied: [],
-	// 	});
-	// }
-	// if (role == "employer") {
-	// 	await setDoc(doc(db, "employer", email), {
-	// 		email: email,
-	// 		role: role,
-	// 		displayName: displayName,
-	// 	});
-	// }
 }
 
 async function doChangePassword(email, oldPassword, newPassword) {
@@ -100,7 +83,6 @@ async function doPasswordUpdate(password) {
 
 async function doSignOut() {
 	await signOut(auth);
-	window.location.replace("/signin");
 }
 
 async function checkEmployer(uid) {
