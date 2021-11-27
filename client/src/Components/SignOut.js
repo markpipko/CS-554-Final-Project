@@ -1,9 +1,14 @@
 import React from "react";
 import { doSignOut } from "../firebase/FirebaseFunctions";
 import { Button } from "@mui/material";
+import { Redirect } from "react-router";
 const SignOutButton = () => {
-	return <Button onClick={doSignOut}>Sign Out</Button>;
-	// return (<button type="button" onClick={doSignOut}>Sign Out</button>);
+	const handleSignout = () => {
+		doSignOut();
+		<Redirect to="/signin" />;
+	};
+
+	return <Button onClick={handleSignout}>Sign Out</Button>;
 };
 
 export default SignOutButton;
