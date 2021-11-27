@@ -1,4 +1,3 @@
-import firebase from "firebase/compat/app";
 import { firebaseApp, db } from "./Firebase";
 import {
 	getAuth,
@@ -14,8 +13,8 @@ import {
 	updateProfile,
 	reauthenticateWithCredential,
 } from "firebase/auth";
-import { collection, setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
 const auth = getAuth(firebaseApp);
 // let currentUser;
 // onAuthStateChanged(auth, (user) => {
@@ -114,9 +113,10 @@ async function checkForImage(uid) {
 
 async function imageUpload(uid, url) {
 	const storage = getStorage();
-	const storageRef = ref(storage, `profileImages/${uid}`);
-	await uploadBytes(storageRef, url);
-	let downloadUrl = await getDownloadURL(ref(storage, `profileImages/${uid}`));
+	let downloadUrl = await getDownloadURL(
+		ref(storage, `profileImages/${uid}.jpg`)
+	);
+	console.log(downloadUrl);
 	const userRef = doc(db, "seekers", uid);
 	await updateDoc(userRef, {
 		imageUrl: downloadUrl,
