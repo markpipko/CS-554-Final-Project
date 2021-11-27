@@ -1,4 +1,3 @@
-import firebase from "firebase/compat/app";
 import { firebaseApp, db } from "./Firebase";
 import {
 	getAuth,
@@ -14,8 +13,8 @@ import {
 	updateProfile,
 	reauthenticateWithCredential,
 } from "firebase/auth";
-import { collection, setDoc, doc, getDoc } from "firebase/firestore";
-
+import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
 const auth = getAuth(firebaseApp);
 // let currentUser;
 // onAuthStateChanged(auth, (user) => {
@@ -38,6 +37,7 @@ async function doCreateUserWithEmailAndPassword(
 					displayName: displayName,
 					resume: null,
 					applied: [],
+					imageUrl: "",
 				});
 			}
 			if (role === "employer") {
@@ -46,27 +46,12 @@ async function doCreateUserWithEmailAndPassword(
 					email: email,
 					role: role,
 					displayName: displayName,
+					imageUrl: "",
 				});
 			}
 			updateProfile(auth.currentUser, { displayName: displayName });
 		}
 	);
-	// if (role == "seeker") {
-	// 	await setDoc(doc(db, "seekers", email), {
-	// 		email: email,
-	// 		role: role,
-	// 		displayName: displayName,
-	// 		resume: null,
-	// 		applied: [],
-	// 	});
-	// }
-	// if (role == "employer") {
-	// 	await setDoc(doc(db, "employer", email), {
-	// 		email: email,
-	// 		role: role,
-	// 		displayName: displayName,
-	// 	});
-	// }
 }
 
 async function doChangePassword(email, oldPassword, newPassword) {
@@ -100,7 +85,6 @@ async function doPasswordUpdate(password) {
 
 async function doSignOut() {
 	await signOut(auth);
-	window.location.replace("/signin");
 }
 
 async function checkEmployer(uid) {
@@ -113,6 +97,33 @@ async function checkEmployer(uid) {
 	}
 }
 
+async function checkForImage(uid) {
+	const ref = doc(db, "seekers", uid);
+	const docSnap = await getDoc(ref);
+	if (docSnap.exists()) {
+		if (docSnap.data().imageUrl) {
+			return docSnap.data().imageUrl;
+		} else {
+			return "";
+		}
+	} else {
+		return "";
+	}
+}
+
+async function imageUpload(uid, url) {
+	const storage = getStorage();
+	let downloadUrl = await getDownloadURL(
+		ref(storage, `profileImages/${uid}.jpg`)
+	);
+	console.log(downloadUrl);
+	const userRef = doc(db, "seekers", uid);
+	await updateDoc(userRef, {
+		imageUrl: downloadUrl,
+	});
+	return downloadUrl;
+}
+
 export {
 	doCreateUserWithEmailAndPassword,
 	doSocialSignIn,
@@ -122,4 +133,6 @@ export {
 	doSignOut,
 	doChangePassword,
 	checkEmployer,
+	checkForImage,
+	imageUpload,
 };

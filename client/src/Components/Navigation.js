@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { AuthContext } from "../firebase/Auth";
 import SignOutButton from "./SignOut";
 import "../App.css";
@@ -13,15 +13,9 @@ const Navigation = () => {
 const NavigationAuth = () => {
 	const [isEmployer, setIsEmployer] = useState(false);
 	const { currentUser } = useContext(AuthContext);
-
 	useEffect(() => {
 		async function check() {
 			let res = await checkEmp(currentUser.uid);
-			if (res) {
-				console.log("I am a employer");
-			} else {
-				console.log("I am a seeker");
-			}
 			setIsEmployer(res);
 		}
 		check();
@@ -36,11 +30,10 @@ const NavigationAuth = () => {
 		? ["/", "/home", "/postJob", "/posts", "/account"]
 		: ["/", "/home", "/jobs", "/account"];
 	const [value, setValue] = useState(
-		paths.indexOf(window.location.pathname.toLowerCase()) > 0
+		paths.indexOf(window.location.pathname.toLowerCase()) >= 0
 			? paths.indexOf(window.location.pathname.toLowerCase())
 			: 1
 	);
-
 	return (
 		<div>
 			<AppBar
@@ -62,19 +55,8 @@ const NavigationAuth = () => {
 								value={value}
 								aria-label="Navigation Tabs"
 							>
-								<Tab
-									label={"Landing"}
-									component={NavLink}
-									exact
-									to="/"
-									activeClassName="active"
-								/>
-								<Tab
-									label={"Home"}
-									component={NavLink}
-									to="/home"
-									activeClassName="active"
-								/>
+								<Tab label={"Landing"} component={Link} to="/" />
+								<Tab label={"Home"} component={Link} to="/home" />
 								{isEmployer ? (
 									<div>
 									<Tab
@@ -91,20 +73,10 @@ const NavigationAuth = () => {
 									/>
 									</div>
 								) : (
-									<Tab
-										label={"Job Search"}
-										component={NavLink}
-										to="/jobs"
-										activeClassName="active"
-									/>
+									<Tab label={"Job Search"} component={Link} to="/jobs" />
 								)}
 
-								<Tab
-									label={"Account"}
-									component={NavLink}
-									to="/account"
-									activeClassName="active"
-								/>
+								<Tab label={"Account"} component={Link} to="/account" />
 							</Tabs>
 						</Grid>
 						<Grid item xs={1} />
@@ -120,9 +92,9 @@ const NavigationAuth = () => {
 const NavigationNonAuth = () => {
 	const paths = ["/", "/signup", "/signin"];
 	const [value, setValue] = useState(
-		paths.indexOf(window.location.pathname.toLowerCase()) > 0
+		paths.indexOf(window.location.pathname.toLowerCase()) >= 0
 			? paths.indexOf(window.location.pathname.toLowerCase())
-			: 0
+			: 2
 	);
 	return (
 		<div>
@@ -148,25 +120,9 @@ const NavigationNonAuth = () => {
 								value={value}
 								aria-label="Navigation Tabs"
 							>
-								<Tab
-									label={"Landing"}
-									component={NavLink}
-									exact
-									to="/"
-									activeClassName="active"
-								/>
-								<Tab
-									label={"Sign Up"}
-									component={NavLink}
-									to="/signup"
-									activeClassName="active"
-								/>
-								<Tab
-									label={"Sign In"}
-									component={NavLink}
-									to="/signin"
-									activeClassName="active"
-								/>
+								<Tab label={"Landing"} component={Link} to="/" />
+								<Tab label={"Sign Up"} component={Link} to="/signup" />
+								<Tab label={"Sign In"} component={Link} to="/signin" />
 							</Tabs>
 						</Grid>
 						<Grid item xs={1} />

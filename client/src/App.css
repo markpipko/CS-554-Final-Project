@@ -82,3 +82,7 @@
 	text-decoration: none;
 	color: red;
 }
+
+.profileImage {
+	width: 200px;
+}
