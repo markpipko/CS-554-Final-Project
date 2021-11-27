@@ -13,6 +13,7 @@ import Navigation from "./Components/Navigation";
 import NotFound from "./Components/NotFound";
 import React from "react";
 import PostJob from "./Components/PostJob";
+import MyPosts from "./Components/MyPosts";
 
 function App() {
 	return (
@@ -29,6 +30,7 @@ function App() {
 							<PrivateRoute exact path="/home" component={Home} />
 							<PrivateRoute exact path="/jobs" component={Jobs} />
 							<PrivateRoute exact path="/postJob" component={PostJob} />
+							<PrivateRoute exact path="/posts" component={MyPosts} />
 							<PrivateRoute exact path="/account" component={Account} />
 							<Route exact path="/signin" component={SignIn} />
 							<Route exact path="/signup" component={SignUp} />
