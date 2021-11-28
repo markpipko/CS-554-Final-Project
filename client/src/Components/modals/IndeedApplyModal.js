@@ -11,7 +11,6 @@ function IndeedApplyModal(props) {
 		}
 	};
 
-	console.log(props);
 	return (
 		<Modal
 			{...props}

@@ -36,7 +36,6 @@ async function doCreateUserWithEmailAndPassword(
 					role: role,
 					displayName: displayName,
 					resume: null,
-					applied: [],
 					imageUrl: "",
 				});
 			}

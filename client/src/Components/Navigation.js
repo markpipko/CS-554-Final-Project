@@ -61,13 +61,13 @@ const NavigationAuth = () => {
 									<div>
 									<Tab
 										label={"Post a Job"}
-										component={NavLink}
+										component={Link}
 										to="/postJob"
 										activeClassName="active"
 									/>
 									<Tab
 										label={"Posts"}
-										component={NavLink}
+										component={Link}
 										to="/posts"
 										activeClassName="active"
 									/>
