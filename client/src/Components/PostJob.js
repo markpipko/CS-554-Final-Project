@@ -80,13 +80,14 @@ const PostJob = (props) => {
 		setTypeError(false);
 		setTypeErrorMessage("");
 		try {
-            console.log(currentUser.email, formData)
             await addDoc(collection(db, "posts"), {
+                company: currentUser.displayName,
                 email: currentUser.email,
                 title: formData.title,
                 description: formData.description,
                 zip: formData.zip,
                 jobType: formData.jobType,
+                // applicants: []
               });
 		} catch (e) {
 			console.log(e);
@@ -101,7 +102,7 @@ const PostJob = (props) => {
                 <TextField
                     id="title"
                     variant="outlined"
-                    label="title"
+                    label="Title"
                     onChange={(e) => handleChange(e)}
                     name="title"
                     error={!!titleError}
@@ -115,7 +116,7 @@ const PostJob = (props) => {
                 <TextField
                     id="description"
                     variant="outlined"
-                    label="description"
+                    label="Description"
                     onChange={(e) => handleChange(e)}
                     name="description"
                     error={!!descriptionError}

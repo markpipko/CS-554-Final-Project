@@ -27,7 +27,7 @@ const NavigationAuth = () => {
 	};
 
 	const paths = isEmployer
-		? ["/", "/home", "/postJob", "/account"]
+		? ["/", "/home", "/postJob", "/posts", "/account"]
 		: ["/", "/home", "/jobs", "/account"];
 	const [value, setValue] = useState(
 		paths.indexOf(window.location.pathname.toLowerCase()) >= 0
@@ -58,7 +58,20 @@ const NavigationAuth = () => {
 								<Tab label={"Landing"} component={Link} to="/" />
 								<Tab label={"Home"} component={Link} to="/home" />
 								{isEmployer ? (
-									<Tab label={"Post a Job"} component={Link} to="/postJob" />
+									<div>
+									<Tab
+										label={"Post a Job"}
+										component={Link}
+										to="/postJob"
+										activeClassName="active"
+									/>
+									<Tab
+										label={"Posts"}
+										component={Link}
+										to="/posts"
+										activeClassName="active"
+									/>
+									</div>
 								) : (
 									<Tab label={"Job Search"} component={Link} to="/jobs" />
 								)}
