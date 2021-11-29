@@ -87,7 +87,7 @@ const PostJob = (props) => {
                 description: formData.description,
                 zip: formData.zip,
                 jobType: formData.jobType,
-                applicants: []
+                // applicants: []
               });
 		} catch (e) {
 			console.log(e);

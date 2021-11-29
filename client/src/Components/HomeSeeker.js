@@ -8,7 +8,7 @@ import {
 	FormGroup,
 } from "@mui/material";
 import { db } from "../firebase/Firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, getDoc, doc, setDoc } from "firebase/firestore";
 import { Card, Button, Row, Col} from 'react-bootstrap';
 import zipcodes from 'zipcodes'
 
@@ -30,18 +30,22 @@ function HomeSeeker() {
 	};
 
   const apply = async (jobId, job) => {
-    const ref = await db.collection('posts').doc(jobId).collection('applied').doc(currentUser.uid).set({
+    const docRef = doc(db, "seekers", currentUser.uid);
+    const docSnap = await getDoc(docRef);
+
+    await setDoc(doc(doc(db,'posts',jobId), "applicants", currentUser.uid), {
         name: currentUser.displayName,
         email: currentUser.email,
-        resume: currentUser.resume
+        resume: docSnap.data().resume
     })
     };
 
   const checkApplied = async (jobId) => {
-    const red = db.collection('posts').doc(jobId).collection('applied').doc(currentUser.uid);
-    const doc = await red.get();
+    // const docRef =  doc(db, 'posts', jobId)
+    const docRef =  doc(doc(db, 'posts', jobId), "applicants", currentUser.uid);
+    const docSnap = await getDoc(docRef);
 
-    return doc.exists()
+    return docSnap.exists()
   }
 
   const search = async (e) => {
@@ -100,6 +104,16 @@ function HomeSeeker() {
       return <div>No search results found</div>
   }
 
+  function findLoc(zip){
+    try{
+        let loc = zipcodes.lookup(zip);
+        return `${loc.city},${loc.state}`
+    }
+    catch(e){
+        return ``
+    }
+  }
+
   const buildCard = (id, job) => {
 		return (
             
@@ -108,14 +122,11 @@ function HomeSeeker() {
               <Card.Body>
                   <Card.Title className='titleHead'>{ job.title}</Card.Title>
                   <Card.Text>
-                  {
-                    () => {let loc = zipcodes.lookup(job.zip);
-                    return `${loc.city},${loc.state}`}
-                  }
+                  {findLoc(job.zip)}
                   <br />
                   {job.description}
                   </Card.Text>
-                  {!checkApplied && <Button onClick={apply(id, job)}>Apply</Button>}
+                  <Button onClick={apply(id, job)}>Apply</Button>
               </Card.Body>
           </Card>
       </Col>
@@ -125,7 +136,6 @@ function HomeSeeker() {
 
     let card = null
   if (data){
-    console.log(data)
     let dataArr = []
     data &&
     data.forEach((doc) => {
