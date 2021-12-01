@@ -27,8 +27,8 @@ const NavigationAuth = () => {
 	};
 
 	const paths = isEmployer
-		? ["/", "/home", "/postJob", "/posts", "/account"]
-		: ["/", "/home", "/jobs", "/account"];
+		? ["/home", "/postJob", "/posts", "/account"]
+		: ["/home", "/jobs", "/account"];
 	const [value, setValue] = useState(
 		paths.indexOf(window.location.pathname.toLowerCase()) >= 0
 			? paths.indexOf(window.location.pathname.toLowerCase())
@@ -55,7 +55,6 @@ const NavigationAuth = () => {
 								value={value}
 								aria-label="Navigation Tabs"
 							>
-								<Tab label={"Landing"} component={Link} to="/" />
 								<Tab label={"Home"} component={Link} to="/home" />
 								{isEmployer ? (
 									<div>
