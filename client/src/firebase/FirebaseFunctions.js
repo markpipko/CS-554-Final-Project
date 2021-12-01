@@ -96,6 +96,23 @@ async function checkEmployer(uid) {
 	}
 }
 
+async function checkSeekers(uid) {
+	const docRef = doc(db, "seekers", uid);
+	const docSnap = await getDoc(docRef);
+	if (docSnap.exists()) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+async function getSeeker(uid) {
+	const docRef = doc(db, "seekers", uid);
+	const docSnap = await getDoc(docRef);
+	return docSnap.data();
+}
+
 async function checkForImage(uid) {
 	const ref = doc(db, "seekers", uid);
 	const docSnap = await getDoc(ref);
@@ -123,6 +140,14 @@ async function imageUpload(uid, url) {
 	return downloadUrl;
 }
 
+async function resumeUpload(uid, resumeName) {
+	console.log("resumeName: ", resumeName);
+	const userRef = doc(db, "seekers", uid);
+	await updateDoc(userRef, {
+		resume: resumeName
+	});
+}
+
 export {
 	doCreateUserWithEmailAndPassword,
 	doSocialSignIn,
@@ -132,6 +157,9 @@ export {
 	doSignOut,
 	doChangePassword,
 	checkEmployer,
+	checkSeekers,
+	getSeeker,
 	checkForImage,
 	imageUpload,
+	resumeUpload
 };
