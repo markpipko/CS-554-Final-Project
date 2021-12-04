@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../firebase/Auth";
 import SignOutButton from "./SignOut";
 import "../App.css";
-import { AppBar, Toolbar, Grid, Tabs, Tab } from "@mui/material";
+import { AppBar, Toolbar, Grid, Tabs, Tab, Avatar } from "@mui/material";
 import { checkEmployer } from "../firebase/FirebaseFunctions";
+import { borderRight } from "@mui/system";
 const Navigation = () => {
 	const { currentUser } = useContext(AuthContext);
 	return <div>{currentUser ? <NavigationAuth /> : <NavigationNonAuth />}</div>;
@@ -28,7 +29,7 @@ const NavigationAuth = () => {
 
 	const paths = isEmployer
 		? ["/home", "/postJob", "/posts", "/account"]
-		: ["/home", "/jobs", "/account"];
+		: ["/home", "/jobs", "/applicantChart", "/account"];
 	const [value, setValue] = useState(
 		paths.indexOf(window.location.pathname.toLowerCase()) >= 0
 			? paths.indexOf(window.location.pathname.toLowerCase())
@@ -46,8 +47,14 @@ const NavigationAuth = () => {
 							xs={1}
 							item
 							style={{ textAlign: "left", transform: "translateY(5%)" }}
-						>
-							<span>Jobaroo</span>
+						>    
+
+						<div style={{display:"flex"}}>
+						<Avatar alt="Jobaroo Icon" src="../imgs/Jobaroo2.png" style={{ height:"auto"}}/>
+
+						</div>
+						
+							
 						</Grid>
 						<Grid xs={5} item>
 							<Tabs
@@ -55,7 +62,7 @@ const NavigationAuth = () => {
 								value={value}
 								aria-label="Navigation Tabs"
 							>
-								<Tab label={"Home"} component={Link} to="/home" />
+								<Tab label={"Jobaroo"} component={Link} to="/home" />
 								{isEmployer ? (
 									<div>
 									<Tab
@@ -72,7 +79,18 @@ const NavigationAuth = () => {
 									/>
 									</div>
 								) : (
-									<Tab label={"Job Search"} component={Link} to="/jobs" />
+									
+										<>
+										<Tab
+											label={"Job Search"}
+											component={Link}
+											to="/jobs" 
+										/>
+										<Tab
+											label={"My Applications"}
+											component={Link}
+											to="/applicantChart" 
+										/></>
 								)}
 
 								<Tab label={"Account"} component={Link} to="/account" />
@@ -80,6 +98,7 @@ const NavigationAuth = () => {
 						</Grid>
 						<Grid item xs={1} />
 					</Grid>
+					
 					<SignOutButton />
 				</Toolbar>
 			</AppBar>
