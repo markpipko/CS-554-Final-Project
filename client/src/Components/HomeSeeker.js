@@ -91,7 +91,8 @@ function HomeSeeker() {
 						required
 					/>
 				</FormGroup>
-        <Button type="submit" variant="contained" onClick={(e) => search(e)}>
+        <br/>
+        <Button type="submit" onClick={(e) => search(e)}>
 					Submit
 				</Button>
     </FormControl>
