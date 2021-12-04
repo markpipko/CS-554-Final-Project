@@ -91,7 +91,7 @@ function HomeSeeker() {
 						required
 					/>
 				</FormGroup>
-        <Button type="submit" onClick={(e) => search(e)}>
+        <Button type="submit" variant="contained" onClick={(e) => search(e)}>
 					Submit
 				</Button>
     </FormControl>
@@ -126,7 +126,7 @@ function HomeSeeker() {
                   <br />
                   {job.description}
                   </Card.Text>
-                  <Button onClick={apply(id, job)}>Apply</Button>
+                  <Button variant="contained" onClick={apply(id, job)}>Apply</Button>
               </Card.Body>
           </Card>
       </Col>

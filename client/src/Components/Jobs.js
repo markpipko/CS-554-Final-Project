@@ -234,6 +234,7 @@ const Jobs = (props) => {
 	return (
 		<div>
 			<h1>Search for Jobs</h1>
+			<br />
 			<FormControl>
 				<FormGroup>
 					<InputLabel id="query" htmlFor="query"></InputLabel>
@@ -280,7 +281,7 @@ const Jobs = (props) => {
 					</TextField>
 				</FormGroup>
 				<br />
-				<Button type="submit" onClick={(e) => search(e)}>
+				<Button type="submit" variant="contained" onClick={(e) => search(e)}>
 					Submit
 				</Button>
 			</FormControl>
@@ -309,6 +310,7 @@ const Jobs = (props) => {
 						className={classes.grid}
 						spacing={5}
 						alignItems="stretch"
+						style={{marginBottom:"15px", padding:"10px"}}
 					>
 						{jobsList}
 					</Grid>

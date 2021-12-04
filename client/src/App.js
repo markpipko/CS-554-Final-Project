@@ -19,12 +19,11 @@ function App() {
 	return (
 		<AuthProvider>
 			<Router>
-				<div className="App">
+				<div className="App" id="page-container">
 					<header className="App-header">
-						{/* <h1>Jobaroo</h1> */}
 						<Navigation />
 					</header>
-					<div className="App-body">
+					<div className="App-body" id="content-wrap">
 						<Switch>
 							<Route exact path="/" component={Landing} />
 							<PrivateRoute exact path="/home" component={Home} />
@@ -37,6 +36,11 @@ function App() {
 							<Route component={NotFound} />
 						</Switch>
 					</div>
+					<footer>
+						<hr/>
+						<span>Jobaroo © 2021 - Made by Matt Evanego, Matt Koerner, Mark Pipko, Edward Yaroslavsky, Christopher Moon</span>
+						<hr/>
+					</footer>
 				</div>
 			</Router>
 		</AuthProvider>
