@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../firebase/Auth";
 import SignOutButton from "./SignOut";
 import "../App.css";
-import { AppBar, Toolbar, Grid, Tabs, Tab } from "@mui/material";
+import { AppBar, Toolbar, Grid, Tabs, Tab, Avatar } from "@mui/material";
 import { checkEmployer } from "../firebase/FirebaseFunctions";
+import { borderRight } from "@mui/system";
 const Navigation = () => {
 	const { currentUser } = useContext(AuthContext);
 	return <div>{currentUser ? <NavigationAuth /> : <NavigationNonAuth />}</div>;
@@ -46,8 +47,14 @@ const NavigationAuth = () => {
 							xs={1}
 							item
 							style={{ textAlign: "left", transform: "translateY(5%)" }}
-						>
-							<span>Jobaroo</span>
+						>    
+
+						<div style={{display:"flex"}}>
+						<Avatar alt="Jobaroo Icon" src="../imgs/Jobaroo2.png" style={{ height:"auto"}}/>
+						<span style={{display:"inline"}}>Jobaroo</span>
+						</div>
+						
+							
 						</Grid>
 						<Grid xs={5} item>
 							<Tabs
@@ -80,6 +87,7 @@ const NavigationAuth = () => {
 						</Grid>
 						<Grid item xs={1} />
 					</Grid>
+					
 					<SignOutButton />
 				</Toolbar>
 			</AppBar>
