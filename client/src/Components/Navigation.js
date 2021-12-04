@@ -51,7 +51,7 @@ const NavigationAuth = () => {
 
 						<div style={{display:"flex"}}>
 						<Avatar alt="Jobaroo Icon" src="../imgs/Jobaroo2.png" style={{ height:"auto"}}/>
-						<span style={{display:"inline"}}>Jobaroo</span>
+
 						</div>
 						
 							
@@ -62,7 +62,7 @@ const NavigationAuth = () => {
 								value={value}
 								aria-label="Navigation Tabs"
 							>
-								<Tab label={"Home"} component={Link} to="/home" />
+								<Tab label={"Jobaroo"} component={Link} to="/home" />
 								{isEmployer ? (
 									<div>
 									<Tab
