@@ -43,8 +43,9 @@ function UploadResume(props) {
 				Current Resume:{" "}
 				{resumeLink ? (
 					<div>
+						<br />
 						<a href={resumeLink} target="_blank" rel="noreferrer">
-							Resume
+							Link to Resume
 						</a>
 					</div>
 				) : (
