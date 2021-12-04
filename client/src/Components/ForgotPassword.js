@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
 	FormControl,
 	FormGroup,
@@ -10,6 +10,9 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { doPasswordReset } from "../firebase/FirebaseFunctions";
+import { Redirect } from "react-router-dom";
+import { AuthContext } from "../firebase/Auth";
+
 const ForgotPassword = () => {
 	const [formData, setFormData] = useState({
 		email: "",
@@ -20,6 +23,12 @@ const ForgotPassword = () => {
 	const [error, setError] = useState(false);
 	const [errorOpen, setErrorOpen] = useState(false);
 	const [infoOpen, setInfoOpen] = useState(false);
+	const { currentUser } = useContext(AuthContext);
+
+	if (currentUser) {
+		return <Redirect to="/home" />;
+	}
+
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 	};
