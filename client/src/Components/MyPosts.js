@@ -1,12 +1,20 @@
 import React, { useState, useContext, useEffect } from "react";
 import { db } from "../firebase/Firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, doc } from "firebase/firestore";
 import { AuthContext } from "../firebase/Auth";
 import { Card, Button, Row, Col} from 'react-bootstrap';
+import ApplicantsModal from './modals/ApplicantsModal'
 
 function MyPosts(){
     const { currentUser } = useContext(AuthContext);
     const [posts, setPosts] = useState(undefined);
+    const [showModal, setShowModal] = useState(false);
+	const [modalApplicants, setModalApplicants] = useState([{
+        id: undefined,
+		name: undefined,
+		email: undefined,
+		resume: undefined
+	}]);
 
     useEffect(() => {
         async function postings(){
@@ -19,6 +27,27 @@ function MyPosts(){
         postings()
     },[])
 
+    const handleOpenModal = async (id) => {
+        const querySnapshot = await getDocs(collection(doc(db, 'posts', id), "applicants"));
+
+        let applicantsArr = []
+        querySnapshot.forEach((doc) => {
+            applicantsArr.push({
+                id: doc.id,
+                name: doc.data().name,
+                email: doc.data().email,
+                resume: doc.data().resume
+            });
+        });  
+
+        setModalApplicants(applicantsArr)
+		setShowModal(true);
+	};
+
+	const handleCloseModal = () => {
+		setShowModal(false);
+	};
+
     const buildCard = (id, job) => {
 		return (
             
@@ -29,9 +58,14 @@ function MyPosts(){
                         <Card.Text>
                         {job.description}
                         </Card.Text>
-                        <Button>See Applicants</Button>
+                        <Button onClick={() => handleOpenModal(id)}>See Applicants</Button>
                     </Card.Body>
                 </Card>
+                <ApplicantsModal
+                    show={showModal}
+                    onHide={handleCloseModal}
+                    modalApplicants={modalApplicants}
+                />
             </Col>
 
 		);
@@ -48,6 +82,7 @@ function MyPosts(){
             
         card = postsArr.map((doc) => {return buildCard(doc.id, doc.data())})
     }
+
     return (
         <div>
         <Row sm={1} md={2} lg={4}>
