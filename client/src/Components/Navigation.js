@@ -5,7 +5,6 @@ import SignOutButton from "./SignOut";
 import "../App.css";
 import { AppBar, Toolbar, Grid, Tabs, Tab, Avatar } from "@mui/material";
 import { checkEmployer } from "../firebase/FirebaseFunctions";
-import { borderRight } from "@mui/system";
 const Navigation = () => {
 	const { currentUser } = useContext(AuthContext);
 	return <div>{currentUser ? <NavigationAuth /> : <NavigationNonAuth />}</div>;
@@ -33,7 +32,7 @@ const NavigationAuth = () => {
 	const [value, setValue] = useState(
 		paths.indexOf(window.location.pathname.toLowerCase()) >= 0
 			? paths.indexOf(window.location.pathname.toLowerCase())
-			: 1
+			: 0
 	);
 	return (
 		<div>
@@ -46,15 +45,12 @@ const NavigationAuth = () => {
 						<Grid
 							xs={1}
 							item
-							style={{ textAlign: "left", transform: "translateY(5%)" }}
-						>    
-
-						<div style={{display:"flex"}}>
-						<Avatar alt="Jobaroo Icon" src="../imgs/Jobaroo2.png" style={{ height:"auto"}}/>
-
-						</div>
-						
-							
+							style={{
+								textAlign: "left",
+								transform: "translateY(5%)",
+							}}
+						>
+							<span>Jobaroo</span>
 						</Grid>
 						<Grid xs={5} item>
 							<Tabs
@@ -62,43 +58,36 @@ const NavigationAuth = () => {
 								value={value}
 								aria-label="Navigation Tabs"
 							>
-								<Tab label={"Jobaroo"} component={Link} to="/home" />
+								<Tab label={"Home"} component={Link} to="/home" />
 								{isEmployer ? (
-									<div>
 									<Tab
 										label={"Post a Job"}
 										component={Link}
 										to="/postJob"
 										activeClassName="active"
 									/>
+								) : (
+									<Tab label={"Job Search"} component={Link} to="/jobs" />
+								)}
+								{isEmployer ? (
 									<Tab
 										label={"Posts"}
 										component={Link}
 										to="/posts"
 										activeClassName="active"
 									/>
-									</div>
 								) : (
-									
-										<>
-										<Tab
-											label={"Job Search"}
-											component={Link}
-											to="/jobs" 
-										/>
-										<Tab
-											label={"My Applications"}
-											component={Link}
-											to="/applicantChart" 
-										/></>
+									<Tab
+										label={"My Applications"}
+										component={Link}
+										to="/applicantChart"
+									/>
 								)}
-
 								<Tab label={"Account"} component={Link} to="/account" />
 							</Tabs>
 						</Grid>
 						<Grid item xs={1} />
 					</Grid>
-					
 					<SignOutButton />
 				</Toolbar>
 			</AppBar>

@@ -15,7 +15,7 @@ import React from "react";
 import PostJob from "./Components/PostJob";
 import MyPosts from "./Components/MyPosts";
 import ApplicantChart from "./Components/ApplicantChart";
-
+import ForgotPassword from "./Components/ForgotPassword";
 function App() {
 	return (
 		<AuthProvider>
@@ -31,17 +31,25 @@ function App() {
 							<PrivateRoute exact path="/jobs" component={Jobs} />
 							<PrivateRoute exact path="/postJob" component={PostJob} />
 							<PrivateRoute exact path="/posts" component={MyPosts} />
-							<PrivateRoute exact path="/applicantChart" component={ApplicantChart} />
+							<PrivateRoute
+								exact
+								path="/applicantChart"
+								component={ApplicantChart}
+							/>
 							<PrivateRoute exact path="/account" component={Account} />
 							<Route exact path="/signin" component={SignIn} />
 							<Route exact path="/signup" component={SignUp} />
+							<Route exact path="/forgotpassword" component={ForgotPassword} />
 							<Route component={NotFound} />
 						</Switch>
 					</div>
 					<footer>
-						<hr/>
-						<span>Jobaroo © 2021 - Made by Matt Evanego, Matt Koerner, Mark Pipko, Edward Yaroslavsky, Christopher Moon</span>
-						<hr/>
+						<hr />
+						<span>
+							Jobaroo © 2021 - Made by Matt Evanego, Matt Koerner, Mark Pipko,
+							Edward Yaroslavsky, Christopher Moon
+						</span>
+						<hr />
 					</footer>
 				</div>
 			</Router>
