@@ -14,7 +14,7 @@ import {
 	reauthenticateWithCredential,
 } from "firebase/auth";
 import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
-import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
 const auth = getAuth(firebaseApp);
 // let currentUser;
 // onAuthStateChanged(auth, (user) => {
@@ -101,8 +101,7 @@ async function checkSeekers(uid) {
 	const docSnap = await getDoc(docRef);
 	if (docSnap.exists()) {
 		return true;
-	}
-	else {
+	} else {
 		return false;
 	}
 }
@@ -141,11 +140,15 @@ async function imageUpload(uid, url) {
 }
 
 async function resumeUpload(uid, resumeName) {
-	console.log("resumeName: ", resumeName);
+	const storage = getStorage();
+	const storageRef = ref(storage, `resumes/${uid}`);
+	await uploadBytes(storageRef, resumeName);
+	let downloadUrl = await getDownloadURL(ref(storage, `resumes/${uid}`));
 	const userRef = doc(db, "seekers", uid);
 	await updateDoc(userRef, {
-		resume: resumeName
+		resume: downloadUrl,
 	});
+	return downloadUrl;
 }
 
 export {
@@ -161,5 +164,5 @@ export {
 	getSeeker,
 	checkForImage,
 	imageUpload,
-	resumeUpload
+	resumeUpload,
 };

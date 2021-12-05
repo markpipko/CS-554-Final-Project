@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../firebase/Auth";
 import SignOutButton from "./SignOut";
 import "../App.css";
-import { AppBar, Toolbar, Grid, Tabs, Tab } from "@mui/material";
+import { AppBar, Toolbar, Grid, Tabs, Tab, Avatar } from "@mui/material";
 import { checkEmployer } from "../firebase/FirebaseFunctions";
 const Navigation = () => {
 	const { currentUser } = useContext(AuthContext);
@@ -28,11 +28,11 @@ const NavigationAuth = () => {
 
 	const paths = isEmployer
 		? ["/home", "/postJob", "/posts", "/account"]
-		: ["/home", "/jobs", "/account"];
+		: ["/home", "/jobs", "/applicantChart", "/account"];
 	const [value, setValue] = useState(
 		paths.indexOf(window.location.pathname.toLowerCase()) >= 0
 			? paths.indexOf(window.location.pathname.toLowerCase())
-			: 1
+			: 0
 	);
 	return (
 		<div>
@@ -45,7 +45,10 @@ const NavigationAuth = () => {
 						<Grid
 							xs={1}
 							item
-							style={{ textAlign: "left", transform: "translateY(5%)" }}
+							style={{
+								textAlign: "left",
+								transform: "translateY(5%)",
+							}}
 						>
 							<span>Jobaroo</span>
 						</Grid>
@@ -57,24 +60,29 @@ const NavigationAuth = () => {
 							>
 								<Tab label={"Home"} component={Link} to="/home" />
 								{isEmployer ? (
-									<div>
 									<Tab
 										label={"Post a Job"}
 										component={Link}
 										to="/postJob"
 										activeClassName="active"
 									/>
+								) : (
+									<Tab label={"Job Search"} component={Link} to="/jobs" />
+								)}
+								{isEmployer ? (
 									<Tab
 										label={"Posts"}
 										component={Link}
 										to="/posts"
 										activeClassName="active"
 									/>
-									</div>
 								) : (
-									<Tab label={"Job Search"} component={Link} to="/jobs" />
+									<Tab
+										label={"My Applications"}
+										component={Link}
+										to="/applicantChart"
+									/>
 								)}
-
 								<Tab label={"Account"} component={Link} to="/account" />
 							</Tabs>
 						</Grid>
