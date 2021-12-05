@@ -16,6 +16,7 @@ import PostJob from "./Components/PostJob";
 import MyPosts from "./Components/MyPosts";
 import ApplicantChart from "./Components/ApplicantChart";
 import ForgotPassword from "./Components/ForgotPassword";
+import Applications from "./Components/Applications";
 function App() {
 	return (
 		<AuthProvider>
@@ -33,8 +34,8 @@ function App() {
 							<PrivateRoute exact path="/posts" component={MyPosts} />
 							<PrivateRoute
 								exact
-								path="/applicantChart"
-								component={ApplicantChart}
+								path="/applications"
+								component={Applications}
 							/>
 							<PrivateRoute exact path="/account" component={Account} />
 							<Route exact path="/signin" component={SignIn} />
