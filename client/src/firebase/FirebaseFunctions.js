@@ -15,7 +15,9 @@ import {
 } from "firebase/auth";
 import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
+
 const auth = getAuth(firebaseApp);
+
 // let currentUser;
 // onAuthStateChanged(auth, (user) => {
 //     currentUser = user
@@ -37,6 +39,7 @@ async function doCreateUserWithEmailAndPassword(
 					displayName: displayName,
 					resume: null,
 					imageUrl: "",
+					applications: []
 				});
 			}
 			if (role === "employer") {
@@ -151,6 +154,23 @@ async function resumeUpload(uid, resumeName) {
 	return downloadUrl;
 }
 
+async function newApplicationUpload(uid, job) {
+	const userRef = doc(db, "seekers", uid);
+	const userSnap = await getDoc(userRef);
+
+	let currentApplications = userSnap.data().applications;
+	const company = job.company;
+
+	if (!currentApplications.includes(company)) {
+		currentApplications.push(company);
+
+		console.log("JobTitle: ", company);
+		await updateDoc(userRef, {
+			applications: currentApplications
+		});
+	}
+}
+
 export {
 	doCreateUserWithEmailAndPassword,
 	doSocialSignIn,
@@ -165,4 +185,5 @@ export {
 	checkForImage,
 	imageUpload,
 	resumeUpload,
+	newApplicationUpload
 };

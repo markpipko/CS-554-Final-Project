@@ -64,7 +64,7 @@ function UploadResume(props) {
 							id="file"
 							name="resumeUrl"
 							hidden
-							accept="application/msword, application/pdf"
+							accept="application/msword, application/pdf, .docx"
 							onChange={(e) => handleChange(e)}
 						/>
 					</Button>

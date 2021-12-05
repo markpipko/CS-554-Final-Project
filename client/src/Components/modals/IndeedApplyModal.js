@@ -1,13 +1,19 @@
+import { useContext } from "react";
 import { Modal, Button } from "react-bootstrap";
+import { AuthContext } from "../../firebase/Auth";
+import { newApplicationUpload } from "../../firebase/FirebaseFunctions";
 
 function IndeedApplyModal(props) {
-	const handleApply = (url) => {
+	const { currentUser } = useContext(AuthContext);
+
+	const handleApply = async (url) => {
 		if (
 			window.confirm(
 				"This will take you to the job listing on Indeed. Do you wish to proceed?"
 			)
 		) {
 			window.open(url);
+			await newApplicationUpload(currentUser.uid, props.modaljob);
 		}
 	};
 
