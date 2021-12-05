@@ -41,7 +41,7 @@ function UploadResume(props) {
             </h5>
             <br />
             <form>
-                <label className="button">
+                <label>
                     <input type="file" id="file" accept="application/msword, application/pdf" />
                 </label><br />
                 <Button onClick={uploadResume}>Upload</Button>
