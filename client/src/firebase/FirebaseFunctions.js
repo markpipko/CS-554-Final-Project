@@ -17,7 +17,6 @@ import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
 
 const auth = getAuth(firebaseApp);
-const FieldValue = require('firebase-admin').firestore.FieldValue;
 
 // let currentUser;
 // onAuthStateChanged(auth, (user) => {
