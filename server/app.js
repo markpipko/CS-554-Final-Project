@@ -9,6 +9,5 @@ const port = 4000;
 configRoutes(app);
 
 app.listen(port, () => {
-	console.log("We've now got a server!");
 	console.log(`Your routes will now be running on http://localhost:${port}`);
 });

@@ -1,36 +1,77 @@
-import React from 'react';
-import { Button } from "@mui/material";
-
-const path = require("path");
+import React, { useContext, useEffect, useState } from "react";
+import { resumeUpload } from "../firebase/FirebaseFunctions";
+import { AuthContext } from "../firebase/Auth";
+import "../App.css";
+import { getSeeker } from "../firebase/FirebaseFunctions";
+import {
+	FormControl,
+	FormGroup,
+	Button,
+	CircularProgress,
+} from "@mui/material";
 
 function UploadResume(props) {
+	const [loading, setLoading] = useState(false);
+	const { currentUser } = useContext(AuthContext);
+	const [resumeLink, setResumeLink] = useState("");
 
-    function uploadResume() {
-        try {
-            const inputVal = document.getElementById("file").files[0].name;
-            let fileName = path.basename(inputVal);
-            console.log(fileName);
-        }
-        catch (e) {
-            let error = document.getElementById("uploadError");
-            error.innerHTML = "Please upload a proper file.";
-        }
-    }
+	useEffect(() => {
+		async function fetchData() {
+			let user = await getSeeker(currentUser.uid);
+			setResumeLink(user.resume);
+		}
+		fetchData();
+	}, [currentUser]);
 
-    return (
-        <div>
-            <h3>Upload Resume</h3>
-            <form>
-                <label>
-                    Upload Resume:{" "}
-                    <input type="file" id="file" accept="application/msword, application/pdf" />
-                </label><br />
-                <p id="uploadError"></p>
-                <Button onClick={uploadResume}>Upload</Button>
-            </form>
-        </div>
-    )
-    
+	const handleChange = async (e) => {
+		let resumeUrl = e.target.files[0];
+		try {
+			setLoading(true);
+			let postedUrl = await resumeUpload(currentUser.uid, resumeUrl);
+			setResumeLink(postedUrl);
+			setLoading(false);
+		} catch (e) {
+			setLoading(false);
+			console.log(e);
+		}
+	};
+
+	return (
+		<div>
+			<h3>Upload Resume</h3>
+			<h5>
+				Current Resume:{" "}
+				{resumeLink ? (
+					<div>
+						<br />
+						<a href={resumeLink} target="_blank" rel="noreferrer">
+							Link to Resume
+						</a>
+					</div>
+				) : (
+					<div></div>
+				)}
+			</h5>
+			<br />
+			{loading ? <CircularProgress /> : <div></div>}
+			<br />
+			<FormControl>
+				<FormGroup>
+					<Button variant="contained" component="label" disabled={loading}>
+						{resumeLink ? "Upload a different resume" : "Upload your resume"}
+						<input
+							type="file"
+							id="file"
+							name="resumeUrl"
+							hidden
+							accept="application/msword, application/pdf, .docx"
+							onChange={(e) => handleChange(e)}
+						/>
+					</Button>
+				</FormGroup>
+			</FormControl>
+		</div>
+	);
 }
 
 export default UploadResume;

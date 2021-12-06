@@ -14,8 +14,10 @@ import {
 	reauthenticateWithCredential,
 } from "firebase/auth";
 import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
-import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
+
 const auth = getAuth(firebaseApp);
+
 // let currentUser;
 // onAuthStateChanged(auth, (user) => {
 //     currentUser = user
@@ -37,6 +39,7 @@ async function doCreateUserWithEmailAndPassword(
 					displayName: displayName,
 					resume: null,
 					imageUrl: "",
+					applications: []
 				});
 			}
 			if (role === "employer") {
@@ -96,6 +99,22 @@ async function checkEmployer(uid) {
 	}
 }
 
+async function checkSeekers(uid) {
+	const docRef = doc(db, "seekers", uid);
+	const docSnap = await getDoc(docRef);
+	if (docSnap.exists()) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+async function getSeeker(uid) {
+	const docRef = doc(db, "seekers", uid);
+	const docSnap = await getDoc(docRef);
+	return docSnap.data();
+}
+
 async function checkForImage(uid) {
 	const ref = doc(db, "seekers", uid);
 	const docSnap = await getDoc(ref);
@@ -123,6 +142,35 @@ async function imageUpload(uid, url) {
 	return downloadUrl;
 }
 
+async function resumeUpload(uid, resumeName) {
+	const storage = getStorage();
+	const storageRef = ref(storage, `resumes/${uid}`);
+	await uploadBytes(storageRef, resumeName);
+	let downloadUrl = await getDownloadURL(ref(storage, `resumes/${uid}`));
+	const userRef = doc(db, "seekers", uid);
+	await updateDoc(userRef, {
+		resume: downloadUrl,
+	});
+	return downloadUrl;
+}
+
+async function newApplicationUpload(uid, job) {
+	const userRef = doc(db, "seekers", uid);
+	const userSnap = await getDoc(userRef);
+
+	let currentApplications = userSnap.data().applications;
+	const company = job.company;
+
+	if (!currentApplications.includes(company)) {
+		currentApplications.push(company);
+
+		console.log("JobTitle: ", company);
+		await updateDoc(userRef, {
+			applications: currentApplications
+		});
+	}
+}
+
 export {
 	doCreateUserWithEmailAndPassword,
 	doSocialSignIn,
@@ -132,6 +180,10 @@ export {
 	doSignOut,
 	doChangePassword,
 	checkEmployer,
+	checkSeekers,
+	getSeeker,
 	checkForImage,
 	imageUpload,
+	resumeUpload,
+	newApplicationUpload
 };

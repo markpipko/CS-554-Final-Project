@@ -14,29 +14,44 @@ import NotFound from "./Components/NotFound";
 import React from "react";
 import PostJob from "./Components/PostJob";
 import MyPosts from "./Components/MyPosts";
-
+import ApplicantChart from "./Components/ApplicantChart";
+import ForgotPassword from "./Components/ForgotPassword";
+import Applications from "./Components/Applications";
 function App() {
 	return (
 		<AuthProvider>
 			<Router>
-				<div className="App">
+				<div className="App" id="page-container">
 					<header className="App-header">
-						{/* <h1>Jobaroo</h1> */}
 						<Navigation />
 					</header>
-					<div className="App-body">
+					<div className="App-body" id="content-wrap">
 						<Switch>
 							<Route exact path="/" component={Landing} />
 							<PrivateRoute exact path="/home" component={Home} />
 							<PrivateRoute exact path="/jobs" component={Jobs} />
 							<PrivateRoute exact path="/postJob" component={PostJob} />
 							<PrivateRoute exact path="/posts" component={MyPosts} />
+							<PrivateRoute
+								exact
+								path="/applications"
+								component={Applications}
+							/>
 							<PrivateRoute exact path="/account" component={Account} />
 							<Route exact path="/signin" component={SignIn} />
 							<Route exact path="/signup" component={SignUp} />
+							<Route exact path="/forgotpassword" component={ForgotPassword} />
 							<Route component={NotFound} />
 						</Switch>
 					</div>
+					<footer>
+						<hr />
+						<span>
+							Jobaroo © 2021 - Made by Matt Evanego, Matt Koerner, Mark Pipko,
+							Edward Yaroslavsky, Christopher Moon
+						</span>
+						<hr />
+					</footer>
 				</div>
 			</Router>
 		</AuthProvider>

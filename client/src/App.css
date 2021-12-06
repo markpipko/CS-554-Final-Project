@@ -70,19 +70,27 @@
 	color: red !important;
 }
 
-.forgotPassword {
-	background: none !important;
-	border: none !important;
-	text-decoration: underline;
-	margin-left: 5px;
-	color: #069;
-}
-
-.forgotPassword:hover {
-	text-decoration: none;
+.loginError {
 	color: red;
+	font-weight: bold;
 }
 
 .profileImage {
 	width: 200px;
+}
+
+footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 2.5rem;
+}
+
+#page-container {
+	position: relative;
+	min-height: 100vh;
+}
+
+#content-wrap {
+	padding-bottom: 2.5rem; /* Footer height */
 }
