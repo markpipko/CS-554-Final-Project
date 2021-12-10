@@ -67,30 +67,43 @@ function Applications() {
 
     const buildCards = (job, index) => {
 		return (
-			<Grid
-				item
-				xs={10}
-				sm={5}
-				md={5}
-				lg={4}
-				xl={3}
-				key={index}
-				style={{ display: "flex" }}
-			>
-				<Card className={classes.card} variant="outlined">
-					<CardContent>
-						<Typography
-							className={classes.titleHead}
-							gutterBottom
-							variant="h6"
-							component="h2"
-						>
-							{job}
-						</Typography>
-						
-					</CardContent>
-				</Card>
-			</Grid>
+				<Grid
+					item
+					xs={10}
+					sm={5}
+					md={5}
+					lg={4}
+					xl={3}
+					key={index}
+					style={{ display: "flex" }}
+				>
+					<Card className={classes.card} variant="outlined">
+						<CardContent>
+							<Typography
+								className={classes.titleHead}
+								gutterBottom
+								variant="h6"
+								component="h2"
+							>
+								{job.title}
+							</Typography>
+							<Typography
+								// style={{ whiteSpace: "pre-wrap" }}
+								gutterBottom
+								variant="body1"
+								component="p"
+							>
+								{job.summary}
+							</Typography>
+							<Typography gutterBottom variant="body1" component="p">
+								Company: {job.company}
+							</Typography>
+							<Typography gutterBottom variant="body1" component="p">
+								Location: {job.location}
+							</Typography>
+						</CardContent>
+					</Card>
+				</Grid>
 		);
 	};
 
