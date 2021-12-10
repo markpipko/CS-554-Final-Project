@@ -5,7 +5,6 @@ import { newApplicationUpload } from "../../firebase/FirebaseFunctions";
 
 function IndeedApplyModal(props) {
 	const { currentUser } = useContext(AuthContext);
-	console.log(props.modaljob);
 
 	const handleApply = async (url) => {
 		if (
