@@ -56,6 +56,19 @@ async function doCreateUserWithEmailAndPassword(
 	);
 }
 
+// async function sendVerificationEmail() {
+// 	let user = auth.currentUser;
+// 	await sendEmailVerification(user);
+// 	// user
+// 	// 	.sendEmailVerification()
+// 	// 	.then(function () {
+// 	// 		window.alert("this ran");
+// 	// 	})
+// 	// 	.catch(function (error) {
+// 	// 		console.log(error);
+// 	// 	});
+// }
+
 async function doChangePassword(email, oldPassword, newPassword) {
 	let credential = EmailAuthProvider.credential(email, oldPassword);
 	await reauthenticateWithCredential(auth.currentUser, credential);
@@ -192,4 +205,5 @@ export {
 	imageUpload,
 	resumeUpload,
 	newApplicationUpload,
+	// sendVerificationEmail,
 };

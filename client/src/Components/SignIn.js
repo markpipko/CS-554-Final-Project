@@ -81,7 +81,7 @@ function SignIn() {
 				) : (
 					<div></div>
 				)}
-				<Box component="form" onSubmit={handleLogin} sx={{ mt: 1 }}>
+				<Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
 					<TextField
 						id="email"
 						margin="normal"

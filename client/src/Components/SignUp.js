@@ -3,10 +3,23 @@ import { Redirect } from "react-router-dom";
 import { doCreateUserWithEmailAndPassword } from "../firebase/FirebaseFunctions";
 import { AuthContext } from "../firebase/Auth";
 import SocialSignIn from "./SocialSignIn";
-
+import {
+	Container,
+	Box,
+	Typography,
+	Grid,
+	TextField,
+	Button,
+	RadioGroup,
+	FormControlLabel,
+	Radio,
+	FormControl,
+	FormLabel,
+	CircularProgress,
+	FormHelperText,
+} from "@mui/material";
 function SignUp() {
 	const { currentUser } = useContext(AuthContext);
-	const [pwMatch, setPwMatch] = useState("");
 	const [formData, setFormData] = useState({
 		displayName: "",
 		email: "",
@@ -14,15 +27,75 @@ function SignUp() {
 		passwordOne: "",
 		passwordTwo: "",
 	});
+	const [loading, setLoading] = useState(false);
+	const [nameError, setNameError] = useState(false);
+	const [nameErrorMessage, setNameErrorMessage] = useState("");
+	const [emailError, setEmailError] = useState(false);
+	const [emailErrorMessage, setEmailErrorMessage] = useState("");
+	const [roleError, setRoleError] = useState(false);
+	const [roleErrorMessage, setRoleErrorMessage] = useState("");
+	const [passwordError, setPasswordError] = useState(false);
+	const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 	};
 
 	const handleSignUp = async (e) => {
 		e.preventDefault();
+		setLoading(true);
+		if (!formData.displayName || !formData.displayName.trim()) {
+			setNameError(true);
+			setNameErrorMessage("Name must be provided");
+			setLoading(false);
+			return;
+		}
+		setNameError(false);
+		setNameErrorMessage("");
+
+		if (!formData.email || !formData.email.trim()) {
+			setEmailError(true);
+			setEmailErrorMessage("Email must be provided");
+			setLoading(false);
+			return;
+		}
+		setEmailError(false);
+		setEmailErrorMessage("");
+
+		let pattern =
+			/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		if (!pattern.test(formData.email)) {
+			setEmailError(true);
+			setEmailErrorMessage("Email is not valid");
+			setLoading(false);
+			return;
+		}
+		setEmailError(false);
+		setEmailErrorMessage("");
+
+		if (!formData.role) {
+			setRoleError(true);
+			setRoleErrorMessage(`Error: A role must be selected.`);
+			setLoading(false);
+			return;
+		}
+		setRoleError(false);
+		setRoleErrorMessage("");
+
+		if (!formData.passwordOne || !formData.passwordTwo) {
+			setPasswordError(true);
+			setPasswordErrorMessage("Password must be provided");
+			setLoading(false);
+			return;
+		}
+		setPasswordError(false);
+		setPasswordErrorMessage("");
+
 		if (formData.passwordOne !== formData.passwordTwo) {
-			setPwMatch("Passwords do not match");
-			return false;
+			setPasswordError(true);
+			setPasswordErrorMessage("Passwords do not match");
+			setLoading(false);
+			return;
 		}
 
 		try {
@@ -33,7 +106,11 @@ function SignUp() {
 				formData.displayName
 			);
 		} catch (error) {
-			alert(error);
+			setEmailError(true);
+			setEmailErrorMessage(
+				"Email is already in use. Please use a different email."
+			);
+			setLoading(false);
 		}
 	};
 
@@ -42,94 +119,110 @@ function SignUp() {
 	}
 
 	return (
-		<div>
-			<h1>Sign up</h1>
-			{pwMatch && <h4 className="error">{pwMatch}</h4>}
-			<div>
-				<div className="form-group">
-					<label>
-						Name:
-						<input
-							className="form-control"
-							required
-							name="displayName"
-							type="text"
-							placeholder="Name"
-							onChange={(e) => handleChange(e)}
-						/>
-					</label>
-				</div>
-				<div className="form-group">
-					<label>
-						Email:
-						<input
-							className="form-control"
-							required
-							name="email"
-							type="email"
-							placeholder="Email"
-							onChange={(e) => handleChange(e)}
-						/>
-					</label>
-				</div>
-				<div className="form-group">
-					<input
-						type="radio"
-						id="seeker"
-						name="role"
-						value="seeker"
-						onChange={(e) => handleChange(e)}
-					/>
-					<label htmlFor="seeker">Job Seeker</label>
-					<br />
-					<input
-						type="radio"
-						id="employer"
-						name="role"
-						value="employer"
-						onChange={(e) => handleChange(e)}
-					/>
-					<label htmlFor="employer">Employer</label>
-				</div>
-				<div className="form-group">
-					<label>
-						Password:
-						<input
-							className="form-control"
-							id="passwordOne"
-							name="passwordOne"
-							type="password"
-							placeholder="Password"
-							required
-							onChange={(e) => handleChange(e)}
-						/>
-					</label>
-				</div>
-				<div className="form-group">
-					<label>
-						Confirm Password:
-						<input
-							className="form-control"
-							name="passwordTwo"
-							type="password"
-							placeholder="Confirm Password"
-							required
-							onChange={(e) => handleChange(e)}
-						/>
-					</label>
-				</div>
-				<button
-					id="submitButton"
-					name="submitButton"
-					type="submit"
-					onClick={(e) => handleSignUp(e)}
-				>
+		<Container component="main" maxWidth="xs">
+			<Box
+				sx={{
+					marginTop: 4,
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+				}}
+			>
+				<Typography component="h1" variant="h4">
 					Sign Up
-				</button>
-			</div>
-			<br />
-			<SocialSignIn />
-		</div>
+				</Typography>
+				{loading ? <CircularProgress /> : <div></div>}
+				<Box component="form" noValidate onSubmit={handleSignUp} sx={{ mt: 3 }}>
+					<Grid container spacing={2}>
+						<Grid item xs={12}>
+							<TextField
+								name="displayName"
+								required
+								fullWidth
+								id="displayName"
+								autoFocus
+								label="Name/Company Name"
+								onChange={(e) => handleChange(e)}
+								error={!!nameError}
+								helperText={nameErrorMessage}
+							/>
+						</Grid>
+						<Grid item xs={12}>
+							<TextField
+								name="email"
+								required
+								fullWidth
+								id="email"
+								label="Email"
+								onChange={(e) => handleChange(e)}
+								error={!!emailError}
+								helperText={emailErrorMessage}
+							/>
+						</Grid>
+						<Grid item xs={12}>
+							<FormControl component="fieldset" error={roleError}>
+								<FormLabel component="p">Role</FormLabel>
+								<RadioGroup
+									row
+									aria-label="role"
+									name="role"
+									onChange={(e) => handleChange(e)}
+									required
+								>
+									<FormControlLabel
+										value="seeker"
+										control={<Radio />}
+										label="Job Seeker"
+									/>
+									<FormControlLabel
+										value="employer"
+										control={<Radio />}
+										label="Employer"
+									/>
+								</RadioGroup>
+								<FormHelperText>{roleErrorMessage}</FormHelperText>
+							</FormControl>
+						</Grid>
+						<Grid item xs={12}>
+							<TextField
+								name="passwordOne"
+								required
+								fullWidth
+								type="password"
+								id="passwordOne"
+								label="Password"
+								onChange={(e) => handleChange(e)}
+								error={!!passwordError}
+								helperText={passwordErrorMessage}
+							/>
+						</Grid>
+						<Grid item xs={12}>
+							<TextField
+								name="passwordTwo"
+								required
+								fullWidth
+								type="password"
+								id="passwordTwo"
+								label="Confirm Password"
+								onChange={(e) => handleChange(e)}
+								error={!!passwordError}
+								helperText={passwordErrorMessage}
+							/>
+						</Grid>
+						<Button
+							type="submit"
+							fullWidth
+							variant="contained"
+							sx={{ mt: 3, mb: 2 }}
+							disabled={loading}
+						>
+							Sign Up
+						</Button>
+					</Grid>
+				</Box>
+				<SocialSignIn />
+			</Box>
+		</Container>
 	);
 }
 
