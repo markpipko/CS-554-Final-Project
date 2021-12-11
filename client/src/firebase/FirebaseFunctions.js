@@ -39,7 +39,7 @@ async function doCreateUserWithEmailAndPassword(
 					displayName: displayName,
 					resume: null,
 					imageUrl: "",
-					applications: []
+					applications: [],
 				});
 			}
 			if (role === "employer") {
@@ -160,19 +160,19 @@ async function newApplicationUpload(uid, job) {
 
 	let currentApplications = userSnap.data().applications;
 
-	if (currentApplications.filter(x => x._id === job._id).length == 0) {
+	if (currentApplications.filter((x) => x._id === job._id).length === 0) {
 		let applicationObj = {
 			_id: job._id,
 			company: job.company,
 			title: job.title,
 			url: job.url,
 			location: job.location,
-			summary: job.summary
+			summary: job.summary,
 		};
 		currentApplications.push(applicationObj);
 
 		await updateDoc(userRef, {
-			applications: currentApplications
+			applications: currentApplications,
 		});
 	}
 }
@@ -191,5 +191,5 @@ export {
 	checkForImage,
 	imageUpload,
 	resumeUpload,
-	newApplicationUpload
+	newApplicationUpload,
 };

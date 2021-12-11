@@ -30,7 +30,7 @@ function App() {
 							<Route exact path="/" component={Landing} />
 							<PrivateRoute exact path="/home" component={Home} />
 							<PrivateRoute exact path="/jobs" component={Jobs} />
-							<PrivateRoute exact path="/postJob" component={PostJob} />
+							<PrivateRoute exact path="/postjob" component={PostJob} />
 							<PrivateRoute exact path="/posts" component={MyPosts} />
 							<PrivateRoute
 								exact

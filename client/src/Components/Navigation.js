@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../firebase/Auth";
 import SignOutButton from "./SignOut";
 import "../App.css";
-import { AppBar, Toolbar, Grid, Tabs, Tab, Avatar } from "@mui/material";
+import { AppBar, Toolbar, Grid, Tabs, Tab } from "@mui/material";
 import { checkEmployer } from "../firebase/FirebaseFunctions";
 const Navigation = () => {
 	const { currentUser } = useContext(AuthContext);
@@ -25,9 +25,8 @@ const NavigationAuth = () => {
 		let res = await checkEmployer(uid);
 		return res;
 	};
-
 	const paths = isEmployer
-		? ["/home", "/postJob", "/posts", "/account"]
+		? ["/home", "/postjob", "/posts", "/account"]
 		: ["/home", "/jobs", "/applications", "/account"];
 	const [value, setValue] = useState(
 		paths.indexOf(window.location.pathname.toLowerCase()) >= 0
@@ -60,22 +59,12 @@ const NavigationAuth = () => {
 							>
 								<Tab label={"Home"} component={Link} to="/home" />
 								{isEmployer ? (
-									<Tab
-										label={"Post a Job"}
-										component={Link}
-										to="/postJob"
-										activeClassName="active"
-									/>
+									<Tab label={"Post a Job"} component={Link} to="/postjob" />
 								) : (
 									<Tab label={"Job Search"} component={Link} to="/jobs" />
 								)}
 								{isEmployer ? (
-									<Tab
-										label={"Posts"}
-										component={Link}
-										to="/posts"
-										activeClassName="active"
-									/>
+									<Tab label={"Posts"} component={Link} to="/posts" />
 								) : (
 									<Tab
 										label={"My Applications"}
