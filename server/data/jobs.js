@@ -1,4 +1,5 @@
 const axios = require("axios");
+const uuid = require("uuid");
 const indeed = require("indeed-scraper");
 const zipcode = require("zipcode");
 const exportedMethods = {
@@ -53,6 +54,11 @@ const exportedMethods = {
 		};
 
 		let res = await indeed.query(queryOptions);
+		
+		for (let i = 0; i < res.length; i++) {
+			res[i]._id = uuid.v4();
+		}
+
 		if (!res) {
 			throw "No results found";
 		}

@@ -159,12 +159,18 @@ async function newApplicationUpload(uid, job) {
 	const userSnap = await getDoc(userRef);
 
 	let currentApplications = userSnap.data().applications;
-	const company = job.company;
 
-	if (!currentApplications.includes(company)) {
-		currentApplications.push(company);
+	if (currentApplications.filter(x => x._id === job._id).length == 0) {
+		let applicationObj = {
+			_id: job._id,
+			company: job.company,
+			title: job.title,
+			url: job.url,
+			location: job.location,
+			summary: job.summary
+		};
+		currentApplications.push(applicationObj);
 
-		console.log("JobTitle: ", company);
 		await updateDoc(userRef, {
 			applications: currentApplications
 		});
