@@ -20,18 +20,12 @@ function SignUp() {
 
 	const handleSignUp = async (e) => {
 		e.preventDefault();
-		// const { displayName, email, passwordOne, passwordTwo } = e.target.elements;
 		if (formData.passwordOne !== formData.passwordTwo) {
 			setPwMatch("Passwords do not match");
 			return false;
 		}
 
 		try {
-			// await doCreateUserWithEmailAndPassword(
-			// 	email.value,
-			// 	passwordOne.value,
-			// 	displayName
-			// );
 			await doCreateUserWithEmailAndPassword(
 				formData.email,
 				formData.passwordOne,
