@@ -22,6 +22,7 @@ import  { Redirect } from 'react-router-dom'
 const PostJob = (props) => {
     const [formData, setFormData] = useState({
 		title: "",
+        field: "",
 		description: "",
         zip: "",
 		jobType: "entry_level",
@@ -29,12 +30,15 @@ const PostJob = (props) => {
     const {currentUser} = getAuth();
     const [titleError, setTitleError] = useState(false);
 	const [titleErrorMessage, setTitleErrorMessage] = useState("");
+    const [fieldError, setFieldError] = useState(false);
+	const [fieldErrorMessage, setFieldErrorMessage] = useState("");
 	const [zipError, setZipError] = useState(false);
 	const [zipErrorMessage, setZipErrorMessage] = useState("");
 	const [descriptionError, setDescriptionError] = useState(false);
 	const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
     const [typeError, setTypeError] = useState(false);
 	const [typeErrorMessage, setTypeErrorMessage] = useState("");
+    const [submitted, setSubmitted] = useState(false)
 
     const handleChange = (e) => {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -54,6 +58,13 @@ const PostJob = (props) => {
 		}
 		setTitleError(false);
 		setTitleError("");
+        if (!formData.field ) {
+			setTitleError(true);
+			setTitleErrorMessage("Field must be provided");
+			return;
+		}
+		setFieldError(false);
+		setFieldError("");
         if (!formData.description) {
 			setDescriptionError(true);
 			setDescriptionErrorMessage("Job description must be provided");
@@ -84,11 +95,13 @@ const PostJob = (props) => {
                 company: currentUser.displayName,
                 email: currentUser.email,
                 title: formData.title,
+                field: formData.field,
                 description: formData.description,
                 zip: formData.zip,
                 jobType: formData.jobType,
                 // applicants: []
               });
+            setSubmitted(true)
 		} catch (e) {
 			console.log(e);
 		}
@@ -96,7 +109,7 @@ const PostJob = (props) => {
     return(
     <div>
         <h1>Post a Job</h1>
-        <FormControl>
+        <FormControl id="mainForm">
             <FormGroup>
                 <InputLabel id="title" htmlFor="title"></InputLabel>
                 <TextField
@@ -105,10 +118,41 @@ const PostJob = (props) => {
                     label="Title"
                     onChange={(e) => handleChange(e)}
                     name="title"
-                    error={!!titleError}
+                    error={!!fieldError}
                     helperText={titleErrorMessage}
                     required
                 />
+            </FormGroup>
+            <br />
+            <FormGroup>
+                <InputLabel id="field" htmlFor="field"></InputLabel>
+                <TextField
+                    select
+                    id="field"
+                    variant="outlined"
+                    label="Field"
+                    onChange={(e) => handleChange(e)}
+                    name="field"
+                    error={!!titleError}
+                    helperText={fieldErrorMessage}
+                    required
+                >  
+                    <MenuItem value="Architecture, Planning & Environmental Design">Architecture, Planning & Environmental Design</MenuItem>
+                    <MenuItem value="mid_level">Arts & Entertainment</MenuItem>
+                    <MenuItem value="Business">Business</MenuItem>
+                    <MenuItem value="Communications">Communications</MenuItem>
+                    <MenuItem value="Education">Education</MenuItem>
+                    <MenuItem value="Engineering & Computer Science">Engineering & Computer Science</MenuItem>
+                    <MenuItem value="Environment">Environment</MenuItem>
+                    <MenuItem value="Government">Government</MenuItem>
+                    <MenuItem value="Health & Medicine">Health & Medicine</MenuItem>
+                    <MenuItem value="International">International</MenuItem>
+                    <MenuItem value="Law & Public Policy">Law & Public Policy</MenuItem>
+                    <MenuItem value="Sciences - Biological & Physical">Sciences - Biological & Physical</MenuItem>
+                    <MenuItem value="Social Impact">Social Impact</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
+
+                </TextField>     
             </FormGroup>
             <br />
             <FormGroup>
@@ -160,6 +204,7 @@ const PostJob = (props) => {
                 Submit
             </Button>
         </FormControl>
+        {submitted && <p>Job Posted</p>}
     </div>)
 }
 export default PostJob;
