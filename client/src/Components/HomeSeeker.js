@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../firebase/Auth";
 import {
 	FormControl,
@@ -30,7 +30,7 @@ import {
 	Tooltip,
 	Legend,
 } from "recharts";
-
+import { getFieldNumbers } from "../firebase/FirebaseFunctions";
 function HomeSeeker() {
 	const [formData, setFormData] = useState({});
 	const [queryError, setQueryError] = useState(false);
@@ -61,6 +61,18 @@ function HomeSeeker() {
 		Other: 0,
 	});
 	let jobTypes = [];
+
+	useEffect(() => {
+		async function load() {
+			let tempFields = await getFieldNumbers();
+			setFields(tempFields);
+		}
+		load();
+	}, []);
+
+	for (var key in fields) {
+		jobTypes.push({ name: key, "Number of Postings": fields[key] });
+	}
 
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -214,17 +226,26 @@ function HomeSeeker() {
 			)}
 			<h1>Search for Jobs on Jobaroo</h1>
 			{!data ? form : card}
+			<br />
+			<br />
 			<BarChart
 				width={1000}
-				height={300}
+				height={500}
 				data={jobTypes}
+				// margin={{
+				// 	top: 5,
+				// 	right: 30,
+				// 	left: 20,
+				// 	bottom: 5,
+				// }}
 				margin={{
-					top: 5,
-					right: 30,
-					left: 20,
-					bottom: 5,
+					top: 0,
+					right: 15,
+					left: 15,
+					bottom: 50,
 				}}
 				barSize={20}
+				className="fieldChart"
 			>
 				<XAxis dataKey="name" scale="point" padding={{ left: 10, right: 10 }} />
 				<YAxis />

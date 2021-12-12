@@ -13,14 +13,14 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { getAuth } from "firebase/auth";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, updateDoc, increment } from "firebase/firestore";
 import { db } from "../firebase/Firebase";
 import { Redirect } from "react-router-dom";
-
+import { updateFieldNumbers } from "../firebase/FirebaseFunctions";
 const PostJob = (props) => {
 	const [formData, setFormData] = useState({
 		title: "",
-		field: "",
+		field: "Architecture, Planning & Environmental Design",
 		summary: "",
 		zip: "",
 		jobType: "entry_level",
@@ -109,6 +109,7 @@ const PostJob = (props) => {
 				jobType: formData.jobType,
 				// applicants: []
 			});
+			await updateFieldNumbers(formData.field);
 
 			setError(false);
 			setInfoOpen(true);
@@ -198,6 +199,7 @@ const PostJob = (props) => {
 						label="Field"
 						onChange={(e) => handleChange(e)}
 						name="field"
+						value={formData.field}
 						error={!!titleError}
 						helperText={fieldErrorMessage}
 						required
@@ -206,7 +208,9 @@ const PostJob = (props) => {
 						<MenuItem value="Architecture, Planning & Environmental Design">
 							Architecture, Planning & Environmental Design
 						</MenuItem>
-						<MenuItem value="mid_level">Arts & Entertainment</MenuItem>
+						<MenuItem value="Arts & Entertainment">
+							Arts & Entertainment
+						</MenuItem>
 						<MenuItem value="Business">Business</MenuItem>
 						<MenuItem value="Communications">Communications</MenuItem>
 						<MenuItem value="Education">Education</MenuItem>
