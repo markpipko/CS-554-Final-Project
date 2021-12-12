@@ -19,7 +19,8 @@ import {
 } from "firebase/firestore";
 import "../App.css";
 import JobPost from "./JobPost";
-import { Alert, Collapse, Button, IconButton } from "@mui/material";
+import { Alert, Collapse, Button, IconButton, Grid } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import {
 	BarChart,
@@ -31,6 +32,14 @@ import {
 	Legend,
 } from "recharts";
 import { getFieldNumbers } from "../firebase/FirebaseFunctions";
+
+const useStyles = makeStyles({
+	grid: {
+		flexGrow: 1,
+		flexDirection: "row",
+	},
+});
+
 function HomeSeeker() {
 	const [formData, setFormData] = useState({});
 	const [queryError, setQueryError] = useState(false);
@@ -61,6 +70,7 @@ function HomeSeeker() {
 		Other: 0,
 	});
 	let jobTypes = [];
+	const classes = useStyles();
 
 	useEffect(() => {
 		async function load() {
@@ -225,7 +235,19 @@ function HomeSeeker() {
 				<div></div>
 			)}
 			<h1>Search for Jobs on Jobaroo</h1>
-			{!data ? form : card}
+			{!data ? (
+				form
+			) : (
+				<Grid
+					container
+					className={classes.grid}
+					spacing={5}
+					alignItems="stretch"
+					style={{ marginBottom: "15px", padding: "10px" }}
+				>
+					{card}
+				</Grid>
+			)}
 			<br />
 			<br />
 			<BarChart
