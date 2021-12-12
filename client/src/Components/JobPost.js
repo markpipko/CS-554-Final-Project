@@ -65,6 +65,8 @@ const JobPost = (props) => {
 				},
 			});
 
+			console.log("Data: ", data);
+
 			if (!data) {
 				throw "Could not process application";
 			}
