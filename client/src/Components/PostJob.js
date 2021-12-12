@@ -9,6 +9,7 @@ import {
 	Alert,
 	Collapse,
 	IconButton,
+	CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { getAuth } from "firebase/auth";
@@ -19,7 +20,8 @@ import { Redirect } from "react-router-dom";
 const PostJob = (props) => {
 	const [formData, setFormData] = useState({
 		title: "",
-		description: "",
+		field: "",
+		summary: "",
 		zip: "",
 		jobType: "entry_level",
 	});
@@ -30,13 +32,15 @@ const PostJob = (props) => {
 	const [errorOpen, setErrorOpen] = useState(false);
 	const [titleError, setTitleError] = useState(false);
 	const [titleErrorMessage, setTitleErrorMessage] = useState("");
+	const [fieldError, setFieldError] = useState(false);
+	const [fieldErrorMessage, setFieldErrorMessage] = useState("");
 	const [zipError, setZipError] = useState(false);
 	const [zipErrorMessage, setZipErrorMessage] = useState("");
 	const [descriptionError, setDescriptionError] = useState(false);
 	const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
 	const [typeError, setTypeError] = useState(false);
 	const [typeErrorMessage, setTypeErrorMessage] = useState("");
-
+	const [loading, setLoading] = useState(false);
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 	};
@@ -47,16 +51,28 @@ const PostJob = (props) => {
 
 	const post = async (e) => {
 		e.preventDefault();
+		setLoading(true);
 		if (!formData.title || !formData.title.trim()) {
 			setTitleError(true);
 			setTitleErrorMessage("Title must be provided");
+			setLoading(false);
 			return;
 		}
 		setTitleError(false);
 		setTitleError("");
-		if (!formData.description) {
+
+		if (!formData.field) {
+			setTitleError(true);
+			setTitleErrorMessage("Field must be provided");
+			setLoading(false);
+			return;
+		}
+		setFieldError(false);
+		setFieldError("");
+		if (!formData.summary) {
 			setDescriptionError(true);
-			setDescriptionErrorMessage("Job description must be provided");
+			setDescriptionErrorMessage("Job summary must be provided");
+			setLoading(false);
 			return;
 		}
 		setDescriptionError(false);
@@ -64,10 +80,12 @@ const PostJob = (props) => {
 		if (!formData.zip || !formData.zip.trim()) {
 			setZipError(true);
 			setZipErrorMessage("Zip code must be provided");
+			setLoading(false);
 			return;
 		} else if (!/(^\d{5}$)|(^\d{5}-\d{4}$)/.test(formData.zip.trim())) {
 			setZipError(true);
 			setZipErrorMessage("Zip code is not of proper format");
+			setLoading(false);
 			return;
 		}
 		setZipError(false);
@@ -75,6 +93,7 @@ const PostJob = (props) => {
 		if (!formData.jobType) {
 			setTypeError(true);
 			setTypeErrorMessage("Job type must be provided");
+			setLoading(false);
 			return;
 		}
 		setTypeError(false);
@@ -84,20 +103,25 @@ const PostJob = (props) => {
 				company: currentUser.displayName,
 				email: currentUser.email,
 				title: formData.title,
-				summary: formData.description,
+				field: formData.field,
+				summary: formData.summary,
 				zip: formData.zip,
 				jobType: formData.jobType,
-				applicants: [],
+				// applicants: []
 			});
+
 			setError(false);
 			setInfoOpen(true);
 			setStatus(true);
+			setLoading(false);
 		} catch (e) {
 			console.log(e);
 			setErrorOpen(true);
 			setError(true);
+			setLoading(false);
 		}
 	};
+
 	return (
 		<div>
 			{status ? (
@@ -150,7 +174,7 @@ const PostJob = (props) => {
 				<div></div>
 			)}
 			<h1>Post a Job</h1>
-			<FormControl>
+			<FormControl id="mainForm">
 				<FormGroup>
 					<InputLabel id="title" htmlFor="title"></InputLabel>
 					<TextField
@@ -159,20 +183,57 @@ const PostJob = (props) => {
 						label="Title"
 						onChange={(e) => handleChange(e)}
 						name="title"
-						error={!!titleError}
+						error={!!fieldError}
 						helperText={titleErrorMessage}
 						required
 					/>
 				</FormGroup>
 				<br />
 				<FormGroup>
-					<InputLabel id="description" htmlFor="description"></InputLabel>
+					<InputLabel id="field" htmlFor="field"></InputLabel>
 					<TextField
-						id="description"
+						select
+						id="field"
 						variant="outlined"
-						label="Description"
+						label="Field"
 						onChange={(e) => handleChange(e)}
-						name="description"
+						name="field"
+						error={!!titleError}
+						helperText={fieldErrorMessage}
+						required
+						style={{ width: 400 }}
+					>
+						<MenuItem value="Architecture, Planning & Environmental Design">
+							Architecture, Planning & Environmental Design
+						</MenuItem>
+						<MenuItem value="mid_level">Arts & Entertainment</MenuItem>
+						<MenuItem value="Business">Business</MenuItem>
+						<MenuItem value="Communications">Communications</MenuItem>
+						<MenuItem value="Education">Education</MenuItem>
+						<MenuItem value="Engineering & Computer Science">
+							Engineering & Computer Science
+						</MenuItem>
+						<MenuItem value="Environment">Environment</MenuItem>
+						<MenuItem value="Government">Government</MenuItem>
+						<MenuItem value="Health & Medicine">Health & Medicine</MenuItem>
+						<MenuItem value="International">International</MenuItem>
+						<MenuItem value="Law & Public Policy">Law & Public Policy</MenuItem>
+						<MenuItem value="Sciences - Biological & Physical">
+							Sciences - Biological & Physical
+						</MenuItem>
+						<MenuItem value="Social Impact">Social Impact</MenuItem>
+						<MenuItem value="Other">Other</MenuItem>
+					</TextField>
+				</FormGroup>
+				<br />
+				<FormGroup>
+					<InputLabel id="summary" htmlFor="summary"></InputLabel>
+					<TextField
+						id="summary"
+						variant="outlined"
+						label="Summary"
+						onChange={(e) => handleChange(e)}
+						name="summary"
 						error={!!descriptionError}
 						helperText={descriptionErrorMessage}
 						required
@@ -210,11 +271,14 @@ const PostJob = (props) => {
 					</TextField>
 				</FormGroup>
 				<br />
-				<Button type="submit" onClick={(e) => post(e)}>
+				{loading ? <CircularProgress /> : <div></div>}
+				<br />
+				<Button type="submit" disabled={loading} onClick={(e) => post(e)}>
 					Submit
 				</Button>
 			</FormControl>
 		</div>
 	);
 };
+
 export default PostJob;
