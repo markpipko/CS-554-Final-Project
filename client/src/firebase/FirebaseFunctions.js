@@ -206,7 +206,39 @@ async function getFieldNumbers() {
 	if (postSnap.exists()) {
 		return postSnap.data();
 	} else {
-		return [];
+		await setDoc(doc(db, "posts", "fieldsDoc"), {
+			"Architecture, Planning & Environmental Design": 0,
+			"Arts & Entertainment": 0,
+			Business: 0,
+			Communications: 0,
+			Education: 0,
+			"Engineering & Computer Science": 0,
+			Environment: 0,
+			Government: 0,
+			"Health & Medicine": 0,
+			International: 0,
+			"Law & Public Policy": 0,
+			"Sciences - Biological & Physical": 0,
+			"Social Impact": 0,
+			Other: 0,
+		});
+
+		return {
+			"Architecture, Planning & Environmental Design": 0,
+			"Arts & Entertainment": 0,
+			Business: 0,
+			Communications: 0,
+			Education: 0,
+			"Engineering & Computer Science": 0,
+			Environment: 0,
+			Government: 0,
+			"Health & Medicine": 0,
+			International: 0,
+			"Law & Public Policy": 0,
+			"Sciences - Biological & Physical": 0,
+			"Social Impact": 0,
+			Other: 0,
+		};
 	}
 }
 

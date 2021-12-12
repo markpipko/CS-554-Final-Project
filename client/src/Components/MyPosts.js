@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { db } from "../firebase/Firebase";
-import { collection, query, where, getDocs, doc } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { AuthContext } from "../firebase/Auth";
 import { Card, Button, Row, Col } from "react-bootstrap";
 import ApplicantsModal from "./modals/ApplicantsModal";
@@ -23,7 +23,7 @@ function MyPosts() {
 		}
 
 		postings();
-	}, []);
+	}, [currentUser]);
 	const handleOpenModal = async (id) => {
 		if (!id) {
 			return;
