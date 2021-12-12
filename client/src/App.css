@@ -86,6 +86,10 @@ footer {
 	height: 2.5rem;
 }
 
+.signInLinks {
+	color: #0072ee;
+}
+
 #page-container {
 	position: relative;
 	min-height: 100vh;

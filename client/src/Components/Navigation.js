@@ -3,14 +3,16 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../firebase/Auth";
 import SignOutButton from "./SignOut";
 import "../App.css";
-import { AppBar, Toolbar, Grid, Tabs, Tab, Avatar } from "@mui/material";
+import { AppBar, Toolbar, Grid, Tabs, Tab } from "@mui/material";
 import { checkEmployer } from "../firebase/FirebaseFunctions";
+import { useLocation } from "react-router-dom";
 const Navigation = () => {
 	const { currentUser } = useContext(AuthContext);
 	return <div>{currentUser ? <NavigationAuth /> : <NavigationNonAuth />}</div>;
 };
 
 const NavigationAuth = () => {
+	const location = useLocation();
 	const [isEmployer, setIsEmployer] = useState(false);
 	const { currentUser } = useContext(AuthContext);
 	useEffect(() => {
@@ -26,14 +28,17 @@ const NavigationAuth = () => {
 		return res;
 	};
 
-	const paths = isEmployer
-		? ["/home", "/postJob", "/posts", "/account"]
-		: ["/home", "/jobs", "/applications", "/account"];
-	const [value, setValue] = useState(
-		paths.indexOf(window.location.pathname.toLowerCase()) >= 0
-			? paths.indexOf(window.location.pathname.toLowerCase())
-			: 0
-	);
+	const [value, setValue] = useState(0);
+	useEffect(() => {
+		const paths = isEmployer
+			? ["/home", "/postjob", "/posts", "/account"]
+			: ["/home", "/jobs", "/applications", "/account"];
+		setValue(
+			paths.indexOf(location.pathname.toLowerCase()) >= 0
+				? paths.indexOf(location.pathname.toLowerCase())
+				: 0
+		);
+	}, [location.pathname, isEmployer]);
 	return (
 		<div>
 			<AppBar
@@ -60,22 +65,12 @@ const NavigationAuth = () => {
 							>
 								<Tab label={"Home"} component={Link} to="/home" />
 								{isEmployer ? (
-									<Tab
-										label={"Post a Job"}
-										component={Link}
-										to="/postJob"
-										activeClassName="active"
-									/>
+									<Tab label={"Post a Job"} component={Link} to="/postjob" />
 								) : (
 									<Tab label={"Job Search"} component={Link} to="/jobs" />
 								)}
 								{isEmployer ? (
-									<Tab
-										label={"Posts"}
-										component={Link}
-										to="/posts"
-										activeClassName="active"
-									/>
+									<Tab label={"Posts"} component={Link} to="/posts" />
 								) : (
 									<Tab
 										label={"My Applications"}
@@ -97,12 +92,16 @@ const NavigationAuth = () => {
 };
 
 const NavigationNonAuth = () => {
-	const paths = ["/", "/signup", "/signin"];
-	const [value, setValue] = useState(
-		paths.indexOf(window.location.pathname.toLowerCase()) >= 0
-			? paths.indexOf(window.location.pathname.toLowerCase())
-			: 2
-	);
+	const location = useLocation();
+	const [value, setValue] = useState(0);
+	useEffect(() => {
+		const paths = ["/", "/signup", "/signin"];
+		setValue(
+			paths.indexOf(location.pathname.toLowerCase()) >= 0
+				? paths.indexOf(location.pathname.toLowerCase())
+				: 0
+		);
+	}, [location.pathname]);
 	return (
 		<div>
 			<AppBar
