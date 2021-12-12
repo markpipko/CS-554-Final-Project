@@ -178,7 +178,12 @@ function HomeSeeker() {
 	};
 
 	function handleCheckChange(e) {
-		checkedFields.push(e.target.value);
+		if (e.target.checked) {
+			checkedFields.push(e.target.value);
+		} else {
+			checkedFields.splice(checkedFields.indexOf(5), 1);
+		}
+
 		console.log(checkedFields);
 	}
 
