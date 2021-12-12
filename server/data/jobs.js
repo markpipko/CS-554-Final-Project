@@ -54,7 +54,7 @@ const exportedMethods = {
 		};
 
 		let res = await indeed.query(queryOptions);
-		
+
 		for (let i = 0; i < res.length; i++) {
 			res[i]._id = uuid.v4();
 		}
