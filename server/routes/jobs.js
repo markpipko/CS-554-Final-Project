@@ -5,7 +5,8 @@ const redis = require("redis");
 const client = redis.createClient();
 const data = require("../data");
 const jobsData = data.jobs;
-
+const applyData = data.apply;
+const { getUserById, authenticate, apply } = require("../firebase/firebase");
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
@@ -94,6 +95,38 @@ router.post("/search", async (req, res) => {
 		);
 
 		return res.status(200).send(jobsPage);
+	} catch (e) {
+		console.log(e);
+		return res.status(500).json({ error: e });
+	}
+});
+
+router.post("/apply", authenticate, async (req, res) => {
+	let applyReq = req.body;
+	let uid = await getUserById(req.headers.token);
+	if (!uid) {
+		return res.status(403).json({ error: "User is not authenticated" });
+	}
+
+	if (
+		!applyReq.jobUid ||
+		typeof applyReq.jobUid !== "string" ||
+		!applyReq.jobUid.trim()
+	) {
+		return res
+			.status(400)
+			.json({ error: "Job uid not provided or not of proper type" });
+	}
+
+	try {
+		let companyEmail = await apply(uid, applyReq.jobUid);
+
+		let status = await applyData.sendEmail(
+			companyEmail,
+			"New Application Received",
+			"A user on Jobaroo has just applied to your job post. Check Jobaroo for more details"
+		);
+		return res.status(200).json({ message: "success" });
 	} catch (e) {
 		console.log(e);
 		return res.status(500).json({ error: e });

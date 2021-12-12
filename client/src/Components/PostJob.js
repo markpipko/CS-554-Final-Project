@@ -84,10 +84,10 @@ const PostJob = (props) => {
 				company: currentUser.displayName,
 				email: currentUser.email,
 				title: formData.title,
-				description: formData.description,
+				summary: formData.description,
 				zip: formData.zip,
 				jobType: formData.jobType,
-				// applicants: []
+				applicants: [],
 			});
 			setError(false);
 			setInfoOpen(true);
