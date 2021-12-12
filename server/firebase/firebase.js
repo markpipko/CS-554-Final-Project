@@ -9,6 +9,9 @@ admin.initializeApp({
 });
 
 const uploadImage = async (uid, newImage) => {
+	if (!uid || !newImage) {
+		throw "One or more inputs were not provided";
+	}
 	const bucket = admin
 		.storage()
 		.bucket("gs://cs554finalproject-53b9e.appspot.com");
@@ -33,6 +36,9 @@ const uploadImage = async (uid, newImage) => {
 };
 
 const getUserById = async (token) => {
+	if (!token) {
+		throw "Token not provided";
+	}
 	try {
 		let user = await admin.auth().verifyIdToken(token);
 		return user.uid;
@@ -58,6 +64,13 @@ const authenticate = async (req, res, next) => {
 };
 
 const apply = async (userUid, jobUid) => {
+	if (!userUid || typeof userUid != "string" || !userUid.trim()) {
+		throw "User uid not provided or not of type string";
+	}
+	if (!jobUid || typeof jobUid != "string" || !jobUid.trim()) {
+		throw "Job uid not provided or not of type string";
+	}
+
 	let jobRef = await admin.firestore().doc(`posts/${jobUid}`);
 
 	let jobData = {};

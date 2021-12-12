@@ -1,5 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useContext } from "react";
 import { AuthContext } from "../firebase/Auth";
 import {
 	FormControl,
@@ -16,11 +15,11 @@ import {
 	getDocs,
 	getDoc,
 	doc,
-	setDoc,
 } from "firebase/firestore";
-import { Card, Button, Row, Col } from "react-bootstrap";
-import zipcodes from "zipcodes";
 import "../App.css";
+import JobPost from "./JobPost";
+import { Alert, Collapse, Button, IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 function HomeSeeker() {
 	const [formData, setFormData] = useState({});
@@ -31,33 +30,13 @@ function HomeSeeker() {
 	const [loading, setLoading] = useState(false);
 	const [searchError, setSearchError] = useState(false);
 	const [data, setData] = useState(undefined);
-	const [token, setToken] = useState(null);
-
-	if (currentUser) {
-		currentUser.getIdToken().then((t) => {
-			setToken(t);
-		});
-	}
+	const [status, setStatus] = useState(false);
+	const [error, setError] = useState(false);
+	const [infoOpen, setInfoOpen] = useState(false);
+	const [errorOpen, setErrorOpen] = useState(false);
 
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-	};
-
-	const apply = async (jobId) => {
-		try {
-			let body = {
-				jobUid: jobId,
-			};
-			const { data } = await axios.post("/jobs/apply", body, {
-				headers: {
-					token: token,
-					// "Content-Type": `multipart/form-data; boundary=${fData._boundary}`,
-				},
-			});
-			alert("Application has been successfully submitted");
-		} catch (e) {
-			console.log(e);
-		}
 	};
 
 	const checkApplied = async (jobId) => {
@@ -129,32 +108,17 @@ function HomeSeeker() {
 		return <div>No search results found</div>;
 	}
 
-	function findLoc(zip) {
-		try {
-			let loc = zipcodes.lookup(zip);
-			return `${loc.city},${loc.state}`;
-		} catch (e) {
-			return ``;
-		}
-	}
-
-	const buildCard = (id, job) => {
+	const buildCard = (id, job, index) => {
 		return (
-			<Col key={id}>
-				<Card className="card" style={{ width: "18rem", height: "25rem" }}>
-					<Card.Body>
-						<Card.Title className="titleHead">{job.title}</Card.Title>
-						<Card.Text>
-							{findLoc(job.zip)}
-							<br />
-							{job.summary}
-						</Card.Text>
-						<Button variant="contained" onClick={() => apply(id)}>
-							Apply
-						</Button>
-					</Card.Body>
-				</Card>
-			</Col>
+			<JobPost
+				id={id}
+				job={job}
+				index={index}
+				setInfoOpen={setInfoOpen}
+				setErrorOpen={setErrorOpen}
+				setStatus={setStatus}
+				setError={setError}
+			/>
 		);
 	};
 
@@ -166,14 +130,61 @@ function HomeSeeker() {
 				dataArr.push(doc);
 			});
 
-		card = dataArr.map((doc) => {
-			console.log(doc.id);
-			return buildCard(doc.id, doc.data());
+		card = dataArr.map((doc, index) => {
+			return buildCard(doc.id, doc.data(), index);
 		});
 	}
 
 	return (
 		<div>
+			{status ? (
+				<Collapse in={infoOpen}>
+					<Alert
+						severity="success"
+						action={
+							<IconButton
+								aria-label="close"
+								color="inherit"
+								size="small"
+								onClick={() => {
+									setInfoOpen(false);
+								}}
+							>
+								<CloseIcon fontSize="inherit" />
+							</IconButton>
+						}
+						sx={{ mb: 2 }}
+					>
+						Application has been successfully submitted!
+					</Alert>
+				</Collapse>
+			) : (
+				<div></div>
+			)}
+			{error ? (
+				<Collapse in={errorOpen}>
+					<Alert
+						severity="error"
+						action={
+							<IconButton
+								aria-label="close"
+								color="inherit"
+								size="small"
+								onClick={() => {
+									setErrorOpen(false);
+								}}
+							>
+								<CloseIcon fontSize="inherit" />
+							</IconButton>
+						}
+						sx={{ mb: 2 }}
+					>
+						Application could not be submitted. Please try again.
+					</Alert>
+				</Collapse>
+			) : (
+				<div></div>
+			)}
 			<h1>Search for Jobs on Jobaroo</h1>
 			{!data ? form : card}
 		</div>

@@ -190,49 +190,6 @@ async function newApplicationUpload(uid, job) {
 	}
 }
 
-async function applyNew(uid, jobUid) {
-	const jobRef = doc(db, "posts", jobUid);
-	const jobDocSnap = await getDoc(jobRef);
-
-	const userRef = doc(db, "seekers", uid);
-	const userDocSnap = await getDoc(userRef);
-	if (jobDocSnap.exists() && userDocSnap.exists()) {
-		let currentApplicants = jobDocSnap.data.applicants;
-		if (!currentApplicants) {
-			currentApplicants = [];
-		}
-
-		let userData = {
-			name: userDocSnap.data().displayName,
-			email: userDocSnap.data().email,
-			resume: userDocSnap.data().resume,
-		};
-
-		currentApplicants.push(userData);
-		console.log(currentApplicants);
-		await updateDoc(jobRef, {
-			applicants: currentApplicants,
-		});
-
-		let jobData = {
-			_id: jobUid,
-			company: jobDocSnap.data().company,
-			email: jobDocSnap.data().email,
-			summary: jobDocSnap.data().summary,
-			title: jobDocSnap.data().title,
-			url: "",
-		};
-		let currentApplications = userDocSnap.data().applications;
-		currentApplications.push(jobData);
-		await updateDoc(userRef, {
-			applications: currentApplications,
-		});
-		return true;
-	} else {
-		return false;
-	}
-}
-
 export {
 	doCreateUserWithEmailAndPassword,
 	doSocialSignIn,
@@ -248,6 +205,5 @@ export {
 	imageUpload,
 	resumeUpload,
 	newApplicationUpload,
-	applyNew,
 	// sendVerificationEmail,
 };

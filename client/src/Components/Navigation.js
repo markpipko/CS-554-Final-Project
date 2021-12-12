@@ -67,7 +67,11 @@ const NavigationAuth = () => {
 								{isEmployer ? (
 									<Tab label={"Post a Job"} component={Link} to="/postjob" />
 								) : (
-									<Tab label={"Job Search"} component={Link} to="/jobs" />
+									<Tab
+										label={"Indeed Job Search"}
+										component={Link}
+										to="/jobs"
+									/>
 								)}
 								{isEmployer ? (
 									<Tab label={"Posts"} component={Link} to="/posts" />
