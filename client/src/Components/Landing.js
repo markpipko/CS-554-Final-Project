@@ -1,7 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import "../App.css";
+import { AuthContext } from "../firebase/Auth";
+import { Redirect } from "react-router-dom";
 
 function Landing() {
+	const { currentUser } = useContext(AuthContext);
+
+	if (currentUser) {
+		return <Redirect to="/home" />;
+	}
+
 	return (
 		<div>
 			<h1>Welcome to Jobaroo!</h1>
