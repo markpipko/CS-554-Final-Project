@@ -6,6 +6,13 @@ import {
 	TextField,
 	CircularProgress,
 	FormGroup,
+	Checkbox,
+	FormControlLabel,
+	Collapse,
+	Alert,
+	IconButton,
+	Grid,
+	Button,
 } from "@mui/material";
 import { db } from "../firebase/Firebase";
 import {
@@ -17,11 +24,6 @@ import {
 	doc,
 	setDoc,
 } from "firebase/firestore";
-import "../App.css";
-import JobPost from "./JobPost";
-import { Alert, Collapse, Button, IconButton, Grid } from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import CloseIcon from "@mui/icons-material/Close";
 import {
 	BarChart,
 	Bar,
@@ -32,6 +34,10 @@ import {
 	Legend,
 } from "recharts";
 import { getFieldNumbers } from "../firebase/FirebaseFunctions";
+import JobPost from "./JobPost";
+import "../App.css";
+import { makeStyles } from "@mui/styles";
+import CloseIcon from "@mui/icons-material/Close";
 
 const useStyles = makeStyles({
 	grid: {
@@ -69,8 +75,13 @@ function HomeSeeker() {
 		"Social Impact": 0,
 		Other: 0,
 	});
-	let jobTypes = [];
 	const classes = useStyles();
+
+	// const [jobTypes, setJobtypes] = useState([{}])
+
+	let jobTypes = [];
+
+	let checkedFields = [];
 
 	useEffect(() => {
 		async function load() {
@@ -82,6 +93,7 @@ function HomeSeeker() {
 
 	for (var key in fields) {
 		jobTypes.push({ name: key, "Number of Postings": fields[key] });
+		// setJobtypes([...jobTypes, {name: key, 'Number of Postings': fields[key]}])
 	}
 
 	const handleChange = (e) => {
@@ -99,33 +111,97 @@ function HomeSeeker() {
 	const search = async (e) => {
 		setLoading(true);
 		e.preventDefault();
-		if (!formData.query || !formData.query.trim()) {
+		// if (!formData.query || !formData.query.trim()) {
+		// 	setQueryError(true);
+		// 	setQueryErrorMessage("Search term must be provided");
+		// 	setLoading(false);
+		// 	return;
+		// }
+		// setQueryError(false);
+		// setQueryErrorMessage("");
+
+		// try {
+		if (formData.query && checkedFields.length > 0) {
+			try {
+				const q = query(
+					collection(db, "posts"),
+					where("company", "==", formData.query),
+					where("field", "in", checkedFields)
+				);
+
+				const querySnapshot = await getDocs(q);
+				setData(querySnapshot);
+
+				setLoading(false);
+			} catch (e) {
+				console.log(e);
+				setSearchError(true);
+				setLoading(false);
+			}
+		} else if (formData.query) {
+			try {
+				const q = query(
+					collection(db, "posts"),
+					where("company", "==", formData.query)
+				);
+
+				const querySnapshot = await getDocs(q);
+				setData(querySnapshot);
+
+				setLoading(false);
+			} catch (e) {
+				console.log(e);
+				setSearchError(true);
+				setLoading(false);
+			}
+		} else if (checkedFields.length > 0) {
+			try {
+				const q = query(
+					collection(db, "posts"),
+					where("field", "in", checkedFields)
+				);
+
+				const querySnapshot = await getDocs(q);
+				setData(querySnapshot);
+
+				setLoading(false);
+			} catch (e) {
+				console.log(e);
+				setSearchError(true);
+				setLoading(false);
+			}
+		} else {
 			setQueryError(true);
-			setQueryErrorMessage("Search term must be provided");
-			setLoading(false);
-			return;
-		}
-		setQueryError(false);
-		setQueryErrorMessage("");
-
-		try {
-			const q = query(
-				collection(db, "posts"),
-				where("company", "==", formData.query)
-			);
-
-			const querySnapshot = await getDocs(q);
-			setData(querySnapshot);
-
-			setLoading(false);
-		} catch (e) {
-			console.log(e);
-			setSearchError(true);
+			setQueryErrorMessage("Must give search input");
 			setLoading(false);
 		}
 	};
 
+	function handleCheckChange(e) {
+		if (e.target.checked) {
+			checkedFields.push(e.target.value);
+		} else {
+			checkedFields.splice(checkedFields.indexOf(5), 1);
+		}
+
+		console.log(checkedFields);
+	}
+
 	let form = null;
+
+	let fieldsForm = [];
+	for (var key in fields) {
+		fieldsForm.push(
+			<FormControlLabel
+				id={`${key}`}
+				value={`${key}`}
+				control={<Checkbox />}
+				label={`${key}`}
+				labelPlacement="end"
+				onChange={(e) => handleCheckChange(e)}
+			/>
+		);
+	}
 
 	form = (
 		<FormControl>
@@ -139,8 +215,12 @@ function HomeSeeker() {
 					name="query"
 					error={!!queryError}
 					helperText={queryErrorMessage}
-					required
 				/>
+			</FormGroup>
+			<FormGroup>
+				{fieldsForm.map((element) => {
+					return element;
+				})}
 			</FormGroup>
 			<br />
 			<Button type="submit" onClick={(e) => search(e)}>
@@ -234,9 +314,38 @@ function HomeSeeker() {
 			) : (
 				<div></div>
 			)}
-			<h1>Search for Jobs on Jobaroo</h1>
 			{!data ? (
-				form
+				<div>
+					<h1>Search for Jobs on Jobaroo</h1>
+					{form}
+					<BarChart
+						width={1000}
+						height={300}
+						data={jobTypes}
+						margin={{
+							top: 5,
+							right: 30,
+							left: 20,
+							bottom: 5,
+						}}
+						barSize={20}
+					>
+						<XAxis
+							dataKey="name"
+							scale="point"
+							padding={{ left: 10, right: 10 }}
+						/>
+						<YAxis />
+						<Tooltip />
+						<Legend />
+						<CartesianGrid strokeDasharray="3 3" />
+						<Bar
+							dataKey="Number of Postings"
+							fill="#8884d8"
+							background={{ fill: "#eee" }}
+						/>
+					</BarChart>
+				</div>
 			) : (
 				<Grid
 					container
@@ -248,38 +357,6 @@ function HomeSeeker() {
 					{card}
 				</Grid>
 			)}
-			<br />
-			<br />
-			<BarChart
-				width={1000}
-				height={500}
-				data={jobTypes}
-				// margin={{
-				// 	top: 5,
-				// 	right: 30,
-				// 	left: 20,
-				// 	bottom: 5,
-				// }}
-				margin={{
-					top: 0,
-					right: 15,
-					left: 15,
-					bottom: 50,
-				}}
-				barSize={20}
-				className="fieldChart"
-			>
-				<XAxis dataKey="name" scale="point" padding={{ left: 10, right: 10 }} />
-				<YAxis />
-				<Tooltip />
-				<Legend />
-				<CartesianGrid strokeDasharray="3 3" />
-				<Bar
-					dataKey="Number of Postings"
-					fill="#8884d8"
-					background={{ fill: "#eee" }}
-				/>
-			</BarChart>
 		</div>
 	);
 }
