@@ -6,6 +6,8 @@ import {
 	TextField,
 	CircularProgress,
 	FormGroup,
+  Checkbox,
+  FormControlLabel
 } from "@mui/material";
 import { db } from "../firebase/Firebase";
 import { collection, query, where, getDocs, getDoc, doc, setDoc } from "firebase/firestore";
@@ -50,7 +52,11 @@ function HomeSeeker() {
     "Other": 0
   })
 
+  // const [jobTypes, setJobtypes] = useState([{}])
+
   let jobTypes = [];
+
+  let checkedFields = []
 
   useEffect(() => {
 		async function load() {
@@ -63,13 +69,16 @@ function HomeSeeker() {
       })    
 
       setFields(temp)
+  
     }
     load()
     },[])
 
-  for(var key in fields) {
-    jobTypes.push({name: key, 'Number of Postings': fields[key]})
-  }
+    for(var key in fields) {
+      jobTypes.push({name: key, 'Number of Postings': fields[key]})
+      // setJobtypes([...jobTypes, {name: key, 'Number of Postings': fields[key]}])
+    }
+
 
   const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -97,30 +106,87 @@ function HomeSeeker() {
   const search = async (e) => {
 		setLoading(true);
 		e.preventDefault();
-		if (!formData.query || !formData.query.trim()) {
-			setQueryError(true);
-			setQueryErrorMessage("Search term must be provided");
-			setLoading(false);
-			return;
-		}
-		setQueryError(false);
-		setQueryErrorMessage("");
+		// if (!formData.query || !formData.query.trim()) {
+		// 	setQueryError(true);
+		// 	setQueryErrorMessage("Search term must be provided");
+		// 	setLoading(false);
+		// 	return;
+		// }
+		// setQueryError(false);
+		// setQueryErrorMessage("");
 
-    try {
-        const q = query(collection(db, "posts"), where("company", "==", formData.query));
+    // try {
+        if(formData.query && checkedFields.length > 0){
+          try{
+            const q = query(collection(db, "posts"), where("company", "==", formData.query), where("field", 'in', checkedFields));
 
-        const querySnapshot = await getDocs(q);
-        setData(querySnapshot)
+            const querySnapshot = await getDocs(q);
+            setData(querySnapshot)
 
-        setLoading(false);
-        } catch (e) {
+            setLoading(false);
+          } catch (e) {
             console.log(e);
             setSearchError(true);
             setLoading(false);
         }
+
+        }
+        else if(formData.query){
+          try{
+            const q = query(collection(db, "posts"), where("company", "==", formData.query));
+
+            const querySnapshot = await getDocs(q);
+            setData(querySnapshot)
+
+            setLoading(false);
+          } catch (e) {
+            console.log(e);
+            setSearchError(true);
+            setLoading(false);
+          }
+
+        }
+        else if(checkedFields.length > 0){
+          try{
+            const q = query(collection(db, "posts"), where("field", 'in', checkedFields));
+
+            const querySnapshot = await getDocs(q);
+            setData(querySnapshot)
+
+            setLoading(false);
+          } catch (e) {
+            console.log(e);
+            setSearchError(true);
+            setLoading(false);
+        }
+        }
+        else{
+          setQueryError(true);
+          setQueryErrorMessage("Must give search input");
+          setLoading(false);
+        }
+
+  }
+
+  function handleCheckChange(e){
+    checkedFields.push(e.target.value)
+    console.log(checkedFields)
   }
 
   let form = null
+
+  let fieldsForm = []
+  for(var key in fields){
+    fieldsForm.push(<FormControlLabel
+      id={`${key}`}
+      value= {`${key}`}
+      control={<Checkbox />}
+      label={`${key}`}
+      labelPlacement="end"
+      onChange={(e)=>handleCheckChange(e)}
+    />)
+  }
+
 
     form = 
     <FormControl>
@@ -134,9 +200,11 @@ function HomeSeeker() {
 						name="query"
 						error={!!queryError}
 						helperText={queryErrorMessage}
-						required
 					/>
 				</FormGroup>
+        <FormGroup>
+            {fieldsForm.map((element)=>{return element})}
+            </FormGroup>
         <br/>
         <Button type="submit" onClick={(e) => search(e)}>
 					Submit
@@ -154,7 +222,7 @@ function HomeSeeker() {
   function findLoc(zip){
     try{
         let loc = zipcodes.lookup(zip);
-        return `${loc.city},${loc.state}`
+        return `${loc.city}, ${loc.state}`
     }
     catch(e){
         return ``
@@ -195,8 +263,7 @@ function HomeSeeker() {
   return (
 
     <div>
-      {!data ? form: card}
-
+      {!data ? <div> {form}
       <BarChart
                 width={1000}
                 height={300}
@@ -216,6 +283,8 @@ function HomeSeeker() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <Bar dataKey="Number of Postings" fill="#8884d8" background={{ fill: "#eee" }} />
             </BarChart>
+          </div>
+            : card}
     </div>
   );
 }
