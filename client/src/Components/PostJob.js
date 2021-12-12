@@ -59,16 +59,16 @@ const PostJob = (props) => {
 			return;
 		}
 		setTitleError(false);
-		setTitleError("");
+		setTitleErrorMessage("");
 
 		if (!formData.field) {
-			setTitleError(true);
-			setTitleErrorMessage("Field must be provided");
+			setFieldError(true);
+			setFieldErrorMessage("Field must be provided");
 			setLoading(false);
 			return;
 		}
 		setFieldError(false);
-		setFieldError("");
+		setFieldErrorMessage("");
 		if (!formData.summary) {
 			setDescriptionError(true);
 			setDescriptionErrorMessage("Job summary must be provided");

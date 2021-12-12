@@ -190,6 +190,16 @@ async function newApplicationUpload(uid, job) {
 	}
 }
 
+async function retrieveCurrentApplicants(jobUid) {
+	const jobRef = doc(db, "posts", jobUid);
+	const jobSnap = await getDoc(jobRef);
+	if (jobSnap.exists()) {
+		return jobSnap.data().applicants;
+	} else {
+		return [];
+	}
+}
+
 export {
 	doCreateUserWithEmailAndPassword,
 	doSocialSignIn,
@@ -205,5 +215,6 @@ export {
 	imageUpload,
 	resumeUpload,
 	newApplicationUpload,
+	retrieveCurrentApplicants,
 	// sendVerificationEmail,
 };
