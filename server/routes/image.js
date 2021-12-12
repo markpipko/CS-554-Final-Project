@@ -47,8 +47,12 @@ router.post(
 			let transformed = await transformImage(req.file.buffer);
 			let uid = await getUserById(req.headers.token);
 			if (uid) {
-				let url = await uploadImage(uid, transformed);
-				return res.status(200).json({ img: url });
+				try {
+					let url = await uploadImage(uid, transformed);
+					return res.status(200).json({ img: url });
+				} catch (e) {
+					return res.status(500).json({ error: e });
+				}
 			} else {
 				return res.status(403).json({ message: "User is not authenticated" });
 			}

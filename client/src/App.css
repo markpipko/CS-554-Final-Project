@@ -90,6 +90,13 @@ footer {
 	color: #0072ee;
 }
 
+.fieldChart {
+	/* justify-content: center;
+	align-items: center;
+	text-align: center; */
+	margin: 0 auto;
+}
+
 #page-container {
 	position: relative;
 	min-height: 100vh;

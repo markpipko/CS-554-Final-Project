@@ -9,6 +9,9 @@ admin.initializeApp({
 });
 
 const uploadImage = async (uid, newImage) => {
+	if (!uid || !newImage) {
+		throw "One or more inputs were not provided";
+	}
 	const bucket = admin
 		.storage()
 		.bucket("gs://cs554finalproject-53b9e.appspot.com");
@@ -28,10 +31,14 @@ const uploadImage = async (uid, newImage) => {
 		})
 		.catch((err) => {
 			console.log(`Unable to upload file ${err}`);
+			throw err;
 		});
 };
 
 const getUserById = async (token) => {
+	if (!token) {
+		throw "Token not provided";
+	}
 	try {
 		let user = await admin.auth().verifyIdToken(token);
 		return user.uid;
@@ -56,8 +63,69 @@ const authenticate = async (req, res, next) => {
 	}
 };
 
+const apply = async (userUid, jobUid) => {
+	if (!userUid || typeof userUid != "string" || !userUid.trim()) {
+		throw "User uid not provided or not of type string";
+	}
+	if (!jobUid || typeof jobUid != "string" || !jobUid.trim()) {
+		throw "Job uid not provided or not of type string";
+	}
+
+	let jobRef = await admin.firestore().doc(`posts/${jobUid}`);
+
+	let jobData = {};
+	await jobRef.get().then((documentSnapShot) => {
+		if (documentSnapShot.exists) {
+			jobData = documentSnapShot.data();
+		} else {
+			throw "Could not find corresponding job";
+		}
+	});
+	let currentApplicants = jobData.applicants ? jobData.applicants : [];
+
+	let userRef = await admin.firestore().doc(`seekers/${userUid}`);
+
+	let userData = {};
+	await userRef.get().then((documentSnapShot) => {
+		if (documentSnapShot.exists) {
+			userData = documentSnapShot.data();
+		} else {
+			throw "Could not find corresponding user";
+		}
+	});
+	let newApplication = {
+		email: userData.email,
+		name: userData.displayName,
+		resume: userData.resume,
+	};
+	if (currentApplicants.findIndex((x) => x.email === userData.email) < 0) {
+		currentApplicants.push(newApplication);
+	}
+
+	await jobRef.update({ applicants: currentApplicants });
+
+	let newJob = {
+		_id: jobUid,
+		company: jobData.company,
+		location: jobData.zip,
+		email: jobData.email,
+		summary: jobData.summary,
+		title: jobData.title,
+		url: "",
+	};
+
+	let currentApplications = userData.applications ? userData.applications : [];
+	if (currentApplicants.findIndex((x) => x._id === jobUid) < 0) {
+		currentApplications.push(newJob);
+	}
+	await userRef.update({ applications: currentApplications });
+
+	return jobData.email;
+};
+
 module.exports = {
 	uploadImage,
 	authenticate,
 	getUserById,
+	apply,
 };

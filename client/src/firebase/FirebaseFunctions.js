@@ -13,7 +13,7 @@ import {
 	updateProfile,
 	reauthenticateWithCredential,
 } from "firebase/auth";
-import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { setDoc, doc, getDoc, updateDoc, increment } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
 
 const auth = getAuth(firebaseApp);
@@ -190,6 +190,36 @@ async function newApplicationUpload(uid, job) {
 	}
 }
 
+async function retrieveCurrentApplicants(jobUid) {
+	const jobRef = doc(db, "posts", jobUid);
+	const jobSnap = await getDoc(jobRef);
+	if (jobSnap.exists()) {
+		return jobSnap.data().applicants;
+	} else {
+		return [];
+	}
+}
+
+async function getFieldNumbers() {
+	const postRef = doc(db, "posts", "fieldsDoc");
+	const postSnap = await getDoc(postRef);
+	if (postSnap.exists()) {
+		return postSnap.data();
+	} else {
+		return [];
+	}
+}
+
+async function updateFieldNumbers(field) {
+	const postRef = doc(db, "posts", "fieldsDoc");
+	const postSnap = await getDoc(postRef);
+	if (postSnap.exists()) {
+		await updateDoc(postRef, {
+			[`${field}`]: increment(1),
+		});
+	}
+}
+
 export {
 	doCreateUserWithEmailAndPassword,
 	doSocialSignIn,
@@ -205,5 +235,8 @@ export {
 	imageUpload,
 	resumeUpload,
 	newApplicationUpload,
+	retrieveCurrentApplicants,
+	getFieldNumbers,
+	updateFieldNumbers,
 	// sendVerificationEmail,
 };
