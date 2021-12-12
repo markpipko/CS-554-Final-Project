@@ -4,11 +4,13 @@ import { Redirect, Link } from "react-router-dom";
 import { AuthContext } from "../firebase/Auth";
 import { doSignInWithEmailAndPassword } from "../firebase/FirebaseFunctions";
 import {
-	FormControl,
-	FormGroup,
+	Container,
 	Button,
 	TextField,
 	CircularProgress,
+	Box,
+	Typography,
+	Grid,
 } from "@mui/material";
 function SignIn() {
 	const [formData, setFormData] = useState({
@@ -61,31 +63,38 @@ function SignIn() {
 		return <Redirect to="/home" />;
 	}
 	return (
-		<div>
-			<h1>Log in</h1>
-			{loading ? <CircularProgress /> : <div></div>}
-			{loginError ? (
-				<div className="loginError">Email and/or password is incorrect</div>
-			) : (
-				<div></div>
-			)}
-			<br />
-			<br />
-			<FormControl>
-				<FormGroup>
+		<Container component="main" maxWidth="xs">
+			<Box
+				sx={{
+					marginTop: 4,
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+				}}
+			>
+				<Typography component="h1" variant="h5">
+					Sign In
+				</Typography>
+				{loading ? <CircularProgress /> : <div></div>}
+				{loginError ? (
+					<div className="loginError">Email and/or password is incorrect.</div>
+				) : (
+					<div></div>
+				)}
+				<Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
 					<TextField
 						id="email"
+						margin="normal"
+						fullWidth
 						variant="outlined"
-						label="Email"
+						label="Email Address"
 						onChange={(e) => handleChange(e)}
 						name="email"
 						error={!!emailError}
 						helperText={emailErrorMessage}
 						required
+						autoFocus
 					/>
-				</FormGroup>
-				<br />
-				<FormGroup>
 					<TextField
 						id="password"
 						variant="outlined"
@@ -96,32 +105,40 @@ function SignIn() {
 						error={!!passwordError}
 						helperText={passwordErrorMessage}
 						required
+						fullWidth
 					/>
-				</FormGroup>
+					<Button
+						type="submit"
+						variant="contained"
+						fullWidth
+						disabled={loading}
+						sx={{ mt: 3, mb: 2 }}
+					>
+						Log in
+					</Button>
+					<Grid container>
+						<Grid item xs>
+							<Link
+								to="/forgotpassword"
+								variant="body2"
+								className="signInLinks"
+							>
+								Forgot Password
+							</Link>
+						</Grid>
+						<Grid item>
+							<Link to="/signup" variant="body2" className="signInLinks">
+								Don't have an account? Sign Up
+							</Link>
+						</Grid>
+						<br />
+						<br />
+					</Grid>
+					<SocialSignIn />
+				</Box>
 				<br />
-				<Button
-					type="submit"
-					variant="contained"
-					onClick={(e) => handleLogin(e)}
-					disabled={loading}
-				>
-					Log in
-				</Button>
-				<br />
-				<Button
-					className="forgotPassword"
-					variant="contained"
-					color="error"
-					component={Link}
-					to="/forgotpassword"
-				>
-					Forgot Password
-				</Button>
-				<br />
-			</FormControl>
-			<br />
-			<SocialSignIn />
-		</div>
+			</Box>
+		</Container>
 	);
 }
 

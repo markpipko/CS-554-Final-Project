@@ -1,34 +1,35 @@
 import React, { useState } from "react";
 import {
-	Card,
-	CardContent,
-	Typography,
-	Grid,
 	FormControl,
 	InputLabel,
 	TextField,
 	MenuItem,
 	Button,
-	CircularProgress,
-	Pagination,
 	FormGroup,
+	Alert,
+	Collapse,
+	IconButton,
 } from "@mui/material";
-import { getAuth} from "firebase/auth";
-import { collection, addDoc, getDoc } from "firebase/firestore";
-import {  db } from "../firebase/Firebase";
-import  { Redirect } from 'react-router-dom'
-
+import CloseIcon from "@mui/icons-material/Close";
+import { getAuth } from "firebase/auth";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebase/Firebase";
+import { Redirect } from "react-router-dom";
 
 const PostJob = (props) => {
-    const [formData, setFormData] = useState({
+	const [formData, setFormData] = useState({
 		title: "",
         field: "",
 		description: "",
-        zip: "",
+		zip: "",
 		jobType: "entry_level",
 	});
-    const {currentUser} = getAuth();
-    const [titleError, setTitleError] = useState(false);
+	const { currentUser } = getAuth();
+	const [status, setStatus] = useState(false);
+	const [error, setError] = useState(false);
+	const [infoOpen, setInfoOpen] = useState(false);
+	const [errorOpen, setErrorOpen] = useState(false);
+	const [titleError, setTitleError] = useState(false);
 	const [titleErrorMessage, setTitleErrorMessage] = useState("");
     const [fieldError, setFieldError] = useState(false);
 	const [fieldErrorMessage, setFieldErrorMessage] = useState("");
@@ -36,20 +37,19 @@ const PostJob = (props) => {
 	const [zipErrorMessage, setZipErrorMessage] = useState("");
 	const [descriptionError, setDescriptionError] = useState(false);
 	const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
-    const [typeError, setTypeError] = useState(false);
+	const [typeError, setTypeError] = useState(false);
 	const [typeErrorMessage, setTypeErrorMessage] = useState("");
     const [submitted, setSubmitted] = useState(false)
 
-    const handleChange = (e) => {
-        setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+	const handleChange = (e) => {
+		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+	};
 
-    };
-
-    if(!props.employer){
-		<Redirect to="/somewhere/else" />
+	if (!props.employer) {
+		<Redirect to="/home" />;
 	}
 
-    const post = async (e) => {
+	const post = async (e) => {
 		e.preventDefault();
 		if (!formData.title || !formData.title.trim()) {
 			setTitleError(true);
@@ -58,6 +58,7 @@ const PostJob = (props) => {
 		}
 		setTitleError(false);
 		setTitleError("");
+
         if (!formData.field ) {
 			setTitleError(true);
 			setTitleErrorMessage("Field must be provided");
@@ -66,6 +67,7 @@ const PostJob = (props) => {
 		setFieldError(false);
 		setFieldError("");
         if (!formData.description) {
+
 			setDescriptionError(true);
 			setDescriptionErrorMessage("Job description must be provided");
 			return;
@@ -91,6 +93,7 @@ const PostJob = (props) => {
 		setTypeError(false);
 		setTypeErrorMessage("");
 		try {
+
             await addDoc(collection(db, "posts"), {
                 company: currentUser.displayName,
                 email: currentUser.email,
@@ -102,10 +105,18 @@ const PostJob = (props) => {
                 // applicants: []
               });
             setSubmitted(true)
+
+			setError(false);
+			setInfoOpen(true);
+			setStatus(true);
+
 		} catch (e) {
 			console.log(e);
+			setErrorOpen(true);
+			setError(true);
 		}
 	};
+
     return(
     <div>
         <h1>Post a Job</h1>
@@ -207,4 +218,5 @@ const PostJob = (props) => {
         {submitted && <p>Job Posted</p>}
     </div>)
 }
+
 export default PostJob;
