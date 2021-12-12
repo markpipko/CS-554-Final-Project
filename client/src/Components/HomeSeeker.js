@@ -6,282 +6,287 @@ import {
 	TextField,
 	CircularProgress,
 	FormGroup,
+  Checkbox,
+  FormControlLabel
 } from "@mui/material";
 import { db } from "../firebase/Firebase";
+import { collection, query, where, getDocs, getDoc, doc, setDoc } from "firebase/firestore";
+import { Card, Button, Row, Col} from 'react-bootstrap';
+import zipcodes from 'zipcodes'
 import {
-	collection,
-	query,
-	where,
-	getDocs,
-	getDoc,
-	doc,
-	setDoc,
-} from "firebase/firestore";
-import "../App.css";
-import JobPost from "./JobPost";
-import { Alert, Collapse, Button, IconButton, Grid } from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import CloseIcon from "@mui/icons-material/Close";
-import {
-	BarChart,
-	Bar,
-	XAxis,
-	YAxis,
-	CartesianGrid,
-	Tooltip,
-	Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend
 } from "recharts";
-import { getFieldNumbers } from "../firebase/FirebaseFunctions";
 
-const useStyles = makeStyles({
-	grid: {
-		flexGrow: 1,
-		flexDirection: "row",
-	},
-});
+
+import '../App.css';
 
 function HomeSeeker() {
-	const [formData, setFormData] = useState({});
-	const [queryError, setQueryError] = useState(false);
-	const [queryErrorMessage, setQueryErrorMessage] = useState("");
-	const [isSeeker, setIsSeeker] = useState(false);
-	const { currentUser } = useContext(AuthContext);
-	const [loading, setLoading] = useState(false);
-	const [searchError, setSearchError] = useState(false);
-	const [data, setData] = useState(undefined);
-	const [status, setStatus] = useState(false);
-	const [error, setError] = useState(false);
-	const [infoOpen, setInfoOpen] = useState(false);
-	const [errorOpen, setErrorOpen] = useState(false);
-	const [fields, setFields] = useState({
-		"Architecture, Planning & Environmental Design": 0,
-		"Arts & Entertainment": 0,
-		Business: 0,
-		Communications: 0,
-		Education: 0,
-		"Engineering & Computer Science": 0,
-		Environment: 0,
-		Government: 0,
-		"Health & Medicine": 0,
-		International: 0,
-		"Law & Public Policy": 0,
-		"Sciences - Biological & Physical": 0,
-		"Social Impact": 0,
-		Other: 0,
-	});
-	let jobTypes = [];
-	const classes = useStyles();
+  const [formData, setFormData] = useState({});
+  const [queryError, setQueryError] = useState(false);
+  const [queryErrorMessage, setQueryErrorMessage] = useState("");
+  const [isSeeker, setIsSeeker] = useState(false);
+  const { currentUser } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const [searchError, setSearchError] = useState(false);
+  const [data, setData] = useState(undefined);
+  const [fields, setFields] = useState({
+    "Architecture, Planning & Environmental Design": 0,
+    "Arts & Entertainment": 0,
+    "Business": 0,
+    "Communications": 0,
+    "Education": 0,
+    "Engineering & Computer Science": 0,
+    "Environment": 0,
+    "Government": 0,
+    "Health & Medicine": 0,
+    "International": 0,
+    "Law & Public Policy": 0,
+    "Sciences - Biological & Physical": 0,
+    "Social Impact": 0,
+    "Other": 0
+  })
 
-	useEffect(() => {
+  // const [jobTypes, setJobtypes] = useState([{}])
+
+  let jobTypes = [];
+
+  let checkedFields = []
+
+  useEffect(() => {
 		async function load() {
-			let tempFields = await getFieldNumbers();
-			setFields(tempFields);
-		}
-		load();
-	}, []);
+      const querySnapshot = await getDocs(collection(db, "posts"));
 
-	for (var key in fields) {
-		jobTypes.push({ name: key, "Number of Postings": fields[key] });
-	}
+      var temp = fields
 
-	const handleChange = (e) => {
+      querySnapshot.forEach((doc) => {
+        temp[doc.data().field] = temp[doc.data().field] + 1
+      })    
+
+      setFields(temp)
+  
+    }
+    load()
+    },[])
+
+    for(var key in fields) {
+      jobTypes.push({name: key, 'Number of Postings': fields[key]})
+      // setJobtypes([...jobTypes, {name: key, 'Number of Postings': fields[key]}])
+    }
+
+
+  const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 	};
 
-	const checkApplied = async (jobId) => {
-		// const docRef =  doc(db, 'posts', jobId)
-		const docRef = doc(doc(db, "posts", jobId), "applicants", currentUser.uid);
-		const docSnap = await getDoc(docRef);
+  const apply = async (jobId, job) => {
+    const docRef = doc(db, "seekers", currentUser.uid);
+    const docSnap = await getDoc(docRef);
 
-		return docSnap.exists();
-	};
+    await setDoc(doc(doc(db,'posts',jobId), "applicants", currentUser.uid), {
+        name: currentUser.displayName,
+        email: currentUser.email,
+        resume: docSnap.data().resume
+    })
+    };
 
-	const search = async (e) => {
+  const checkApplied = async (jobId) => {
+    // const docRef =  doc(db, 'posts', jobId)
+    const docRef =  doc(doc(db, 'posts', jobId), "applicants", currentUser.uid);
+    const docSnap = await getDoc(docRef);
+
+    return docSnap.exists()
+  }
+
+  const search = async (e) => {
 		setLoading(true);
 		e.preventDefault();
-		if (!formData.query || !formData.query.trim()) {
-			setQueryError(true);
-			setQueryErrorMessage("Search term must be provided");
-			setLoading(false);
-			return;
-		}
-		setQueryError(false);
-		setQueryErrorMessage("");
+		// if (!formData.query || !formData.query.trim()) {
+		// 	setQueryError(true);
+		// 	setQueryErrorMessage("Search term must be provided");
+		// 	setLoading(false);
+		// 	return;
+		// }
+		// setQueryError(false);
+		// setQueryErrorMessage("");
 
-		try {
-			const q = query(
-				collection(db, "posts"),
-				where("company", "==", formData.query)
-			);
+    // try {
+        if(formData.query && checkedFields.length > 0){
+          try{
+            const q = query(collection(db, "posts"), where("company", "==", formData.query), where("field", 'in', checkedFields));
 
-			const querySnapshot = await getDocs(q);
-			setData(querySnapshot);
+            const querySnapshot = await getDocs(q);
+            setData(querySnapshot)
 
-			setLoading(false);
-		} catch (e) {
-			console.log(e);
-			setSearchError(true);
-			setLoading(false);
-		}
-	};
+            setLoading(false);
+          } catch (e) {
+            console.log(e);
+            setSearchError(true);
+            setLoading(false);
+        }
 
-	let form = null;
+        }
+        else if(formData.query){
+          try{
+            const q = query(collection(db, "posts"), where("company", "==", formData.query));
 
-	form = (
-		<FormControl>
-			<FormGroup>
-				<InputLabel id="query" htmlFor="query"></InputLabel>
-				<TextField
-					id="query"
-					variant="outlined"
-					label="Company"
-					onChange={(e) => handleChange(e)}
-					name="query"
-					error={!!queryError}
-					helperText={queryErrorMessage}
-					required
-				/>
-			</FormGroup>
-			<br />
-			<Button type="submit" onClick={(e) => search(e)}>
-				Submit
-			</Button>
-		</FormControl>
-	);
+            const querySnapshot = await getDocs(q);
+            setData(querySnapshot)
 
-	if (loading) {
-		return <CircularProgress />;
-	}
+            setLoading(false);
+          } catch (e) {
+            console.log(e);
+            setSearchError(true);
+            setLoading(false);
+          }
 
-	if (searchError) {
-		return <div>No search results found</div>;
-	}
+        }
+        else if(checkedFields.length > 0){
+          try{
+            const q = query(collection(db, "posts"), where("field", 'in', checkedFields));
 
-	const buildCard = (id, job, index) => {
+            const querySnapshot = await getDocs(q);
+            setData(querySnapshot)
+
+            setLoading(false);
+          } catch (e) {
+            console.log(e);
+            setSearchError(true);
+            setLoading(false);
+        }
+        }
+        else{
+          setQueryError(true);
+          setQueryErrorMessage("Must give search input");
+          setLoading(false);
+        }
+
+  }
+
+  function handleCheckChange(e){
+    checkedFields.push(e.target.value)
+    console.log(checkedFields)
+  }
+
+  let form = null
+
+  let fieldsForm = []
+  for(var key in fields){
+    fieldsForm.push(<FormControlLabel
+      id={`${key}`}
+      value= {`${key}`}
+      control={<Checkbox />}
+      label={`${key}`}
+      labelPlacement="end"
+      onChange={(e)=>handleCheckChange(e)}
+    />)
+  }
+
+
+    form = 
+    <FormControl>
+				<FormGroup>
+					<InputLabel id="query" htmlFor="query"></InputLabel>
+					<TextField
+						id="query"
+						variant="outlined"
+						label="Company"
+						onChange={(e) => handleChange(e)}
+						name="query"
+						error={!!queryError}
+						helperText={queryErrorMessage}
+					/>
+				</FormGroup>
+        <FormGroup>
+            {fieldsForm.map((element)=>{return element})}
+            </FormGroup>
+        <br/>
+        <Button type="submit" onClick={(e) => search(e)}>
+					Submit
+				</Button>
+    </FormControl>
+
+  if (loading){
+    return <CircularProgress />
+  }
+
+  if(searchError){
+      return <div>No search results found</div>
+  }
+
+  function findLoc(zip){
+    try{
+        let loc = zipcodes.lookup(zip);
+        return `${loc.city}, ${loc.state}`
+    }
+    catch(e){
+        return ``
+    }
+  }
+
+  const buildCard = (id, job) => {
 		return (
-			<JobPost
-				id={id}
-				job={job}
-				index={index}
-				setInfoOpen={setInfoOpen}
-				setErrorOpen={setErrorOpen}
-				setStatus={setStatus}
-				setError={setError}
-			/>
+            
+      <Col key={id}>
+          <Card className='card' style={{ width: '18rem', height: '25rem' }}>
+              <Card.Body>
+                  <Card.Title className='titleHead'>{ job.title}</Card.Title>
+                  <Card.Text>
+                  {findLoc(job.zip)}
+                  <br />
+                  {job.description}
+                  </Card.Text>
+                  <Button variant="contained" onClick={apply(id, job)}>Apply</Button>
+              </Card.Body>
+          </Card>
+      </Col>
+
 		);
 	};
 
-	let card = null;
-	if (data) {
-		let dataArr = [];
-		data &&
-			data.forEach((doc) => {
-				dataArr.push(doc);
-			});
+    let card = null
+  if (data){
+    let dataArr = []
+    data &&
+    data.forEach((doc) => {
+      dataArr.push(doc);
+        });  
+        
+    card = dataArr.map((doc) => {return buildCard(doc.id, doc.data())})
+  }
 
-		card = dataArr.map((doc, index) => {
-			return buildCard(doc.id, doc.data(), index);
-		});
-	}
+  return (
 
-	return (
-		<div>
-			{status ? (
-				<Collapse in={infoOpen}>
-					<Alert
-						severity="success"
-						action={
-							<IconButton
-								aria-label="close"
-								color="inherit"
-								size="small"
-								onClick={() => {
-									setInfoOpen(false);
-								}}
-							>
-								<CloseIcon fontSize="inherit" />
-							</IconButton>
-						}
-						sx={{ mb: 2 }}
-					>
-						Application has been successfully submitted!
-					</Alert>
-				</Collapse>
-			) : (
-				<div></div>
-			)}
-			{error ? (
-				<Collapse in={errorOpen}>
-					<Alert
-						severity="error"
-						action={
-							<IconButton
-								aria-label="close"
-								color="inherit"
-								size="small"
-								onClick={() => {
-									setErrorOpen(false);
-								}}
-							>
-								<CloseIcon fontSize="inherit" />
-							</IconButton>
-						}
-						sx={{ mb: 2 }}
-					>
-						Application could not be submitted. Please try again.
-					</Alert>
-				</Collapse>
-			) : (
-				<div></div>
-			)}
-			<h1>Search for Jobs on Jobaroo</h1>
-			{!data ? (
-				form
-			) : (
-				<Grid
-					container
-					className={classes.grid}
-					spacing={5}
-					alignItems="stretch"
-					style={{ marginBottom: "15px", padding: "10px" }}
-				>
-					{card}
-				</Grid>
-			)}
-			<br />
-			<br />
-			<BarChart
-				width={1000}
-				height={500}
-				data={jobTypes}
-				// margin={{
-				// 	top: 5,
-				// 	right: 30,
-				// 	left: 20,
-				// 	bottom: 5,
-				// }}
-				margin={{
-					top: 0,
-					right: 15,
-					left: 15,
-					bottom: 50,
-				}}
-				barSize={20}
-				className="fieldChart"
-			>
-				<XAxis dataKey="name" scale="point" padding={{ left: 10, right: 10 }} />
-				<YAxis />
-				<Tooltip />
-				<Legend />
-				<CartesianGrid strokeDasharray="3 3" />
-				<Bar
-					dataKey="Number of Postings"
-					fill="#8884d8"
-					background={{ fill: "#eee" }}
-				/>
-			</BarChart>
-		</div>
-	);
+    <div>
+      {!data ? <div> {form}
+      <BarChart
+                width={1000}
+                height={300}
+                data={jobTypes}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5
+                }}
+                barSize={20}
+              >
+                <XAxis dataKey="name" scale="point" padding={{ left: 10, right: 10 }} />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <CartesianGrid strokeDasharray="3 3" />
+                <Bar dataKey="Number of Postings" fill="#8884d8" background={{ fill: "#eee" }} />
+            </BarChart>
+          </div>
+            : card}
+    </div>
+  );
 }
 
 export default HomeSeeker;
