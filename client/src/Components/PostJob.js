@@ -19,6 +19,7 @@ import { Redirect } from "react-router-dom";
 const PostJob = (props) => {
 	const [formData, setFormData] = useState({
 		title: "",
+        field: "",
 		description: "",
 		zip: "",
 		jobType: "entry_level",
@@ -30,12 +31,15 @@ const PostJob = (props) => {
 	const [errorOpen, setErrorOpen] = useState(false);
 	const [titleError, setTitleError] = useState(false);
 	const [titleErrorMessage, setTitleErrorMessage] = useState("");
+    const [fieldError, setFieldError] = useState(false);
+	const [fieldErrorMessage, setFieldErrorMessage] = useState("");
 	const [zipError, setZipError] = useState(false);
 	const [zipErrorMessage, setZipErrorMessage] = useState("");
 	const [descriptionError, setDescriptionError] = useState(false);
 	const [descriptionErrorMessage, setDescriptionErrorMessage] = useState("");
 	const [typeError, setTypeError] = useState(false);
 	const [typeErrorMessage, setTypeErrorMessage] = useState("");
+    const [submitted, setSubmitted] = useState(false)
 
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -54,7 +58,16 @@ const PostJob = (props) => {
 		}
 		setTitleError(false);
 		setTitleError("");
-		if (!formData.description) {
+
+        if (!formData.field ) {
+			setTitleError(true);
+			setTitleErrorMessage("Field must be provided");
+			return;
+		}
+		setFieldError(false);
+		setFieldError("");
+        if (!formData.description) {
+
 			setDescriptionError(true);
 			setDescriptionErrorMessage("Job description must be provided");
 			return;
@@ -80,141 +93,130 @@ const PostJob = (props) => {
 		setTypeError(false);
 		setTypeErrorMessage("");
 		try {
-			await addDoc(collection(db, "posts"), {
-				company: currentUser.displayName,
-				email: currentUser.email,
-				title: formData.title,
-				description: formData.description,
-				zip: formData.zip,
-				jobType: formData.jobType,
-				// applicants: []
-			});
+
+            await addDoc(collection(db, "posts"), {
+                company: currentUser.displayName,
+                email: currentUser.email,
+                title: formData.title,
+                field: formData.field,
+                description: formData.description,
+                zip: formData.zip,
+                jobType: formData.jobType,
+                // applicants: []
+              });
+            setSubmitted(true)
+
 			setError(false);
 			setInfoOpen(true);
 			setStatus(true);
+
 		} catch (e) {
 			console.log(e);
 			setErrorOpen(true);
 			setError(true);
 		}
 	};
-	return (
-		<div>
-			{status ? (
-				<Collapse in={infoOpen}>
-					<Alert
-						severity="success"
-						action={
-							<IconButton
-								aria-label="close"
-								color="inherit"
-								size="small"
-								onClick={() => {
-									setInfoOpen(false);
-								}}
-							>
-								<CloseIcon fontSize="inherit" />
-							</IconButton>
-						}
-						sx={{ mb: 2 }}
-					>
-						Job has been successfully posted. Please check the Posts tab to see
-						your new job post.
-					</Alert>
-				</Collapse>
-			) : (
-				<div></div>
-			)}
-			{error ? (
-				<Collapse in={errorOpen}>
-					<Alert
-						severity="error"
-						action={
-							<IconButton
-								aria-label="close"
-								color="inherit"
-								size="small"
-								onClick={() => {
-									setErrorOpen(false);
-								}}
-							>
-								<CloseIcon fontSize="inherit" />
-							</IconButton>
-						}
-						sx={{ mb: 2 }}
-					>
-						Job could not be posted. Please try again.
-					</Alert>
-				</Collapse>
-			) : (
-				<div></div>
-			)}
-			<h1>Post a Job</h1>
-			<FormControl>
-				<FormGroup>
-					<InputLabel id="title" htmlFor="title"></InputLabel>
-					<TextField
-						id="title"
-						variant="outlined"
-						label="Title"
-						onChange={(e) => handleChange(e)}
-						name="title"
-						error={!!titleError}
-						helperText={titleErrorMessage}
-						required
-					/>
-				</FormGroup>
-				<br />
-				<FormGroup>
-					<InputLabel id="description" htmlFor="description"></InputLabel>
-					<TextField
-						id="description"
-						variant="outlined"
-						label="Description"
-						onChange={(e) => handleChange(e)}
-						name="description"
-						error={!!descriptionError}
-						helperText={descriptionErrorMessage}
-						required
-					/>
-				</FormGroup>
-				<br />
-				<FormGroup>
-					<InputLabel id="zip" htmlFor="zip"></InputLabel>
-					<TextField
-						id="outlined-basic"
-						label="Zip Code"
-						name="zip"
-						onChange={(e) => handleChange(e)}
-						pattern="[0-9]{5}"
-						required
-						error={!!zipError}
-						helperText={zipErrorMessage}
-					/>
-				</FormGroup>
-				<br />
-				<FormGroup>
-					<TextField
-						select
-						value={formData.jobType}
-						label="Job Type"
-						onChange={(e) => handleChange(e)}
-						name="jobType"
-						id="jobType"
-						error={!!typeError}
-						helperText={typeErrorMessage}
-					>
-						<MenuItem value="entry_level">Entry Level</MenuItem>
-						<MenuItem value="mid_level">Mid Level</MenuItem>
-						<MenuItem value="senior_level">Senior Level</MenuItem>
-					</TextField>
-				</FormGroup>
-				<br />
-				<Button type="submit" onClick={(e) => post(e)}>
-					Submit
-				</Button>
-			</FormControl>
-		</div>
-	);
-};
+
+    return(
+    <div>
+        <h1>Post a Job</h1>
+        <FormControl id="mainForm">
+            <FormGroup>
+                <InputLabel id="title" htmlFor="title"></InputLabel>
+                <TextField
+                    id="title"
+                    variant="outlined"
+                    label="Title"
+                    onChange={(e) => handleChange(e)}
+                    name="title"
+                    error={!!fieldError}
+                    helperText={titleErrorMessage}
+                    required
+                />
+            </FormGroup>
+            <br />
+            <FormGroup>
+                <InputLabel id="field" htmlFor="field"></InputLabel>
+                <TextField
+                    select
+                    id="field"
+                    variant="outlined"
+                    label="Field"
+                    onChange={(e) => handleChange(e)}
+                    name="field"
+                    error={!!titleError}
+                    helperText={fieldErrorMessage}
+                    required
+                >  
+                    <MenuItem value="Architecture, Planning & Environmental Design">Architecture, Planning & Environmental Design</MenuItem>
+                    <MenuItem value="mid_level">Arts & Entertainment</MenuItem>
+                    <MenuItem value="Business">Business</MenuItem>
+                    <MenuItem value="Communications">Communications</MenuItem>
+                    <MenuItem value="Education">Education</MenuItem>
+                    <MenuItem value="Engineering & Computer Science">Engineering & Computer Science</MenuItem>
+                    <MenuItem value="Environment">Environment</MenuItem>
+                    <MenuItem value="Government">Government</MenuItem>
+                    <MenuItem value="Health & Medicine">Health & Medicine</MenuItem>
+                    <MenuItem value="International">International</MenuItem>
+                    <MenuItem value="Law & Public Policy">Law & Public Policy</MenuItem>
+                    <MenuItem value="Sciences - Biological & Physical">Sciences - Biological & Physical</MenuItem>
+                    <MenuItem value="Social Impact">Social Impact</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
+
+                </TextField>     
+            </FormGroup>
+            <br />
+            <FormGroup>
+                <InputLabel id="description" htmlFor="description"></InputLabel>
+                <TextField
+                    id="description"
+                    variant="outlined"
+                    label="Description"
+                    onChange={(e) => handleChange(e)}
+                    name="description"
+                    error={!!descriptionError}
+                    helperText={descriptionErrorMessage}
+                    required
+                />
+            </FormGroup>
+            <br />
+            <FormGroup>
+                <InputLabel id="zip" htmlFor="zip"></InputLabel>
+                <TextField
+                    id="outlined-basic"
+                    label="Zip Code"
+                    name="zip"
+                    onChange={(e) => handleChange(e)}
+                    pattern="[0-9]{5}"
+                    required
+                    error={!!zipError}
+                    helperText={zipErrorMessage}
+                />
+            </FormGroup>
+            <br />
+            <FormGroup>
+                <TextField
+                    select
+                    value={formData.jobType}
+                    label="Job Type"
+                    onChange={(e) => handleChange(e)}
+                    name="jobType"
+                    id="jobType"
+                    error={!!typeError}
+                    helperText={typeErrorMessage}
+                >
+                    <MenuItem value="entry_level">Entry Level</MenuItem>
+                    <MenuItem value="mid_level">Mid Level</MenuItem>
+                    <MenuItem value="senior_level">Senior Level</MenuItem>
+                </TextField>
+            </FormGroup>
+            <br />
+            <Button type="submit" onClick={(e) => post(e)}>
+                Submit
+            </Button>
+        </FormControl>
+        {submitted && <p>Job Posted</p>}
+    </div>)
+}
+
 export default PostJob;

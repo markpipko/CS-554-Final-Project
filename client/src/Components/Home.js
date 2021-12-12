@@ -3,17 +3,19 @@ import HomeSeeker from './HomeSeeker'
 import HomeEmployer from './HomeEmployer'
 import { AuthContext } from "../firebase/Auth";
 import { checkEmployer } from "../firebase/FirebaseFunctions";
+// import { db } from "../firebase/Firebase";
+// import { collection, getDocs } from "firebase/firestore";
 
 function Home(){
   const [isSeeker, setIsSeeker] = useState(false);
   const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
-		async function check() {
+		async function load() {
 			let res = await checkEmp(currentUser.uid);
 			setIsSeeker(!res);
 		}
-		check();
+		load();
 	}, [currentUser]);
 
 	const checkEmp = async (uid) => {
@@ -21,16 +23,17 @@ function Home(){
 		return res;
 	};
 
+  let home = <HomeEmployer />
+
   if(isSeeker){
-    return (
-      <HomeSeeker />
-    );
+    home = <HomeSeeker />
   }
-  else{
-    return (
-      <HomeEmployer />
-    );
-  }
+  
+  return (
+    <div>
+      {home}
+    </div>
+  )
 
 }
 

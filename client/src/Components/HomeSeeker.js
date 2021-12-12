@@ -11,6 +11,16 @@ import { db } from "../firebase/Firebase";
 import { collection, query, where, getDocs, getDoc, doc, setDoc } from "firebase/firestore";
 import { Card, Button, Row, Col} from 'react-bootstrap';
 import zipcodes from 'zipcodes'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend
+} from "recharts";
+
 
 import '../App.css';
 
@@ -23,7 +33,43 @@ function HomeSeeker() {
   const [loading, setLoading] = useState(false);
   const [searchError, setSearchError] = useState(false);
   const [data, setData] = useState(undefined);
+  const [fields, setFields] = useState({
+    "Architecture, Planning & Environmental Design": 0,
+    "Arts & Entertainment": 0,
+    "Business": 0,
+    "Communications": 0,
+    "Education": 0,
+    "Engineering & Computer Science": 0,
+    "Environment": 0,
+    "Government": 0,
+    "Health & Medicine": 0,
+    "International": 0,
+    "Law & Public Policy": 0,
+    "Sciences - Biological & Physical": 0,
+    "Social Impact": 0,
+    "Other": 0
+  })
 
+  let jobTypes = [];
+
+  useEffect(() => {
+		async function load() {
+      const querySnapshot = await getDocs(collection(db, "posts"));
+
+      var temp = fields
+
+      querySnapshot.forEach((doc) => {
+        temp[doc.data().field] = temp[doc.data().field] + 1
+      })    
+
+      setFields(temp)
+    }
+    load()
+    },[])
+
+  for(var key in fields) {
+    jobTypes.push({name: key, 'Number of Postings': fields[key]})
+  }
 
   const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -150,6 +196,26 @@ function HomeSeeker() {
 
     <div>
       {!data ? form: card}
+
+      <BarChart
+                width={1000}
+                height={300}
+                data={jobTypes}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5
+                }}
+                barSize={20}
+              >
+                <XAxis dataKey="name" scale="point" padding={{ left: 10, right: 10 }} />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <CartesianGrid strokeDasharray="3 3" />
+                <Bar dataKey="Number of Postings" fill="#8884d8" background={{ fill: "#eee" }} />
+            </BarChart>
     </div>
   );
 }
