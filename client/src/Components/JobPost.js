@@ -66,7 +66,9 @@ const JobPost = (props) => {
 			});
 
 			if (!data) {
-				throw "Could not process application";
+				props.setErrorOpen(true);
+				props.setError(true);
+				setLoading(false);
 			}
 			props.setError(false);
 			props.setInfoOpen(true);
