@@ -190,6 +190,20 @@ async function newApplicationUpload(uid, job) {
 	}
 }
 
+async function removeJobAppliedFromSeeker(uid, jobId) {
+	const userRef = doc(db, "seekers", uid);
+	const userSnap = await getDoc(userRef);
+
+	let currentApplications = userSnap.data().applications;
+
+	let filteredApplications = currentApplications.filter((x) => x._id !== jobId);
+	await updateDoc(userRef, {
+		applications: filteredApplications
+	});
+
+	return filteredApplications;
+}
+
 async function retrieveCurrentApplicants(jobUid) {
 	const jobRef = doc(db, "posts", jobUid);
 	const jobSnap = await getDoc(jobRef);
@@ -267,6 +281,7 @@ export {
 	imageUpload,
 	resumeUpload,
 	newApplicationUpload,
+	removeJobAppliedFromSeeker,
 	retrieveCurrentApplicants,
 	getFieldNumbers,
 	updateFieldNumbers,
