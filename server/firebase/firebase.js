@@ -98,7 +98,7 @@ const apply = async (userUid, jobUid) => {
 		name: userData.displayName,
 		resume: userData.resume,
 	};
-	if (currentApplicants.findIndex((x) => x.email === userData.email) < 0) {
+	if (currentApplicants.filter((x) => x.email === userData.email).length === 0) {
 		currentApplicants.push(newApplication);
 	}
 
@@ -115,7 +115,7 @@ const apply = async (userUid, jobUid) => {
 	};
 
 	let currentApplications = userData.applications ? userData.applications : [];
-	if (currentApplicants.findIndex((x) => x._id === jobUid) < 0) {
+	if (currentApplications.filter((x) => x._id === jobUid).length === 0) {
 		currentApplications.push(newJob);
 	}
 	await userRef.update({ applications: currentApplications });

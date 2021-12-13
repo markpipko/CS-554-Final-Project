@@ -1,6 +1,8 @@
 # Jobaroo
 #### Members: Christopher Moon, Edward, Yaraslavsky, Mark Pipko, Matt Evanego, Matt Koerner
 
+#### [Link to .env](https://drive.google.com/drive/u/4/folders/1p2gDLnrSSkaZOd8KIvqJC0Iy4cUyT9f0)   
+
 ## To run this app:  
 1. Install [ImageMagick](https://imagemagick.org/script/download.php). Make sure to click the ```Install legacy utilities (e.g. convert)``` in the Additional Tasks. We recommend restarting after installing to ensure that the binaries are set.   
 2. Install [Redis (Stable)](https://redis.io/download) and run the redis-server once downloaded.  

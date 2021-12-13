@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { getAuth } from "firebase/auth";
-import { collection, addDoc, updateDoc, increment } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase/Firebase";
 import { Redirect } from "react-router-dom";
 import { updateFieldNumbers } from "../firebase/FirebaseFunctions";
