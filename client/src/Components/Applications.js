@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { AuthContext } from "../firebase/Auth";
-import { getSeeker } from "../firebase/FirebaseFunctions";
+import { getSeeker, removeJobAppliedFromSeeker } from "../firebase/FirebaseFunctions";
 import ApplicantChart from "./ApplicantChart";
 
 const useStyles = makeStyles({
@@ -65,6 +65,11 @@ function Applications() {
         fetchData();
     }, [currentUser]);
 
+	async function removeJob(job) {
+		let jobsApplied = await removeJobAppliedFromSeeker(currentUser.uid, job._id);
+		setJobsData(jobsApplied);
+	}
+
     const buildCards = (job, index) => {
 		return (
 				<Grid
@@ -102,6 +107,16 @@ function Applications() {
 								Location: {job.location}
 							</Typography>
 						</CardContent>
+						<CardContent style={{ marginTop: "auto" }}>
+							<button
+								className="button"
+								onClick={() => {
+									removeJob(job);
+								}}
+							>
+								Remove
+							</button>
+					</CardContent>
 					</Card>
 				</Grid>
 		);
