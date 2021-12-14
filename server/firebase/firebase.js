@@ -94,6 +94,8 @@ const apply = async (userUid, jobUid) => {
 		}
 	});
 	let newApplication = {
+		uid: userUid,
+		jobuid: jobUid,
 		email: userData.email,
 		name: userData.displayName,
 		resume: userData.resume,
