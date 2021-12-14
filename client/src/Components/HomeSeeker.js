@@ -135,6 +135,7 @@ function HomeSeeker() {
 		);
 	};
 
+<<<<<<< Updated upstream
     let card = null
   if (data){
     let dataArr = []
@@ -152,6 +153,127 @@ function HomeSeeker() {
       {!data ? form: card}
     </div>
   );
+=======
+	let card = null;
+	if (data) {
+		let dataArr = [];
+		data &&
+			data.forEach((doc) => {
+				dataArr.push(doc);
+			});
+		
+			if(dataArr.length === 0){
+				return (<><Button onClick={backToSearch}>Back to search</Button><div>No listings found</div></>);
+			}
+
+		card = dataArr.map((doc, index) => {
+			return buildCard(doc.id, doc.data(), index);
+		});
+	}
+
+	return (
+		<div>
+			{status ? (
+				<Collapse in={infoOpen}>
+					<Alert
+						severity="success"
+						action={
+							<IconButton
+								aria-label="close"
+								color="inherit"
+								size="small"
+								onClick={() => {
+									setInfoOpen(false);
+								}}
+							>
+								<CloseIcon fontSize="inherit" />
+							</IconButton>
+						}
+						sx={{ mb: 2 }}
+					>
+						Application has been successfully submitted!
+					</Alert>
+				</Collapse>
+			) : (
+				<div></div>
+			)}
+			{error ? (
+				<Collapse in={errorOpen}>
+					<Alert
+						severity="error"
+						action={
+							<IconButton
+								aria-label="close"
+								color="inherit"
+								size="small"
+								onClick={() => {
+									setErrorOpen(false);
+								}}
+							>
+								<CloseIcon fontSize="inherit" />
+							</IconButton>
+						}
+						sx={{ mb: 2 }}
+					>
+						Application could not be submitted. Please try again.
+					</Alert>
+				</Collapse>
+			) : (
+				<div></div>
+			)}
+			{!data ? (
+				<div></div>
+			) : (
+				<Button onClick={backToSearch}>Back to search</Button>
+			)}
+			{!data ? (
+				<div>
+					<h1>Search for Jobs on Jobaroo</h1>
+					{form}
+					<BarChart
+						width={1000}
+						height={300}
+						data={jobTypes}
+						margin={{
+							top: 5,
+							right: 30,
+							left: 20,
+							bottom: 5,
+						}}
+						barSize={20}
+					>
+						<XAxis
+							dataKey="name"
+							scale="point"
+							padding={{ left: 10, right: 10 }}
+						/>
+						<YAxis />
+						<Tooltip />
+						<Legend />
+						<CartesianGrid strokeDasharray="3 3" />
+						<Bar
+							dataKey="Number of Postings"
+							fill="#8884d8"
+							background={{ fill: "#eee" }}
+						/>
+					</BarChart>
+				</div>
+			) : (
+				<div>
+					<Grid
+						container
+						className={classes.grid}
+						spacing={5}
+						alignItems="stretch"
+						style={{ marginBottom: "15px", padding: "10px" }}
+					>
+						{card}
+					</Grid>
+				</div>
+			)}
+		</div>
+	);
+>>>>>>> Stashed changes
 }
 
 export default HomeSeeker;
