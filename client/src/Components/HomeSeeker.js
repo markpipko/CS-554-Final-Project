@@ -259,6 +259,28 @@ function HomeSeeker() {
 		);
 	};
 
+<<<<<<< HEAD
+=======
+<<<<<<< Updated upstream
+    let card = null
+  if (data){
+    let dataArr = []
+    data &&
+    data.forEach((doc) => {
+      dataArr.push(doc);
+        });  
+        
+    card = dataArr.map((doc) => {return buildCard(doc.id, doc.data())})
+  }
+
+  return (
+
+    <div>
+      {!data ? form: card}
+    </div>
+  );
+=======
+>>>>>>> MattEBranch
 	let card = null;
 	if (data) {
 		let dataArr = [];
@@ -266,6 +288,13 @@ function HomeSeeker() {
 			data.forEach((doc) => {
 				dataArr.push(doc);
 			});
+<<<<<<< HEAD
+=======
+		
+			if(dataArr.length === 0){
+				return (<><Button onClick={backToSearch}>Back to search</Button><div>No listings found</div></>);
+			}
+>>>>>>> MattEBranch
 
 		card = dataArr.map((doc, index) => {
 			return buildCard(doc.id, doc.data(), index);
@@ -374,6 +403,10 @@ function HomeSeeker() {
 			)}
 		</div>
 	);
+<<<<<<< HEAD
+=======
+>>>>>>> Stashed changes
+>>>>>>> MattEBranch
 }
 
 export default HomeSeeker;
