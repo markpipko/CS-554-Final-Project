@@ -14,7 +14,6 @@ import NotFound from "./Components/NotFound";
 import React from "react";
 import PostJob from "./Components/PostJob";
 import MyPosts from "./Components/MyPosts";
-import ApplicantChart from "./Components/ApplicantChart";
 import ForgotPassword from "./Components/ForgotPassword";
 import Applications from "./Components/Applications";
 function App() {

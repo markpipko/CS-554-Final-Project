@@ -181,6 +181,7 @@ async function newApplicationUpload(uid, job) {
 			url: job.url,
 			location: job.location,
 			summary: job.summary,
+			status: "Pending",
 		};
 		currentApplications.push(applicationObj);
 
@@ -198,7 +199,7 @@ async function removeJobAppliedFromSeeker(uid, jobId) {
 
 	let filteredApplications = currentApplications.filter((x) => x._id !== jobId);
 	await updateDoc(userRef, {
-		applications: filteredApplications
+		applications: filteredApplications,
 	});
 
 	return filteredApplications;

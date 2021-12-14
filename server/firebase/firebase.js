@@ -98,8 +98,12 @@ const apply = async (userUid, jobUid) => {
 		name: userData.displayName,
 		resume: userData.resume,
 	};
-	if (currentApplicants.filter((x) => x.email === userData.email).length === 0) {
+	if (
+		currentApplicants.filter((x) => x.email === userData.email).length === 0
+	) {
 		currentApplicants.push(newApplication);
+	} else {
+		throw "User has already applied";
 	}
 
 	await jobRef.update({ applicants: currentApplicants });
@@ -112,6 +116,7 @@ const apply = async (userUid, jobUid) => {
 		summary: jobData.summary,
 		title: jobData.title,
 		url: "",
+		status: "Pending",
 	};
 
 	let currentApplications = userData.applications ? userData.applications : [];
@@ -123,9 +128,71 @@ const apply = async (userUid, jobUid) => {
 	return jobData.email;
 };
 
+const updateStatus = async (jobUid, userUid, decision) => {
+	if (!userUid || typeof userUid != "string" || !userUid.trim()) {
+		throw "User uid not provided or not of type string";
+	}
+	if (!jobUid || typeof jobUid != "string" || !jobUid.trim()) {
+		throw "Job uid not provided or not of type string";
+	}
+	if (!decision || typeof decision != "string" || !decision.trim()) {
+		throw "Decision not provided or not of type string";
+	}
+	if (decision != "accept" && decision != "deny") {
+		throw "Decision not specified";
+	}
+
+	// Grab job data
+	let jobRef = await admin.firestore().doc(`posts/${jobUid}`);
+	let jobData = {};
+	await jobRef.get().then((documentSnapShot) => {
+		if (documentSnapShot.exists) {
+			jobData = documentSnapShot.data();
+		} else {
+			throw "Could not find corresponding job";
+		}
+	});
+
+	// Grab user data
+	let userRef = await admin.firestore().doc(`seekers/${userUid}`);
+	let userData = {};
+	await userRef.get().then((documentSnapShot) => {
+		if (documentSnapShot.exists) {
+			userData = documentSnapShot.data();
+		} else {
+			throw "Could not find corresponding user";
+		}
+	});
+
+	// Check if user is on the list of current applicants
+	let postIndex = jobData.applicants.findIndex(
+		(x) => x.email == userData.email
+	);
+	if (postIndex < 0) {
+		throw "Applicant is not on the list of current applicants";
+	}
+
+	let userIndex = userData.applications.findIndex((x) => x._id == jobUid);
+	if (userIndex < 0) {
+		throw "User has not applied to this job post";
+	}
+
+	userData.applications[userIndex].status =
+		decision == "accept" ? "Accepted" : "Rejected";
+	await userRef.update(userData);
+
+	jobData.applicants[postIndex].decision =
+		decision == "accept" ? "Accepted" : "Rejected";
+
+	await jobRef.update(jobData);
+
+	return userData.email;
+};
+
 module.exports = {
 	uploadImage,
 	authenticate,
 	getUserById,
 	apply,
+	updateStatus,
 };

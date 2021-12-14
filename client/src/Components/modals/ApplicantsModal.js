@@ -28,7 +28,11 @@ function ApplicantsModal(props) {
 										<td>{applicant.name}</td>
 										<td>{applicant.email}</td>
 										<td>
-											<a href={applicant.resume}>Resume</a>
+											{applicant.resume ? (
+												<a href={applicant.resume}>Resume</a>
+											) : (
+												<div>None provided</div>
+											)}
 										</td>
 										<td>
 											<Button className="statusButtons" variant="success">
