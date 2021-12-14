@@ -1,22 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
-import {
-	Card,
-	CardContent,
-	Typography,
-	Grid,
-	FormControl,
-	InputLabel,
-	TextField,
-	MenuItem,
-	Button,
-	CircularProgress,
-	Pagination,
-	FormGroup,
-} from "@mui/material";
+import { Card, CardContent, Typography, Grid, Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { AuthContext } from "../firebase/Auth";
-import { getSeeker, removeJobAppliedFromSeeker } from "../firebase/FirebaseFunctions";
+import {
+	getSeeker,
+	removeJobAppliedFromSeeker,
+} from "../firebase/FirebaseFunctions";
 import ApplicantChart from "./ApplicantChart";
 
 const useStyles = makeStyles({
@@ -49,103 +39,112 @@ const useStyles = makeStyles({
 	},
 });
 
-
 function Applications() {
-    const { currentUser } = useContext(AuthContext);
-    const [jobsData, setJobsData] = useState(undefined);
+	const { currentUser } = useContext(AuthContext);
+	const [jobsData, setJobsData] = useState(undefined);
 
-    let jobsList = [];
-    const classes = useStyles();
+	let jobsList = [];
+	let colors = {
+		Pending: "",
+		Accepted: "success",
+		Rejected: "error",
+	};
+	const classes = useStyles();
 
-    useEffect(() => {
-        async function fetchData() {
-            let currentUserData = await getSeeker(currentUser.uid);
-            setJobsData(currentUserData.applications);
-        }
-        fetchData();
-    }, [currentUser]);
+	useEffect(() => {
+		async function fetchData() {
+			let currentUserData = await getSeeker(currentUser.uid);
+			setJobsData(currentUserData.applications);
+		}
+		fetchData();
+	}, [currentUser]);
 
 	async function removeJob(job) {
-		let jobsApplied = await removeJobAppliedFromSeeker(currentUser.uid, job._id);
+		let jobsApplied = await removeJobAppliedFromSeeker(
+			currentUser.uid,
+			job._id
+		);
 		setJobsData(jobsApplied);
 	}
 
-    const buildCards = (job, index) => {
+	const buildCards = (job, index) => {
 		return (
-				<Grid
-					item
-					xs={10}
-					sm={5}
-					md={5}
-					lg={4}
-					xl={3}
-					key={index}
-					style={{ display: "flex" }}
-				>
-					<Card className={classes.card} variant="outlined">
-						<CardContent>
-							<Typography
-								className={classes.titleHead}
-								gutterBottom
-								variant="h6"
-								component="h2"
-							>
-								{job.title}
-							</Typography>
-							<Typography
-								// style={{ whiteSpace: "pre-wrap" }}
-								gutterBottom
-								variant="body1"
-								component="p"
-							>
-								{job.summary}
-							</Typography>
-							<Typography gutterBottom variant="body1" component="p">
-								Company: {job.company}
-							</Typography>
-							<Typography gutterBottom variant="body1" component="p">
-								Location: {job.location}
-							</Typography>
-						</CardContent>
-						<CardContent style={{ marginTop: "auto" }}>
-							<button
-								className="button"
-								onClick={() => {
-									removeJob(job);
-								}}
-							>
-								Remove
-							</button>
+			<Grid
+				item
+				xs={10}
+				sm={5}
+				md={5}
+				lg={4}
+				xl={3}
+				key={index}
+				style={{ display: "flex" }}
+			>
+				<Card className={classes.card} variant="outlined">
+					<CardContent>
+						<Typography
+							className={classes.titleHead}
+							gutterBottom
+							variant="h6"
+							component="h2"
+						>
+							{job.title}
+						</Typography>
+						<Typography
+							// style={{ whiteSpace: "pre-wrap" }}
+							gutterBottom
+							variant="body1"
+							component="p"
+						>
+							{job.summary}
+						</Typography>
+						<Typography gutterBottom variant="body1" component="p">
+							Company: {job.company}
+						</Typography>
+						<Typography gutterBottom variant="body1" component="p">
+							Location: {job.location}
+						</Typography>
+						<Button variant="contained" color={colors[job.status]}>
+							{job.status}
+						</Button>
 					</CardContent>
-					</Card>
-				</Grid>
+					<CardContent style={{ marginTop: "auto" }}>
+						<button
+							className="button"
+							onClick={() => {
+								removeJob(job);
+							}}
+						>
+							Remove
+						</button>
+					</CardContent>
+				</Card>
+			</Grid>
 		);
 	};
 
-    jobsList =
+	jobsList =
 		jobsData &&
-		jobsData
-			.map((job, index) => {
-				return buildCards(job, index);
-			});
+		jobsData.map((job, index) => {
+			return buildCards(job, index);
+		});
 
-    return (
-        <div>
-            <h3>Jobs Applied:</h3>
-            <Grid
-                container
-                className={classes.grid}
-                spacing={5}
-                alignItems="stretch"
-                style={{marginBottom:"15px", padding:"10px"}}
-            >
-                {jobsList}
-            </Grid>
-            <br />
-            <h3>Chart:</h3>
-            <ApplicantChart />
-        </div>
-    )
+	return (
+		<div>
+			<h3>Jobs Applied:</h3>
+			<Grid
+				container
+				className={classes.grid}
+				spacing={5}
+				alignItems="stretch"
+				style={{ marginBottom: "15px", padding: "10px" }}
+			>
+				{jobsList}
+			</Grid>
+			<br />
+			<h3>Chart:</h3>
+			<ApplicantChart />
+		</div>
+	);
 }
 
 export default Applications;

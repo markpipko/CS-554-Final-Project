@@ -98,8 +98,12 @@ const apply = async (userUid, jobUid) => {
 		name: userData.displayName,
 		resume: userData.resume,
 	};
-	if (currentApplicants.filter((x) => x.email === userData.email).length === 0) {
+	if (
+		currentApplicants.filter((x) => x.email === userData.email).length === 0
+	) {
 		currentApplicants.push(newApplication);
+	} else {
+		throw "User has already applied";
 	}
 
 	await jobRef.update({ applicants: currentApplicants });
@@ -112,6 +116,7 @@ const apply = async (userUid, jobUid) => {
 		summary: jobData.summary,
 		title: jobData.title,
 		url: "",
+		status: "Pending",
 	};
 
 	let currentApplications = userData.applications ? userData.applications : [];

@@ -121,11 +121,11 @@ router.post("/apply", authenticate, async (req, res) => {
 	try {
 		let companyEmail = await apply(uid, applyReq.jobUid);
 
-		let status = await applyData.sendEmail(
-			companyEmail,
-			"New Application Received",
-			"A user on Jobaroo has just applied to your job post. Check Jobaroo for more details"
-		);
+		// let status = await applyData.sendEmail(
+		// 	companyEmail,
+		// 	"New Application Received",
+		// 	"A user on Jobaroo has just applied to your job post. Check Jobaroo for more details"
+		// );
 		return res.status(200).json({ message: "success" });
 	} catch (e) {
 		console.log(e);
