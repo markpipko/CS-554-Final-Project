@@ -260,21 +260,7 @@ function HomeSeeker() {
 	};
 
 	let card = null;
-	if (data) {
-		let dataArr = [];
-		data &&
-			data.forEach((doc) => {
-				dataArr.push(doc);
-			});
 
-		card = dataArr.map((doc) => {
-			return buildCard(doc.id, doc.data());
-		});
-	}
-
-	return <div>{!data ? form : card}</div>;
-
-	let card = null;
 	if (data) {
 		let dataArr = [];
 		data &&
