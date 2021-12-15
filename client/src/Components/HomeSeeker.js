@@ -76,26 +76,26 @@ function HomeSeeker() {
 		"Social Impact": 0,
 		Other: 0,
 	});
-	const classes = useStyles();
+  const [graphData, setGraphData] = useState(undefined)
+  const classes = useStyles();
 
-	// const [jobTypes, setJobtypes] = useState([{}])
-
-	let jobTypes = [];
 
 	let checkedFields = [];
 
 	useEffect(() => {
 		async function load() {
 			let tempFields = await getFieldNumbers();
-			setFields(tempFields);
+
+			let jobTypes = [];
+
+			for (var key in tempFields) {
+				jobTypes.push({ name: key, "Number of Postings": tempFields[key] });
+			  }
+			setGraphData(jobTypes)
+			console.log(graphData)
 		}
 		load();
-	}, []);
-
-	for (var key in fields) {
-		jobTypes.push({ name: key, "Number of Postings": fields[key] });
-		// setJobtypes([...jobTypes, {name: key, 'Number of Postings': fields[key]}])
-	}
+	}, [currentUser]);
 
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -341,10 +341,10 @@ function HomeSeeker() {
 				<div>
 					<h1>Search for Jobs on Jobaroo</h1>
 					{form}
-					<BarChart
+					{graphData && <BarChart
 						width={1000}
 						height={300}
-						data={jobTypes}
+						data={graphData}
 						margin={{
 							top: 5,
 							right: 30,
@@ -367,7 +367,7 @@ function HomeSeeker() {
 							fill="#8884d8"
 							background={{ fill: "#eee" }}
 						/>
-					</BarChart>
+					</BarChart>}
 				</div>
 			) : (
 				<div>
