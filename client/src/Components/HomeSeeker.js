@@ -75,6 +75,7 @@ function HomeSeeker() {
 		"Social Impact": 0,
 		Other: 0,
 	});
+  const [loadingGraph, setLoadingGraph] = useState(true)
 	const classes = useStyles();
 
 	// const [jobTypes, setJobtypes] = useState([{}])
@@ -87,14 +88,17 @@ function HomeSeeker() {
 		async function load() {
 			let tempFields = await getFieldNumbers();
 			setFields(tempFields);
+
+      for (var key in fields) {
+        jobTypes.push({ name: key, "Number of Postings": fields[key] });
+        // setJobtypes([...jobTypes, {name: key, 'Number of Postings': fields[key]}])
+      }
+      console.log(jobTypes)
+      setLoadingGraph(false)
 		}
 		load();
 	}, []);
 
-	for (var key in fields) {
-		jobTypes.push({ name: key, "Number of Postings": fields[key] });
-		// setJobtypes([...jobTypes, {name: key, 'Number of Postings': fields[key]}])
-	}
 
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -318,7 +322,7 @@ function HomeSeeker() {
 				<div>
 					<h1>Search for Jobs on Jobaroo</h1>
 					{form}
-					<BarChart
+					{!loadingGraph && <BarChart
 						width={1000}
 						height={300}
 						data={jobTypes}
@@ -344,7 +348,7 @@ function HomeSeeker() {
 							fill="#8884d8"
 							background={{ fill: "#eee" }}
 						/>
-					</BarChart>
+					</BarChart>}
 				</div>
 			) : (
 				<Grid
