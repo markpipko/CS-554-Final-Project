@@ -79,7 +79,7 @@ function ChangePassword() {
             </label>
           </div>
 
-          <button type="submit">Change Password</button>
+          <button type="submit" class="MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButtonBase-root  css-sghohy-MuiButtonBase-root-MuiButton-root">Change Password</button>
         </form>
         <br />
       </div>

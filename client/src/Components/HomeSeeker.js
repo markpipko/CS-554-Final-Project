@@ -22,7 +22,6 @@ import {
 	getDocs,
 	getDoc,
 	doc,
-	setDoc,
 } from "firebase/firestore";
 import {
 	BarChart,
@@ -38,7 +37,7 @@ import JobPost from "./JobPost";
 import "../App.css";
 import { makeStyles } from "@mui/styles";
 import CloseIcon from "@mui/icons-material/Close";
-
+// import { Link } from "react-router-dom";
 const useStyles = makeStyles({
 	grid: {
 		flexGrow: 1,
@@ -47,7 +46,9 @@ const useStyles = makeStyles({
 });
 
 function HomeSeeker() {
-	const [formData, setFormData] = useState({});
+	const [formData, setFormData] = useState({
+		query: "",
+	});
 	const [queryError, setQueryError] = useState(false);
 	const [queryErrorMessage, setQueryErrorMessage] = useState("");
 	const [isSeeker, setIsSeeker] = useState(false);
@@ -106,6 +107,10 @@ function HomeSeeker() {
 		const docSnap = await getDoc(docRef);
 
 		return docSnap.exists();
+	};
+
+	const backToSearch = () => {
+		setData(undefined);
 	};
 
 	const search = async (e) => {
@@ -175,6 +180,7 @@ function HomeSeeker() {
 			setQueryErrorMessage("Must give search input");
 			setLoading(false);
 		}
+		setFormData({ query: "" });
 	};
 
 	function handleCheckChange(e) {
@@ -190,15 +196,16 @@ function HomeSeeker() {
 	let form = null;
 
 	let fieldsForm = [];
-	for (var key in fields) {
+	for (var x in fields) {
 		fieldsForm.push(
 			<FormControlLabel
-				id={`${key}`}
-				value={`${key}`}
+				id={`${x}`}
+				value={`${x}`}
 				control={<Checkbox />}
-				label={`${key}`}
+				label={`${x}`}
 				labelPlacement="end"
 				onChange={(e) => handleCheckChange(e)}
+				key={x}
 			/>
 		);
 	}
@@ -247,17 +254,28 @@ function HomeSeeker() {
 				setErrorOpen={setErrorOpen}
 				setStatus={setStatus}
 				setError={setError}
+				key={index}
 			/>
 		);
 	};
 
 	let card = null;
+
 	if (data) {
 		let dataArr = [];
 		data &&
 			data.forEach((doc) => {
 				dataArr.push(doc);
 			});
+
+		if (dataArr.length === 0) {
+			return (
+				<>
+					<Button onClick={backToSearch}>Back to search</Button>
+					<div>No listings found</div>
+				</>
+			);
+		}
 
 		card = dataArr.map((doc, index) => {
 			return buildCard(doc.id, doc.data(), index);
@@ -315,6 +333,11 @@ function HomeSeeker() {
 				<div></div>
 			)}
 			{!data ? (
+				<div></div>
+			) : (
+				<Button onClick={backToSearch}>Back to search</Button>
+			)}
+			{!data ? (
 				<div>
 					<h1>Search for Jobs on Jobaroo</h1>
 					{form}
@@ -347,15 +370,17 @@ function HomeSeeker() {
 					</BarChart>}
 				</div>
 			) : (
-				<Grid
-					container
-					className={classes.grid}
-					spacing={5}
-					alignItems="stretch"
-					style={{ marginBottom: "15px", padding: "10px" }}
-				>
-					{card}
-				</Grid>
+				<div>
+					<Grid
+						container
+						className={classes.grid}
+						spacing={5}
+						alignItems="stretch"
+						style={{ marginBottom: "15px", padding: "10px" }}
+					>
+						{card}
+					</Grid>
+				</div>
 			)}
 		</div>
 	);

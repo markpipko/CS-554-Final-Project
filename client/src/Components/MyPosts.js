@@ -46,7 +46,9 @@ function MyPosts() {
 					<Card.Body>
 						<Card.Title className="titleHead">{job.title}</Card.Title>
 						<Card.Text>{job.summary}</Card.Text>
-						<Button onClick={() => handleOpenModal(id)}>See Applicants</Button>
+						<Button className="modalButton" onClick={() => handleOpenModal(id)}>
+							See Applicants
+						</Button>
 					</Card.Body>
 				</Card>
 				<ApplicantsModal
@@ -73,6 +75,7 @@ function MyPosts() {
 
 	return (
 		<div>
+			<h1>My Posts</h1>
 			<Row sm={1} md={2} lg={4}>
 				{card}
 			</Row>

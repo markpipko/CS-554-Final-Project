@@ -6,7 +6,12 @@ const client = redis.createClient();
 const data = require("../data");
 const jobsData = data.jobs;
 const applyData = data.apply;
-const { getUserById, authenticate, apply } = require("../firebase/firebase");
+const {
+	getUserById,
+	authenticate,
+	apply,
+	updateStatus,
+} = require("../firebase/firebase");
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
@@ -121,14 +126,72 @@ router.post("/apply", authenticate, async (req, res) => {
 	try {
 		let companyEmail = await apply(uid, applyReq.jobUid);
 
-		let status = await applyData.sendEmail(
-			companyEmail,
-			"New Application Received",
-			"A user on Jobaroo has just applied to your job post. Check Jobaroo for more details"
-		);
+		// let status = await applyData.sendEmail(
+		// 	companyEmail,
+		// 	"New Application Received",
+		// 	"A user on Jobaroo has just applied to your job post. Check Jobaroo for more details"
+		// );
 		return res.status(200).json({ message: "success" });
 	} catch (e) {
 		console.log(e);
+		return res.status(500).json({ error: e });
+	}
+});
+
+router.post("/changeStatus", authenticate, async (req, res) => {
+	let statusReq = req.body;
+	let uid = await getUserById(req.headers.token);
+	if (!uid) {
+		return res.status(403).json({ error: "User is not authenticated" });
+	}
+
+	if (
+		!statusReq.jobUid ||
+		typeof statusReq.jobUid !== "string" ||
+		!statusReq.jobUid.trim()
+	) {
+		return res
+			.status(400)
+			.json({ error: "Job uid not provided or not of proper type" });
+	}
+
+	if (
+		!statusReq.userUid ||
+		typeof statusReq.userUid !== "string" ||
+		!statusReq.userUid.trim()
+	) {
+		return res
+			.status(400)
+			.json({ error: "User uid not provided or not of proper type" });
+	}
+
+	if (
+		!statusReq.decision ||
+		typeof statusReq.decision !== "string" ||
+		!statusReq.decision.trim()
+	) {
+		return res
+			.status(400)
+			.json({ error: "Decision not provided or not of proper type" });
+	}
+	if (statusReq.decision != "accept" && statusReq.decision != "deny") {
+		return res.status(400).json({ error: "Decision not specified" });
+	}
+
+	try {
+		let userEmail = await updateStatus(
+			statusReq.jobUid,
+			statusReq.userUid,
+			statusReq.decision
+		);
+
+		// let status = await applyData.sendEmail(
+		// 	userEmail,
+		// 	"Application Update",
+		// 	"One of your applications recently had a status update. Check Jobaroo for more details"
+		// );
+		return res.status(200).json({ message: "success" });
+	} catch (e) {
 		return res.status(500).json({ error: e });
 	}
 });

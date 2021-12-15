@@ -1,6 +1,9 @@
 import { Modal, Button, Table } from "react-bootstrap";
-
+import React, { useState } from "react";
+import ApplicantTable from "./ApplicantTable";
 function ApplicantsModal(props) {
+	const [error, setError] = useState(false);
+
 	return (
 		<Modal
 			{...props}
@@ -9,8 +12,15 @@ function ApplicantsModal(props) {
 			centered
 		>
 			<Modal.Header closeButton>
-				<Modal.Title>Applicants</Modal.Title>
+				<Modal.Title>Applicants </Modal.Title>
 			</Modal.Header>
+			{error ? (
+				<div className="applicationError">
+					Applicant could not be accepted/rejected. Please try again.
+				</div>
+			) : (
+				<div></div>
+			)}
 			<Modal.Body>
 				<Table striped bordered hover>
 					<thead>
@@ -24,21 +34,12 @@ function ApplicantsModal(props) {
 						{props.modalapplicants ? (
 							props.modalapplicants.map((applicant, index) => {
 								return (
-									<tr key={index}>
-										<td>{applicant.name}</td>
-										<td>{applicant.email}</td>
-										<td>
-											<a href={applicant.resume}>Resume</a>
-										</td>
-										<td>
-											<Button className="statusButtons" variant="success">
-												Accept
-											</Button>
-											<Button className="statusButtons" variant="danger">
-												Reject
-											</Button>
-										</td>
-									</tr>
+									<ApplicantTable
+										index={index}
+										applicant={applicant}
+										setError={setError}
+										key={index}
+									/>
 								);
 							})
 						) : (

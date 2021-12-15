@@ -173,7 +173,7 @@ async function newApplicationUpload(uid, job) {
 
 	let currentApplications = userSnap.data().applications;
 
-	if (currentApplications.filter((x) => x._id === job._id).length === 0) {
+	if (!currentApplications || currentApplications.filter((x) => x._id === job._id).length === 0) {
 		let applicationObj = {
 			_id: job._id,
 			company: job.company,
@@ -181,8 +181,12 @@ async function newApplicationUpload(uid, job) {
 			url: job.url,
 			location: job.location,
 			summary: job.summary,
+			status: "Pending",
 		};
-		currentApplications.push(applicationObj);
+	if(!currentApplications)
+		currentApplications = [];
+
+	currentApplications.push(applicationObj);
 
 		await updateDoc(userRef, {
 			applications: currentApplications,
@@ -198,10 +202,21 @@ async function removeJobAppliedFromSeeker(uid, jobId) {
 
 	let filteredApplications = currentApplications.filter((x) => x._id !== jobId);
 	await updateDoc(userRef, {
-		applications: filteredApplications
+		applications: filteredApplications,
 	});
 
 	return filteredApplications;
+}
+
+async function getApplicationsForSeeker(uid) {
+	const userRef = doc(db, "seekers", uid);
+	const userSnap = await getDoc(userRef);
+
+	let currentApplications = userSnap.data().applications;
+	if(currentApplications)
+		return currentApplications;
+	else
+		return [];
 }
 
 async function retrieveCurrentApplicants(jobUid) {
@@ -282,6 +297,7 @@ export {
 	resumeUpload,
 	newApplicationUpload,
 	removeJobAppliedFromSeeker,
+	getApplicationsForSeeker,
 	retrieveCurrentApplicants,
 	getFieldNumbers,
 	updateFieldNumbers,

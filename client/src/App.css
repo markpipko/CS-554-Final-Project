@@ -75,6 +75,11 @@
 	font-weight: bold;
 }
 
+.applicationError {
+	color: #ee0000;
+	font-weight: bold;
+}
+
 .profileImage {
 	width: 200px;
 }
@@ -88,6 +93,29 @@ footer {
 
 .signInLinks {
 	color: #0072ee;
+}
+
+.acceptButton,
+.acceptButton:hover,
+.acceptButton:active {
+	background-color: #036803;
+	color: #ffffff;
+}
+
+.rejected {
+	color: #e00000;
+}
+
+.accepted {
+	color: green;
+}
+
+.resumeLink {
+	color: #006bdf;
+}
+
+.modalButton {
+	background-color: #0072ee;
 }
 
 .fieldChart {
