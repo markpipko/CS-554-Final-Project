@@ -1,15 +1,20 @@
 import React, { useState, useContext, useEffect } from "react";
-import axios from "axios";
 import { Card, CardContent, Typography, Grid, Button } from "@mui/material";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { makeStyles } from "@mui/styles";
 import { AuthContext } from "../firebase/Auth";
 import {
 	getSeeker,
 	removeJobAppliedFromSeeker,
 } from "../firebase/FirebaseFunctions";
-import ApplicantChart from "./ApplicantChart";
 
 const useStyles = makeStyles({
+	chart: {
+		width: 1500,
+		height: "auto",
+		marginLeft: "auto",
+		marginRight: "auto"
+	},
 	card: {
 		// maxWidth: 500,
 		height: "auto",
@@ -42,6 +47,8 @@ const useStyles = makeStyles({
 function Applications() {
 	const { currentUser } = useContext(AuthContext);
 	const [jobsData, setJobsData] = useState(undefined);
+	const [applicationData, setApplicationData] = useState(undefined);
+
 
 	let jobsList = [];
 	let colors = {
@@ -54,7 +61,26 @@ function Applications() {
 	useEffect(() => {
 		async function fetchData() {
 			let currentUserData = await getSeeker(currentUser.uid);
-			setJobsData(currentUserData.applications);
+			let applicationObj = {
+				pending: 0,
+				rejected: 0,
+				accepted: 0
+			  }
+			for(let i = 0; i < currentUserData.applications.length; i++){
+				switch(currentUserData.applications[i].status){
+				  case "Pending":
+					 applicationObj.pending++;
+					break;
+				  case "Rejected":
+					applicationObj.rejected++;
+					break;
+				  case "Accepted":
+					applicationObj.accepted++;
+					break;
+				}
+			  }
+			  setJobsData(currentUserData.applications);
+			  setApplicationData(applicationObj);
 		}
 		fetchData();
 	}, [currentUser]);
@@ -127,10 +153,27 @@ function Applications() {
 		jobsData.map((job, index) => {
 			return buildCards(job, index);
 		});
-
+	let data = [];
+    if(applicationData){
+     data = [
+        {
+          name: 'Pending',
+          "Number of Applications": applicationData.pending
+        },
+        {
+          name: 'Accepted',
+          "Number of Applications": applicationData.accepted
+        },
+        {
+          name: 'Rejected',
+          "Number of Applications": applicationData.rejected
+        }
+      ];
+    }
 	return (
 		<div>
 			<h3>Jobs Applied:</h3>
+
 			<Grid
 				container
 				className={classes.grid}
@@ -142,7 +185,28 @@ function Applications() {
 			</Grid>
 			<br />
 			<h3>Chart:</h3>
-			<ApplicantChart />
+			<BarChart className={classes.chart}
+				width={500}
+				height={300}
+				data={data}
+				margin={{
+				top: 5,
+				right: 30,
+				left: 20,
+				bottom: 5,
+				}}
+				barSize={30}
+
+			>
+				
+				<CartesianGrid strokeDasharray="3 3" />
+				<XAxis dataKey="name"/>
+				<YAxis type="number" domain={[0, 4]} />
+				<Tooltip />
+				<Legend />
+				<Bar dataKey="Number of Applications" fill="#8884d8"/>
+        	</BarChart>
+
 		</div>
 	);
 }
