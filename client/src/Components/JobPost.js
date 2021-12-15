@@ -32,9 +32,10 @@ const useStyles = makeStyles({
 		flexDirection: "row",
 	},
 	button: {
-		color: "#1e8678",
-		fontWeight: "bold",
-		fontSize: 12,
+		"&:disabled": {
+			color: "white",
+			backgroundColor: "#767676",
+		},
 	},
 });
 
@@ -131,11 +132,15 @@ const JobPost = (props) => {
 					<Typography gutterBottom variant="body1" component="p">
 						Company: {props.job.company}
 					</Typography>
+					<Typography gutterBottom variant="body1" component="p">
+						Field: {props.job.field}
+					</Typography>
 				</CardContent>
 				<CardContent style={{ marginTop: "auto" }}>
 					{loading ? <CircularProgress /> : <div></div>}
 					<br />
 					<Button
+						className={classes.button}
 						variant="contained"
 						disabled={loading || applied}
 						onClick={() => apply(props.id)}
