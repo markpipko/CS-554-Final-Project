@@ -13,6 +13,8 @@ import {
 	IconButton,
 	Grid,
 	Button,
+	Autocomplete,
+	Stack,
 } from "@mui/material";
 import { db } from "../firebase/Firebase";
 import {
@@ -37,13 +39,38 @@ import JobPost from "./JobPost";
 import "../App.css";
 import { makeStyles } from "@mui/styles";
 import CloseIcon from "@mui/icons-material/Close";
-// import { Link } from "react-router-dom";
 const useStyles = makeStyles({
 	grid: {
 		flexGrow: 1,
 		flexDirection: "row",
 	},
 });
+
+const options = [
+	{
+		value: "Architecture, Planning & Environmental Design",
+		label: "Architecture, Planning & Environmental Design",
+	},
+	{ value: "Arts & Entertainment", label: "Arts & Entertainment" },
+	{ value: "Business", label: "Business" },
+	{ value: "Communications", label: "Communications" },
+	{ value: "Education", label: "Education" },
+	{
+		value: "Engineering & Computer Science",
+		label: "Engineering & Computer Science",
+	},
+	{ value: "Environment", label: "Environment" },
+	{ value: "Government", label: "Government" },
+	{ value: "Health & Medicine", label: "Health & Medicine" },
+	{ value: "International", label: "International" },
+	{ value: "Law & Public Policy", label: "Law & Public Policy" },
+	{
+		value: "Sciences - Biological & Physical",
+		label: "Sciences - Biological & Physical",
+	},
+	{ value: "Social Impact", label: "Social Impact" },
+	{ value: "Other", label: "Other" },
+];
 
 function HomeSeeker() {
 	const [formData, setFormData] = useState({
@@ -76,13 +103,12 @@ function HomeSeeker() {
 		"Social Impact": 0,
 		Other: 0,
 	});
+	const [checkedFields, setCheckedFields] = useState([]);
 	const classes = useStyles();
 
 	// const [jobTypes, setJobtypes] = useState([{}])
 
 	let jobTypes = [];
-
-	let checkedFields = [];
 
 	useEffect(() => {
 		async function load() {
@@ -125,7 +151,7 @@ function HomeSeeker() {
 		// setQueryError(false);
 		// setQueryErrorMessage("");
 
-		// try {
+		setFormData({ query: formData.query.trim() });
 		if (formData.query && checkedFields.length > 0) {
 			try {
 				const q = query(
@@ -183,16 +209,9 @@ function HomeSeeker() {
 		setFormData({ query: "" });
 	};
 
-	function handleCheckChange(e) {
-		if (e.target.checked) {
-			checkedFields.push(e.target.value);
-		} else {
-			checkedFields.splice(checkedFields.indexOf(5), 1);
-		}
-
-		console.log(checkedFields);
-	}
-
+	const handleCheckChange = (e, values) => {
+		setCheckedFields(values.map((x) => x.value));
+	};
 	let form = null;
 
 	let fieldsForm = [];
@@ -212,27 +231,37 @@ function HomeSeeker() {
 
 	form = (
 		<FormControl>
-			<FormGroup>
-				<InputLabel id="query" htmlFor="query"></InputLabel>
-				<TextField
-					id="query"
-					variant="outlined"
-					label="Company"
-					onChange={(e) => handleChange(e)}
-					name="query"
-					error={!!queryError}
-					helperText={queryErrorMessage}
-				/>
-			</FormGroup>
-			<FormGroup>
-				{fieldsForm.map((element) => {
-					return element;
-				})}
-			</FormGroup>
-			<br />
-			<Button type="submit" onClick={(e) => search(e)}>
-				Submit
-			</Button>
+			<Stack spacing={2} sx={{ width: 500 }}>
+				<FormGroup>
+					<InputLabel id="query" htmlFor="query"></InputLabel>
+					<TextField
+						id="query"
+						variant="outlined"
+						label="Company"
+						onChange={(e) => handleChange(e)}
+						name="query"
+						error={!!queryError}
+						helperText={queryErrorMessage}
+					/>
+				</FormGroup>
+				<FormGroup>
+					<Autocomplete
+						multiple
+						limitTags={2}
+						id="tags-outlined"
+						options={options}
+						getOptionLabel={(option) => option.label}
+						renderInput={(params) => (
+							<TextField {...params} variant="standard" label="Fields" />
+						)}
+						onChange={handleCheckChange}
+					/>
+				</FormGroup>
+				<br />
+				<Button type="submit" onClick={(e) => search(e)}>
+					Submit
+				</Button>
+			</Stack>
 		</FormControl>
 	);
 
@@ -333,11 +362,6 @@ function HomeSeeker() {
 				<div></div>
 			)}
 			{!data ? (
-				<div></div>
-			) : (
-				<Button onClick={backToSearch}>Back to search</Button>
-			)}
-			{!data ? (
 				<div>
 					<h1>Search for Jobs on Jobaroo</h1>
 					{form}
@@ -371,6 +395,9 @@ function HomeSeeker() {
 				</div>
 			) : (
 				<div>
+					<h1>Results</h1>
+					<Button onClick={backToSearch}>Back to search</Button>
+
 					<Grid
 						container
 						className={classes.grid}

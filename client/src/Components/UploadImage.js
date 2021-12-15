@@ -45,7 +45,6 @@ const UploadImage = () => {
 	useEffect(() => {
 		async function check() {
 			let res = await checkForImage(currentUser.uid);
-			console.log(res);
 			setImage(res);
 		}
 		check();
@@ -61,7 +60,7 @@ const UploadImage = () => {
 				<img
 					src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
 					alt="Default Profile"
-					className="profileImage"
+					className="defaultImage"
 				/>
 			)}
 			<br />
@@ -70,7 +69,7 @@ const UploadImage = () => {
 			<br />
 			<FormControl>
 				<FormGroup>
-					<Button variant="contained" component="label">
+					<Button variant="contained" component="label" disabled={loading}>
 						{!image ? "Upload Profile Image" : "Change Profile Image"}
 						<input
 							type="file"
