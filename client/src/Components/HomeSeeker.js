@@ -117,7 +117,7 @@ function HomeSeeker() {
 				jobTypes.push({ name: key, "Number of Postings": tempFields[key] });
 			}
 			setGraphData(jobTypes);
-			console.log(graphData);
+			// console.log(graphData);
 		}
 		load();
 	}, [currentUser]);
@@ -136,6 +136,7 @@ function HomeSeeker() {
 
 	const backToSearch = () => {
 		setData(undefined);
+		setCheckedFields([]);
 	};
 
 	const search = async (e) => {
@@ -207,7 +208,7 @@ function HomeSeeker() {
 		}
 		setFormData({ query: "" });
 	};
-
+	console.log(checkedFields);
 	const handleCheckChange = (e, values) => {
 		setCheckedFields(values.map((x) => x.value));
 	};
