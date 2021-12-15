@@ -104,24 +104,23 @@ function HomeSeeker() {
 		Other: 0,
 	});
 	const [checkedFields, setCheckedFields] = useState([]);
+	const [graphData, setGraphData] = useState(undefined);
 	const classes = useStyles();
-
-	// const [jobTypes, setJobtypes] = useState([{}])
-
-	let jobTypes = [];
 
 	useEffect(() => {
 		async function load() {
 			let tempFields = await getFieldNumbers();
-			setFields(tempFields);
+
+			let jobTypes = [];
+
+			for (var key in tempFields) {
+				jobTypes.push({ name: key, "Number of Postings": tempFields[key] });
+			}
+			setGraphData(jobTypes);
+			console.log(graphData);
 		}
 		load();
-	}, []);
-
-	for (var key in fields) {
-		jobTypes.push({ name: key, "Number of Postings": fields[key] });
-		// setJobtypes([...jobTypes, {name: key, 'Number of Postings': fields[key]}])
-	}
+	}, [currentUser]);
 
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -365,33 +364,35 @@ function HomeSeeker() {
 				<div>
 					<h1>Search for Jobs on Jobaroo</h1>
 					{form}
-					<BarChart
-						width={1000}
-						height={300}
-						data={jobTypes}
-						margin={{
-							top: 5,
-							right: 30,
-							left: 20,
-							bottom: 5,
-						}}
-						barSize={20}
-					>
-						<XAxis
-							dataKey="name"
-							scale="point"
-							padding={{ left: 10, right: 10 }}
-						/>
-						<YAxis />
-						<Tooltip />
-						<Legend />
-						<CartesianGrid strokeDasharray="3 3" />
-						<Bar
-							dataKey="Number of Postings"
-							fill="#8884d8"
-							background={{ fill: "#eee" }}
-						/>
-					</BarChart>
+					{graphData && (
+						<BarChart
+							width={1000}
+							height={300}
+							data={graphData}
+							margin={{
+								top: 5,
+								right: 30,
+								left: 20,
+								bottom: 5,
+							}}
+							barSize={20}
+						>
+							<XAxis
+								dataKey="name"
+								scale="point"
+								padding={{ left: 10, right: 10 }}
+							/>
+							<YAxis />
+							<Tooltip />
+							<Legend />
+							<CartesianGrid strokeDasharray="3 3" />
+							<Bar
+								dataKey="Number of Postings"
+								fill="#8884d8"
+								background={{ fill: "#eee" }}
+							/>
+						</BarChart>
+					)}
 				</div>
 			) : (
 				<div>
