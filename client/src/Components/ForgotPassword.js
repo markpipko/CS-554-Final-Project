@@ -12,7 +12,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { doPasswordReset } from "../firebase/FirebaseFunctions";
 import { Redirect } from "react-router-dom";
 import { AuthContext } from "../firebase/Auth";
-
+import { Link } from "react-router-dom";
 const ForgotPassword = () => {
 	const [formData, setFormData] = useState({
 		email: "",
@@ -53,6 +53,9 @@ const ForgotPassword = () => {
 	};
 	return (
 		<div>
+			<Link to="/signin" className="signInLinks">
+				Back to Sign In
+			</Link>
 			{status ? (
 				<Collapse in={infoOpen}>
 					<Alert

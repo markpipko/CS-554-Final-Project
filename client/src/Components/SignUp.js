@@ -128,7 +128,7 @@ function SignUp() {
 					alignItems: "center",
 				}}
 			>
-				<Typography component="h1" variant="h4">
+				<Typography component="h1" variant="h5">
 					Sign Up
 				</Typography>
 				{loading ? <CircularProgress /> : <div></div>}

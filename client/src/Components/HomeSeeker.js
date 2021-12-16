@@ -259,7 +259,7 @@ function HomeSeeker() {
 				</FormGroup>
 				<br />
 				<Button type="submit" onClick={(e) => search(e)}>
-					Submit
+					Search
 				</Button>
 			</Stack>
 		</FormControl>
@@ -365,18 +365,20 @@ function HomeSeeker() {
 				<div>
 					<h1>Search for Jobs on Jobaroo</h1>
 					{form}
+					<h2>Current Job Posts Available</h2>
 					{graphData && (
 						<BarChart
 							width={1000}
 							height={300}
 							data={graphData}
-							margin={{
-								top: 5,
-								right: 30,
-								left: 20,
-								bottom: 5,
-							}}
+							// margin={{
+							// 	top: 5,
+							// 	right: 30,
+							// 	left: 20,
+							// 	bottom: 5,
+							// }}
 							barSize={20}
+							className="fieldChart"
 						>
 							<XAxis
 								dataKey="name"
@@ -389,7 +391,7 @@ function HomeSeeker() {
 							<CartesianGrid strokeDasharray="3 3" />
 							<Bar
 								dataKey="Number of Postings"
-								fill="#8884d8"
+								fill="#706bcc"
 								background={{ fill: "#eee" }}
 							/>
 						</BarChart>

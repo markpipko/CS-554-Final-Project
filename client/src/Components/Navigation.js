@@ -100,11 +100,15 @@ const NavigationNonAuth = () => {
 	const [value, setValue] = useState(0);
 	useEffect(() => {
 		const paths = ["/", "/signup", "/signin"];
-		setValue(
-			paths.indexOf(location.pathname.toLowerCase()) >= 0
-				? paths.indexOf(location.pathname.toLowerCase())
-				: 0
-		);
+		if (location.pathname.toLowerCase() === "/forgotpassword") {
+			setValue(2);
+		} else {
+			setValue(
+				paths.indexOf(location.pathname.toLowerCase()) >= 0
+					? paths.indexOf(location.pathname.toLowerCase())
+					: 0
+			);
+		}
 	}, [location.pathname]);
 	return (
 		<div>
