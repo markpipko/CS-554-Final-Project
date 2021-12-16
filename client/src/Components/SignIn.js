@@ -118,16 +118,12 @@ function SignIn() {
 					</Button>
 					<Grid container>
 						<Grid item xs>
-							<Link
-								to="/forgotpassword"
-								variant="body2"
-								className="signInLinks"
-							>
+							<Link to="/forgotpassword" className="signInLinks">
 								Forgot Password
 							</Link>
 						</Grid>
 						<Grid item>
-							<Link to="/signup" variant="body2" className="signInLinks">
+							<Link to="/signup" className="signInLinks">
 								Don't have an account? Sign Up
 							</Link>
 						</Grid>

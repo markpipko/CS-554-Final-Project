@@ -21,9 +21,7 @@ function App() {
 		<AuthProvider>
 			<Router>
 				<div className="App" id="page-container">
-					<header className="App-header">
-						<Navigation />
-					</header>
+					<Navigation />
 					<div className="App-body" id="content-wrap">
 						<Switch>
 							<Route exact path="/" component={Landing} />

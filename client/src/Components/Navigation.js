@@ -41,12 +41,9 @@ const NavigationAuth = () => {
 	}, [location.pathname, isEmployer]);
 	return (
 		<div>
-			<AppBar
-				postion="fixed"
-				style={{ backgroundColor: "white", color: "black" }}
-			>
+			<AppBar style={{ backgroundColor: "white", color: "black" }}>
 				<Toolbar>
-					<Grid justify={"space-between"} container>
+					<Grid container>
 						<Grid
 							xs={1}
 							item
@@ -112,12 +109,9 @@ const NavigationNonAuth = () => {
 	}, [location.pathname]);
 	return (
 		<div>
-			<AppBar
-				postion="fixed"
-				style={{ backgroundColor: "white", color: "black" }}
-			>
+			<AppBar style={{ backgroundColor: "white", color: "black" }}>
 				<Toolbar>
-					<Grid justify={"space-between"} container>
+					<Grid container>
 						<Grid
 							xs={1}
 							item

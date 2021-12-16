@@ -53,6 +53,7 @@ const ForgotPassword = () => {
 	};
 	return (
 		<div>
+			<br />
 			<Link to="/signin" className="signInLinks">
 				Back to Sign In
 			</Link>

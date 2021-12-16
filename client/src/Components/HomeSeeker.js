@@ -208,26 +208,11 @@ function HomeSeeker() {
 		}
 		setFormData({ query: "" });
 	};
-	console.log(checkedFields);
+
 	const handleCheckChange = (e, values) => {
 		setCheckedFields(values.map((x) => x.value));
 	};
 	let form = null;
-
-	let fieldsForm = [];
-	for (var x in fields) {
-		fieldsForm.push(
-			<FormControlLabel
-				id={`${x}`}
-				value={`${x}`}
-				control={<Checkbox />}
-				label={`${x}`}
-				labelPlacement="end"
-				onChange={(e) => handleCheckChange(e)}
-				key={x}
-			/>
-		);
-	}
 
 	form = (
 		<FormControl>
