@@ -6,8 +6,6 @@ import {
 	TextField,
 	CircularProgress,
 	FormGroup,
-	Checkbox,
-	FormControlLabel,
 	Collapse,
 	Alert,
 	IconButton,
@@ -17,14 +15,7 @@ import {
 	Stack,
 } from "@mui/material";
 import { db } from "../firebase/Firebase";
-import {
-	collection,
-	query,
-	where,
-	getDocs,
-	getDoc,
-	doc,
-} from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import {
 	BarChart,
 	Bar,
@@ -78,7 +69,6 @@ function HomeSeeker() {
 	});
 	const [queryError, setQueryError] = useState(false);
 	const [queryErrorMessage, setQueryErrorMessage] = useState("");
-	const [isSeeker, setIsSeeker] = useState(false);
 	const { currentUser } = useContext(AuthContext);
 	const [loading, setLoading] = useState(false);
 	const [searchError, setSearchError] = useState(false);
@@ -87,22 +77,6 @@ function HomeSeeker() {
 	const [error, setError] = useState(false);
 	const [infoOpen, setInfoOpen] = useState(false);
 	const [errorOpen, setErrorOpen] = useState(false);
-	const [fields, setFields] = useState({
-		"Architecture, Planning & Environmental Design": 0,
-		"Arts & Entertainment": 0,
-		Business: 0,
-		Communications: 0,
-		Education: 0,
-		"Engineering & Computer Science": 0,
-		Environment: 0,
-		Government: 0,
-		"Health & Medicine": 0,
-		International: 0,
-		"Law & Public Policy": 0,
-		"Sciences - Biological & Physical": 0,
-		"Social Impact": 0,
-		Other: 0,
-	});
 	const [checkedFields, setCheckedFields] = useState([]);
 	const [graphData, setGraphData] = useState(undefined);
 	const classes = useStyles();
@@ -124,14 +98,6 @@ function HomeSeeker() {
 
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-	};
-
-	const checkApplied = async (jobId) => {
-		// const docRef =  doc(db, 'posts', jobId)
-		const docRef = doc(doc(db, "posts", jobId), "applicants", currentUser.uid);
-		const docSnap = await getDoc(docRef);
-
-		return docSnap.exists();
 	};
 
 	const backToSearch = () => {

@@ -1,15 +1,9 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState } from "react";
 import {
 	FormControl,
-	InputLabel,
-	TextField,
 	CircularProgress,
+	TextField,
 	FormGroup,
-	Checkbox,
-	FormControlLabel,
-	Collapse,
-	Alert,
-	IconButton,
 	Grid,
 	Button,
 	Card,
@@ -17,15 +11,7 @@ import {
 	Typography,
 } from "@mui/material";
 import { db } from "../firebase/Firebase";
-import {
-	collection,
-	query,
-	where,
-	getDocs,
-	getDoc,
-	doc,
-	setDoc,
-} from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 function HomeEmployer() {
 	const [formData, setFormData] = useState({});
@@ -54,7 +40,7 @@ function HomeEmployer() {
 		try {
 			const q = query(
 				collection(db, "seekers"),
-				where("displayName", "==", formData.query)
+				where("displayName", "==", formData.query.trim())
 			);
 
 			const querySnapshot = await getDocs(q);
@@ -72,10 +58,13 @@ function HomeEmployer() {
 		setData(undefined);
 	};
 
+	if (searchError) {
+		return <div>No results found</div>;
+	}
+
 	let form = (
 		<FormControl>
 			<FormGroup>
-				<InputLabel id="query" htmlFor="query"></InputLabel>
 				<TextField
 					id="query"
 					variant="outlined"
@@ -138,6 +127,15 @@ function HomeEmployer() {
 				dataArr.push(doc);
 			});
 
+		if (dataArr.length === 0) {
+			return (
+				<div>
+					<Button onClick={backToSearch}>Back to search</Button>
+					<div>No search results found</div>
+				</div>
+			);
+		}
+
 		card = dataArr.map((doc, index) => {
 			return buildCard(doc.id, doc.data(), index);
 		});
@@ -153,7 +151,7 @@ function HomeEmployer() {
 			) : (
 				<div>
 					<Button onClick={backToSearch}>Back to search</Button>
-					{card}
+					{loading ? <CircularProgress /> : card}
 				</div>
 			)}
 		</div>

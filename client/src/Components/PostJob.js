@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
 	FormControl,
-	InputLabel,
 	TextField,
 	MenuItem,
 	Button,
@@ -107,7 +106,7 @@ const PostJob = (props) => {
 				summary: formData.summary,
 				zip: formData.zip,
 				jobType: formData.jobType,
-				// applicants: []
+				applicants: [],
 			});
 			await updateFieldNumbers(formData.field);
 
@@ -177,30 +176,27 @@ const PostJob = (props) => {
 			<h1>Post a Job</h1>
 			<FormControl id="mainForm">
 				<FormGroup>
-					<InputLabel id="title" htmlFor="title"></InputLabel>
 					<TextField
 						id="title"
 						variant="outlined"
 						label="Title"
 						onChange={(e) => handleChange(e)}
 						name="title"
-						error={!!fieldError}
+						error={!!titleError}
 						helperText={titleErrorMessage}
 						required
 					/>
 				</FormGroup>
 				<br />
 				<FormGroup>
-					<InputLabel id="field" htmlFor="field"></InputLabel>
 					<TextField
 						select
-						id="field"
 						variant="outlined"
 						label="Field"
 						onChange={(e) => handleChange(e)}
 						name="field"
 						value={formData.field}
-						error={!!titleError}
+						error={!!fieldError}
 						helperText={fieldErrorMessage}
 						required
 						style={{ width: 400 }}
@@ -231,7 +227,6 @@ const PostJob = (props) => {
 				</FormGroup>
 				<br />
 				<FormGroup>
-					<InputLabel id="summary" htmlFor="summary"></InputLabel>
 					<TextField
 						id="summary"
 						variant="outlined"
@@ -245,13 +240,11 @@ const PostJob = (props) => {
 				</FormGroup>
 				<br />
 				<FormGroup>
-					<InputLabel id="zip" htmlFor="zip"></InputLabel>
 					<TextField
 						id="outlined-basic"
 						label="Zip Code"
 						name="zip"
 						onChange={(e) => handleChange(e)}
-						pattern="[0-9]{5}"
 						required
 						error={!!zipError}
 						helperText={zipErrorMessage}
@@ -265,7 +258,6 @@ const PostJob = (props) => {
 						label="Job Type"
 						onChange={(e) => handleChange(e)}
 						name="jobType"
-						id="jobType"
 						error={!!typeError}
 						helperText={typeErrorMessage}
 					>

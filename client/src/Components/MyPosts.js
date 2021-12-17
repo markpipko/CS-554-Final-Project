@@ -5,6 +5,7 @@ import { AuthContext } from "../firebase/Auth";
 import { Card, Button, Row, Col } from "react-bootstrap";
 import ApplicantsModal from "./modals/ApplicantsModal";
 import { retrieveCurrentApplicants } from "../firebase/FirebaseFunctions";
+
 function MyPosts() {
 	const { currentUser } = useContext(AuthContext);
 	const [posts, setPosts] = useState(undefined);
@@ -52,6 +53,7 @@ function MyPosts() {
 					</Card.Body>
 				</Card>
 				<ApplicantsModal
+					id={id}
 					show={showModal}
 					onHide={handleCloseModal}
 					modalapplicants={modalApplicants}

@@ -6,6 +6,27 @@ import "../App.css";
 import { AppBar, Toolbar, Grid, Tabs, Tab } from "@mui/material";
 import { checkEmployer } from "../firebase/FirebaseFunctions";
 import { useLocation } from "react-router-dom";
+import { makeStyles } from "@mui/styles";
+
+const useStyles = makeStyles({
+	navBarNon: {
+		"background-color": "white",
+		minHeight: "12vh",
+		display: "flex",
+		"flex-direction": "column",
+		"justify-content": "center",
+	},
+	navContainer: {
+		"background-color": "white",
+		minHeight: "10vh",
+		display: "flex",
+		"flex-direction": "column",
+		"justify-content": "center",
+		"font-size": "calc(10px + 2vmin)",
+		padding: "20px",
+	},
+});
+
 const Navigation = () => {
 	const { currentUser } = useContext(AuthContext);
 	return <div>{currentUser ? <NavigationAuth /> : <NavigationNonAuth />}</div>;
@@ -22,6 +43,8 @@ const NavigationAuth = () => {
 		}
 		check();
 	}, [currentUser]);
+
+	const classes = useStyles();
 
 	const checkEmp = async (uid) => {
 		let res = await checkEmployer(uid);
@@ -40,8 +63,13 @@ const NavigationAuth = () => {
 		);
 	}, [location.pathname, isEmployer]);
 	return (
-		<div>
-			<AppBar style={{ backgroundColor: "white", color: "black" }}>
+		<div className={classes.navContainer}>
+			<AppBar
+				style={{
+					backgroundColor: "white",
+					color: "black",
+				}}
+			>
 				<Toolbar>
 					<Grid container>
 						<Grid
@@ -95,6 +123,9 @@ const NavigationAuth = () => {
 const NavigationNonAuth = () => {
 	const location = useLocation();
 	const [value, setValue] = useState(0);
+
+	const classes = useStyles();
+
 	useEffect(() => {
 		const paths = ["/", "/signup", "/signin"];
 		if (location.pathname.toLowerCase() === "/forgotpassword") {
@@ -108,8 +139,11 @@ const NavigationNonAuth = () => {
 		}
 	}, [location.pathname]);
 	return (
-		<div>
-			<AppBar style={{ backgroundColor: "white", color: "black" }}>
+		<div className={classes.navContainer}>
+			<AppBar
+				className={classes.navBarNon}
+				style={{ backgroundColor: "white", color: "black" }}
+			>
 				<Toolbar>
 					<Grid container>
 						<Grid
