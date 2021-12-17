@@ -3,10 +3,10 @@ import axios from "axios";
 import {
 	Card,
 	CardContent,
+	CardActions,
 	Typography,
 	Grid,
 	FormControl,
-	InputLabel,
 	TextField,
 	MenuItem,
 	Button,
@@ -161,16 +161,6 @@ const Jobs = (props) => {
 		}
 	};
 
-	// const handleApply = (url) => {
-	// 	if (
-	// 		window.confirm(
-	// 			"This will take you to the job listing on Indeed. Do you wish to proceed?"
-	// 		)
-	// 	) {
-	// 		window.open(url);
-	// 	}
-	// };
-
 	const buildCards = (job, index) => {
 		return (
 			<Grid
@@ -183,7 +173,11 @@ const Jobs = (props) => {
 				key={index}
 				style={{ display: "flex" }}
 			>
-				<Card className={classes.card} variant="outlined">
+				<Card
+					className={classes.card}
+					variant="outlined"
+					style={{ display: "flex", flexDirection: "column" }}
+				>
 					<CardContent>
 						<Typography
 							className={classes.titleHead}
@@ -193,12 +187,7 @@ const Jobs = (props) => {
 						>
 							{job.title}
 						</Typography>
-						<Typography
-							// style={{ whiteSpace: "pre-wrap" }}
-							gutterBottom
-							variant="body1"
-							component="p"
-						>
+						<Typography gutterBottom variant="body1" component="p">
 							{job.summary}
 						</Typography>
 						<Typography gutterBottom variant="body1" component="p">
@@ -209,14 +198,13 @@ const Jobs = (props) => {
 						</Typography>
 					</CardContent>
 					<CardContent style={{ marginTop: "auto" }}>
-						<button
-							className="button"
+						<Button
 							onClick={() => {
 								handleOpenIndeedApplyModal(job);
 							}}
 						>
 							See More
-						</button>
+						</Button>
 					</CardContent>
 				</Card>
 			</Grid>
@@ -237,7 +225,6 @@ const Jobs = (props) => {
 			<br />
 			<FormControl>
 				<FormGroup>
-					<InputLabel id="query" htmlFor="query"></InputLabel>
 					<TextField
 						id="query"
 						variant="outlined"
@@ -251,13 +238,11 @@ const Jobs = (props) => {
 				</FormGroup>
 				<br />
 				<FormGroup>
-					<InputLabel id="zip" htmlFor="zip"></InputLabel>
 					<TextField
 						id="outlined-basic"
 						label="Zip Code"
 						name="zip"
 						onChange={(e) => handleChange(e)}
-						pattern="[0-9]{5}"
 						required
 						error={!!zipError}
 						helperText={zipErrorMessage}
@@ -271,7 +256,6 @@ const Jobs = (props) => {
 						label="Job Type"
 						onChange={(e) => handleChange(e)}
 						name="jobType"
-						id="jobType"
 						error={!!typeError}
 						helperText={typeErrorMessage}
 					>
@@ -281,7 +265,12 @@ const Jobs = (props) => {
 					</TextField>
 				</FormGroup>
 				<br />
-				<Button type="submit" variant="contained" onClick={(e) => search(e)}>
+				<Button
+					type="submit"
+					variant="contained"
+					onClick={(e) => search(e)}
+					disabled={loading}
+				>
 					Submit
 				</Button>
 			</FormControl>
@@ -310,7 +299,7 @@ const Jobs = (props) => {
 						className={classes.grid}
 						spacing={5}
 						alignItems="stretch"
-						style={{marginBottom:"15px", padding:"10px"}}
+						style={{ marginBottom: "15px", padding: "10px" }}
 					>
 						{jobsList}
 					</Grid>
@@ -319,7 +308,6 @@ const Jobs = (props) => {
 						show={showIndeedApplyModal}
 						onHide={handleCloseIndeedApplyModal}
 						modaljob={modalJob}
-						//  apply = {handleApply}
 					/>
 				</div>
 			) : (

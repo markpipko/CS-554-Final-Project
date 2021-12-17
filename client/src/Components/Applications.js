@@ -24,7 +24,7 @@ const useStyles = makeStyles({
 		marginRight: "auto",
 	},
 	card: {
-		// maxWidth: 500,
+		minWidth: 250,
 		height: "auto",
 		marginLeft: "auto",
 		marginRight: "auto",
@@ -40,15 +40,6 @@ const useStyles = makeStyles({
 	grid: {
 		flexGrow: 1,
 		flexDirection: "row",
-	},
-	button: {
-		color: "#1e8678",
-		fontWeight: "bold",
-		fontSize: 12,
-	},
-	paginator: {
-		justifyContent: "center",
-		padding: "10px",
 	},
 });
 
@@ -114,7 +105,11 @@ function Applications() {
 				key={index}
 				style={{ display: "flex" }}
 			>
-				<Card className={classes.card} variant="outlined">
+				<Card
+					className={classes.card}
+					variant="outlined"
+					style={{ display: "flex", flexDirection: "column" }}
+				>
 					<CardContent>
 						<Typography
 							className={classes.titleHead}
@@ -138,19 +133,21 @@ function Applications() {
 						<Typography gutterBottom variant="body1" component="p">
 							Location: {job.location}
 						</Typography>
+					</CardContent>
+					<CardContent style={{ marginTop: "auto" }}>
 						<Button variant="contained" color={colors[job.status]}>
 							{job.status}
 						</Button>
-					</CardContent>
-					<CardContent style={{ marginTop: "auto" }}>
-						<button
+						<br />
+						<br />
+						<Button
 							className="button"
 							onClick={() => {
 								removeJob(job);
 							}}
 						>
 							Remove
-						</button>
+						</Button>
 					</CardContent>
 				</Card>
 			</Grid>
@@ -181,7 +178,7 @@ function Applications() {
 	}
 	return (
 		<div>
-			<h3>Jobs Applied:</h3>
+			<h1>Jobs Applied:</h1>
 
 			<Grid
 				container
@@ -211,8 +208,16 @@ function Applications() {
 				<XAxis dataKey="name" />
 				<YAxis type="number" domain={[0, 4]} />
 				<Tooltip />
-				<Legend />
-				<Bar dataKey="Number of Applications" fill="#8884d8" />
+				<Legend
+					payload={[
+						{
+							id: "Number of Applications",
+							value: "Number of Applications",
+							color: "#706bcc",
+						},
+					]}
+				/>
+				<Bar dataKey="Number of Applications" fill="#706bcc" />
 			</BarChart>
 		</div>
 	);
