@@ -99,6 +99,7 @@ const apply = async (userUid, jobUid) => {
 		email: userData.email,
 		name: userData.displayName,
 		resume: userData.resume,
+		decision: "Undecided"
 	};
 	if (
 		currentApplicants.filter((x) => x.email === userData.email).length === 0
