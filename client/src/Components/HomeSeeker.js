@@ -6,23 +6,16 @@ import {
 	TextField,
 	CircularProgress,
 	FormGroup,
-	Checkbox,
-	FormControlLabel,
 	Collapse,
 	Alert,
 	IconButton,
 	Grid,
 	Button,
+	Autocomplete,
+	Stack,
 } from "@mui/material";
 import { db } from "../firebase/Firebase";
-import {
-	collection,
-	query,
-	where,
-	getDocs,
-	getDoc,
-	doc,
-} from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import {
 	BarChart,
 	Bar,
@@ -37,7 +30,6 @@ import JobPost from "./JobPost";
 import "../App.css";
 import { makeStyles } from "@mui/styles";
 import CloseIcon from "@mui/icons-material/Close";
-// import { Link } from "react-router-dom";
 const useStyles = makeStyles({
 	grid: {
 		flexGrow: 1,
@@ -45,13 +37,38 @@ const useStyles = makeStyles({
 	},
 });
 
+const options = [
+	{
+		value: "Architecture, Planning & Environmental Design",
+		label: "Architecture, Planning & Environmental Design",
+	},
+	{ value: "Arts & Entertainment", label: "Arts & Entertainment" },
+	{ value: "Business", label: "Business" },
+	{ value: "Communications", label: "Communications" },
+	{ value: "Education", label: "Education" },
+	{
+		value: "Engineering & Computer Science",
+		label: "Engineering & Computer Science",
+	},
+	{ value: "Environment", label: "Environment" },
+	{ value: "Government", label: "Government" },
+	{ value: "Health & Medicine", label: "Health & Medicine" },
+	{ value: "International", label: "International" },
+	{ value: "Law & Public Policy", label: "Law & Public Policy" },
+	{
+		value: "Sciences - Biological & Physical",
+		label: "Sciences - Biological & Physical",
+	},
+	{ value: "Social Impact", label: "Social Impact" },
+	{ value: "Other", label: "Other" },
+];
+
 function HomeSeeker() {
 	const [formData, setFormData] = useState({
 		query: "",
 	});
 	const [queryError, setQueryError] = useState(false);
 	const [queryErrorMessage, setQueryErrorMessage] = useState("");
-	const [isSeeker, setIsSeeker] = useState(false);
 	const { currentUser } = useContext(AuthContext);
 	const [loading, setLoading] = useState(false);
 	const [searchError, setSearchError] = useState(false);
@@ -60,27 +77,9 @@ function HomeSeeker() {
 	const [error, setError] = useState(false);
 	const [infoOpen, setInfoOpen] = useState(false);
 	const [errorOpen, setErrorOpen] = useState(false);
-	const [fields, setFields] = useState({
-		"Architecture, Planning & Environmental Design": 0,
-		"Arts & Entertainment": 0,
-		Business: 0,
-		Communications: 0,
-		Education: 0,
-		"Engineering & Computer Science": 0,
-		Environment: 0,
-		Government: 0,
-		"Health & Medicine": 0,
-		International: 0,
-		"Law & Public Policy": 0,
-		"Sciences - Biological & Physical": 0,
-		"Social Impact": 0,
-		Other: 0,
-	});
-  const [graphData, setGraphData] = useState(undefined)
-  const classes = useStyles();
-
-
-	let checkedFields = [];
+	const [checkedFields, setCheckedFields] = useState([]);
+	const [graphData, setGraphData] = useState(undefined);
+	const classes = useStyles();
 
 	useEffect(() => {
 		async function load() {
@@ -90,9 +89,9 @@ function HomeSeeker() {
 
 			for (var key in tempFields) {
 				jobTypes.push({ name: key, "Number of Postings": tempFields[key] });
-			  }
-			setGraphData(jobTypes)
-			console.log(graphData)
+			}
+			setGraphData(jobTypes);
+			// console.log(graphData);
 		}
 		load();
 	}, [currentUser]);
@@ -101,16 +100,9 @@ function HomeSeeker() {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 	};
 
-	const checkApplied = async (jobId) => {
-		// const docRef =  doc(db, 'posts', jobId)
-		const docRef = doc(doc(db, "posts", jobId), "applicants", currentUser.uid);
-		const docSnap = await getDoc(docRef);
-
-		return docSnap.exists();
-	};
-
 	const backToSearch = () => {
 		setData(undefined);
+		setCheckedFields([]);
 	};
 
 	const search = async (e) => {
@@ -125,7 +117,7 @@ function HomeSeeker() {
 		// setQueryError(false);
 		// setQueryErrorMessage("");
 
-		// try {
+		setFormData({ query: formData.query.trim() });
 		if (formData.query && checkedFields.length > 0) {
 			try {
 				const q = query(
@@ -183,56 +175,44 @@ function HomeSeeker() {
 		setFormData({ query: "" });
 	};
 
-	function handleCheckChange(e) {
-		if (e.target.checked) {
-			checkedFields.push(e.target.value);
-		} else {
-			checkedFields.splice(checkedFields.indexOf(5), 1);
-		}
-
-		console.log(checkedFields);
-	}
-
+	const handleCheckChange = (e, values) => {
+		setCheckedFields(values.map((x) => x.value));
+	};
 	let form = null;
-
-	let fieldsForm = [];
-	for (var x in fields) {
-		fieldsForm.push(
-			<FormControlLabel
-				id={`${x}`}
-				value={`${x}`}
-				control={<Checkbox />}
-				label={`${x}`}
-				labelPlacement="end"
-				onChange={(e) => handleCheckChange(e)}
-				key={x}
-			/>
-		);
-	}
 
 	form = (
 		<FormControl>
-			<FormGroup>
-				<InputLabel id="query" htmlFor="query"></InputLabel>
-				<TextField
-					id="query"
-					variant="outlined"
-					label="Company"
-					onChange={(e) => handleChange(e)}
-					name="query"
-					error={!!queryError}
-					helperText={queryErrorMessage}
-				/>
-			</FormGroup>
-			<FormGroup>
-				{fieldsForm.map((element) => {
-					return element;
-				})}
-			</FormGroup>
-			<br />
-			<Button type="submit" onClick={(e) => search(e)}>
-				Submit
-			</Button>
+			<Stack spacing={2} sx={{ width: 500 }}>
+				<FormGroup>
+					<InputLabel id="query" htmlFor="query"></InputLabel>
+					<TextField
+						id="query"
+						variant="outlined"
+						label="Company"
+						onChange={(e) => handleChange(e)}
+						name="query"
+						error={!!queryError}
+						helperText={queryErrorMessage}
+					/>
+				</FormGroup>
+				<FormGroup>
+					<Autocomplete
+						multiple
+						limitTags={2}
+						id="tags-outlined"
+						options={options}
+						getOptionLabel={(option) => option.label}
+						renderInput={(params) => (
+							<TextField {...params} variant="standard" label="Fields" />
+						)}
+						onChange={handleCheckChange}
+					/>
+				</FormGroup>
+				<br />
+				<Button type="submit" onClick={(e) => search(e)}>
+					Search
+				</Button>
+			</Stack>
 		</FormControl>
 	);
 
@@ -333,44 +313,46 @@ function HomeSeeker() {
 				<div></div>
 			)}
 			{!data ? (
-				<div></div>
-			) : (
-				<Button onClick={backToSearch}>Back to search</Button>
-			)}
-			{!data ? (
 				<div>
 					<h1>Search for Jobs on Jobaroo</h1>
 					{form}
-					{graphData && <BarChart
-						width={1000}
-						height={300}
-						data={graphData}
-						margin={{
-							top: 5,
-							right: 30,
-							left: 20,
-							bottom: 5,
-						}}
-						barSize={20}
-					>
-						<XAxis
-							dataKey="name"
-							scale="point"
-							padding={{ left: 10, right: 10 }}
-						/>
-						<YAxis />
-						<Tooltip />
-						<Legend />
-						<CartesianGrid strokeDasharray="3 3" />
-						<Bar
-							dataKey="Number of Postings"
-							fill="#8884d8"
-							background={{ fill: "#eee" }}
-						/>
-					</BarChart>}
+					<h2>Current Job Posts Available</h2>
+					{graphData && (
+						<BarChart
+							width={1000}
+							height={300}
+							data={graphData}
+							// margin={{
+							// 	top: 5,
+							// 	right: 30,
+							// 	left: 20,
+							// 	bottom: 5,
+							// }}
+							barSize={20}
+							className="fieldChart"
+						>
+							<XAxis
+								dataKey="name"
+								scale="point"
+								padding={{ left: 10, right: 10 }}
+							/>
+							<YAxis />
+							<Tooltip />
+							<Legend />
+							<CartesianGrid strokeDasharray="3 3" />
+							<Bar
+								dataKey="Number of Postings"
+								fill="#706bcc"
+								background={{ fill: "#eee" }}
+							/>
+						</BarChart>
+					)}
 				</div>
 			) : (
 				<div>
+					<h1>Results</h1>
+					<Button onClick={backToSearch}>Back to search</Button>
+
 					<Grid
 						container
 						className={classes.grid}

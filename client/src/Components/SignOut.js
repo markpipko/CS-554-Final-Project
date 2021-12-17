@@ -5,13 +5,17 @@ import { Redirect } from "react-router";
 import { AuthContext } from "../firebase/Auth";
 const SignOutButton = () => {
 	const { currentUser } = useContext(AuthContext);
-	console.log(currentUser)
 	const handleSignout = () => {
 		doSignOut();
 		<Redirect to="/signin" />;
 	};
 
-	return <Button onClick={handleSignout}>Sign Out <br/>{currentUser.displayName}</Button>;
+	return (
+		<Button onClick={handleSignout}>
+			Sign Out <br />
+			{currentUser.displayName}
+		</Button>
+	);
 };
 
 export default SignOutButton;

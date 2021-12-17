@@ -56,19 +56,6 @@ async function doCreateUserWithEmailAndPassword(
 	);
 }
 
-// async function sendVerificationEmail() {
-// 	let user = auth.currentUser;
-// 	await sendEmailVerification(user);
-// 	// user
-// 	// 	.sendEmailVerification()
-// 	// 	.then(function () {
-// 	// 		window.alert("this ran");
-// 	// 	})
-// 	// 	.catch(function (error) {
-// 	// 		console.log(error);
-// 	// 	});
-// }
-
 async function doChangePassword(email, oldPassword, newPassword) {
 	let credential = EmailAuthProvider.credential(email, oldPassword);
 	await reauthenticateWithCredential(auth.currentUser, credential);
@@ -173,7 +160,10 @@ async function newApplicationUpload(uid, job) {
 
 	let currentApplications = userSnap.data().applications;
 
-	if (!currentApplications || currentApplications.filter((x) => x._id === job._id).length === 0) {
+	if (
+		!currentApplications ||
+		currentApplications.filter((x) => x._id === job._id).length === 0
+	) {
 		let applicationObj = {
 			_id: job._id,
 			company: job.company,
@@ -183,10 +173,9 @@ async function newApplicationUpload(uid, job) {
 			summary: job.summary,
 			status: "Pending",
 		};
-	if(!currentApplications)
-		currentApplications = [];
+		if (!currentApplications) currentApplications = [];
 
-	currentApplications.push(applicationObj);
+		currentApplications.push(applicationObj);
 
 		await updateDoc(userRef, {
 			applications: currentApplications,
@@ -213,10 +202,8 @@ async function getApplicationsForSeeker(uid) {
 	const userSnap = await getDoc(userRef);
 
 	let currentApplications = userSnap.data().applications;
-	if(currentApplications)
-		return currentApplications;
-	else
-		return [];
+	if (currentApplications) return currentApplications;
+	else return [];
 }
 
 async function retrieveCurrentApplicants(jobUid) {
@@ -301,5 +288,4 @@ export {
 	retrieveCurrentApplicants,
 	getFieldNumbers,
 	updateFieldNumbers,
-	// sendVerificationEmail,
 };

@@ -80,8 +80,9 @@
 	font-weight: bold;
 }
 
-.profileImage {
-	width: 200px;
+.defaultImage,
+.jobarooImage {
+	width: 240px;
 }
 
 footer {
@@ -108,6 +109,10 @@ footer {
 
 .accepted {
 	color: green;
+}
+
+.errorMessage {
+	font-weight: bold;
 }
 
 .resumeLink {

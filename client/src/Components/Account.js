@@ -1,9 +1,7 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SignOutButton from "./SignOut";
 import "../App.css";
 import ChangePassword from "./ChangePassword";
-import { firebaseApp, db } from "../firebase/Firebase";
-import { getDoc, doc } from "@firebase/firestore";
 import { AuthContext } from "../firebase/Auth";
 import { checkSeekers } from "../firebase/FirebaseFunctions";
 import UploadResume from "./UploadResume";
@@ -14,23 +12,21 @@ function Account() {
 
 	useEffect(() => {
 		async function fetchData() {
-			console.log("useEffect fired");
-
-            let isSeeker = await checkSeekers(currentUser.uid);
-            if (isSeeker) {
-                setSeeker(true);
-            }
+			let isSeeker = await checkSeekers(currentUser.uid);
+			if (isSeeker) {
+				setSeeker(true);
+			}
 		}
 		fetchData();
-	}, []);
+	}, [currentUser]);
 
 	return (
 		<div>
-			<h2>Account Page</h2>
+			<h1>Account Page</h1>
 			<UploadImage />
-            <br />
+			<br />
 			{seeker && <UploadResume />}
-            <br />
+			<br />
 			<ChangePassword />
 			<SignOutButton />
 		</div>
