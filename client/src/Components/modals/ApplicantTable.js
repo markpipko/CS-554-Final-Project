@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
-import { Button } from "react-bootstrap";
 import axios from "axios";
 import { AuthContext } from "../../firebase/Auth";
+import { TableRow, TableCell, Button } from "@mui/material";
 
 const ApplicantTable = (props) => {
 	const [loading, setLoading] = useState(false);
@@ -66,10 +66,10 @@ const ApplicantTable = (props) => {
 	};
 
 	return (
-		<tr key={props.index}>
-			<td>{props.applicant.name}</td>
-			<td>{props.applicant.email}</td>
-			<td>
+		<TableRow key={props.index}>
+			<TableCell>{props.applicant.name}</TableCell>
+			<TableCell>{props.applicant.email}</TableCell>
+			<TableCell>
 				{props.applicant.resume ? (
 					<a
 						href={props.applicant.resume}
@@ -82,12 +82,13 @@ const ApplicantTable = (props) => {
 				) : (
 					<div>None provided</div>
 				)}
-			</td>
-			<td>
+			</TableCell>
+			<TableCell>
 				{decision === "Undecided" ? (
 					<div>
 						<Button
-							className="statusButtons acceptButton"
+							color="success"
+							variant="contained"
 							onClick={() =>
 								statusUpdate(
 									props.applicant.uid,
@@ -101,7 +102,8 @@ const ApplicantTable = (props) => {
 						</Button>
 						<Button
 							className="statusButtons"
-							variant="danger"
+							variant="contained"
+							color="error"
 							onClick={() =>
 								statusUpdate(
 									props.applicant.uid,
@@ -117,8 +119,8 @@ const ApplicantTable = (props) => {
 				) : (
 					<div className={decision.toLowerCase()}>{decision}</div>
 				)}
-			</td>
-		</tr>
+			</TableCell>
+		</TableRow>
 	);
 };
 

@@ -22,7 +22,7 @@ function Account() {
 
 	return (
 		<div>
-			<h2>Account Page</h2>
+			<h1>Account Page</h1>
 			<UploadImage />
 			<br />
 			{seeker && <UploadResume />}

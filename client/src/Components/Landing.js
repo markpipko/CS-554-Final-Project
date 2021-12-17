@@ -21,6 +21,7 @@ function Landing() {
 				Click on Sign Up to get started or click on Sign In if you have already
 				registered.
 			</p>
+			<img src="/imgs/Jobaroo2.png" alt="Jobaroo" className="jobarooImage" />
 		</div>
 	);
 }

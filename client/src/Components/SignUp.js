@@ -75,7 +75,7 @@ function SignUp() {
 
 		if (!formData.role) {
 			setRoleError(true);
-			setRoleErrorMessage(`Error: A role must be selected.`);
+			setRoleErrorMessage(`\u00A0\u00A0Error: A role must be selected.`);
 			setLoading(false);
 			return;
 		}
@@ -128,7 +128,7 @@ function SignUp() {
 					alignItems: "center",
 				}}
 			>
-				<Typography component="h1" variant="h4">
+				<Typography component="h1" variant="h5">
 					Sign Up
 				</Typography>
 				{loading ? <CircularProgress /> : <div></div>}
@@ -167,7 +167,6 @@ function SignUp() {
 									aria-label="role"
 									name="role"
 									onChange={(e) => handleChange(e)}
-									required
 								>
 									<FormControlLabel
 										value="seeker"
@@ -180,7 +179,9 @@ function SignUp() {
 										label="Employer"
 									/>
 								</RadioGroup>
-								<FormHelperText>{roleErrorMessage}</FormHelperText>
+								<FormHelperText sx={{ fontWeight: "bold", fontSize: 14 }}>
+									{roleErrorMessage}
+								</FormHelperText>
 							</FormControl>
 						</Grid>
 						<Grid item xs={12}>

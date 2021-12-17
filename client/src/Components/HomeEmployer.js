@@ -1,45 +1,31 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState } from "react";
 import {
 	FormControl,
-	InputLabel,
-	TextField,
 	CircularProgress,
+	TextField,
 	FormGroup,
-	Checkbox,
-	FormControlLabel,
-	Collapse,
-	Alert,
-	IconButton,
 	Grid,
 	Button,
-    Card,
-    CardContent,
-    Typography
+	Card,
+	CardContent,
+	Typography,
 } from "@mui/material";
 import { db } from "../firebase/Firebase";
-import {
-	collection,
-	query,
-	where,
-	getDocs,
-	getDoc,
-	doc,
-	setDoc,
-} from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
-function HomeEmployer (){
-    const [formData, setFormData] = useState({});
-    const [queryError, setQueryError] = useState(false);
+function HomeEmployer() {
+	const [formData, setFormData] = useState({});
+	const [queryError, setQueryError] = useState(false);
 	const [queryErrorMessage, setQueryErrorMessage] = useState("");
-    const [searchError, setSearchError] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [data, setData] = useState(undefined);
+	const [searchError, setSearchError] = useState(false);
+	const [loading, setLoading] = useState(false);
+	const [data, setData] = useState(undefined);
 
-    const handleChange = (e) => {
+	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 	};
 
-    const search = async (e) => {
+	const search = async (e) => {
 		setLoading(true);
 		e.preventDefault();
 		if (!formData.query || !formData.query.trim()) {
@@ -52,26 +38,33 @@ function HomeEmployer (){
 		setQueryErrorMessage("");
 
 		try {
-            const q = query(
-                collection(db, "seekers"),
-                where("displayName", "==", formData.query)
-            );
+			const q = query(
+				collection(db, "seekers"),
+				where("displayName", "==", formData.query.trim())
+			);
 
-            const querySnapshot = await getDocs(q);
-            setData(querySnapshot);
+			const querySnapshot = await getDocs(q);
+			setData(querySnapshot);
 
-            setLoading(false);
-			} catch (e) {
-				console.log(e);
-				setSearchError(true);
-				setLoading(false);
-			}
+			setLoading(false);
+		} catch (e) {
+			console.log(e);
+			setSearchError(true);
+			setLoading(false);
+		}
 	};
 
-    let form = (
+	const backToSearch = () => {
+		setData(undefined);
+	};
+
+	if (searchError) {
+		return <div>No results found</div>;
+	}
+
+	let form = (
 		<FormControl>
 			<FormGroup>
-				<InputLabel id="query" htmlFor="query"></InputLabel>
 				<TextField
 					id="query"
 					variant="outlined"
@@ -80,7 +73,7 @@ function HomeEmployer (){
 					name="query"
 					error={!!queryError}
 					helperText={queryErrorMessage}
-                    required
+					required
 				/>
 			</FormGroup>
 			<br />
@@ -90,32 +83,39 @@ function HomeEmployer (){
 		</FormControl>
 	);
 
-    const buildCard = (id, seeker, index) => {
+	const buildCard = (id, seeker, index) => {
 		return (
-            <Grid
-            item
-            xs={10}
-            sm={5}
-            md={5}
-            lg={4}
-            xl={3}
-            key={index}
-            style={{ display: "flex" }}
-          >
-            <Card variant="outlined">
-              <CardContent>
-              <Typography gutterBottom variant="body1" component="p">
-                    {seeker.displayName}
-                </Typography>
-                <Typography gutterBottom variant="body1" component="p">
-                    {seeker.email}
-                </Typography>
-                <Typography gutterBottom variant="body1" component="p">
-                    <a href={`${seeker.resume}`} target="_blank">Resume</a>
-                </Typography>
-               </CardContent>
-            </Card>
-          </Grid>
+			<Grid
+				item
+				xs={10}
+				sm={5}
+				md={5}
+				lg={4}
+				xl={3}
+				key={index}
+				style={{ display: "flex" }}
+			>
+				<Card variant="outlined">
+					<CardContent>
+						<Typography gutterBottom variant="body1" component="p">
+							{seeker.displayName}
+						</Typography>
+						<Typography gutterBottom variant="body1" component="p">
+							{seeker.email}
+						</Typography>
+						<Typography gutterBottom variant="body1" component="p">
+							<a
+								href={`${seeker.resume}`}
+								target="_blank"
+								rel="noreferrer"
+								className="resumeLink"
+							>
+								Resume
+							</a>
+						</Typography>
+					</CardContent>
+				</Card>
+			</Grid>
 		);
 	};
 
@@ -127,16 +127,35 @@ function HomeEmployer (){
 				dataArr.push(doc);
 			});
 
+		if (dataArr.length === 0) {
+			return (
+				<div>
+					<Button onClick={backToSearch}>Back to search</Button>
+					<div>No search results found</div>
+				</div>
+			);
+		}
+
 		card = dataArr.map((doc, index) => {
 			return buildCard(doc.id, doc.data(), index);
 		});
 	}
 
-    return (
-        <div>
-            {!data? form: card}
-        </div>
-    )
+	return (
+		<div>
+			{!data ? (
+				<div>
+					<h1>Look for Job Seekers on Jobaroo</h1>
+					{form}
+				</div>
+			) : (
+				<div>
+					<Button onClick={backToSearch}>Back to search</Button>
+					{loading ? <CircularProgress /> : card}
+				</div>
+			)}
+		</div>
+	);
 }
 
-export default HomeEmployer
+export default HomeEmployer;

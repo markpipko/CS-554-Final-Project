@@ -6,6 +6,27 @@ import "../App.css";
 import { AppBar, Toolbar, Grid, Tabs, Tab } from "@mui/material";
 import { checkEmployer } from "../firebase/FirebaseFunctions";
 import { useLocation } from "react-router-dom";
+import { makeStyles } from "@mui/styles";
+
+const useStyles = makeStyles({
+	navBarNon: {
+		"background-color": "white",
+		minHeight: "12vh",
+		display: "flex",
+		"flex-direction": "column",
+		"justify-content": "center",
+	},
+	navContainer: {
+		"background-color": "white",
+		minHeight: "10vh",
+		display: "flex",
+		"flex-direction": "column",
+		"justify-content": "center",
+		"font-size": "calc(10px + 2vmin)",
+		padding: "20px",
+	},
+});
+
 const Navigation = () => {
 	const { currentUser } = useContext(AuthContext);
 	return <div>{currentUser ? <NavigationAuth /> : <NavigationNonAuth />}</div>;
@@ -22,6 +43,8 @@ const NavigationAuth = () => {
 		}
 		check();
 	}, [currentUser]);
+
+	const classes = useStyles();
 
 	const checkEmp = async (uid) => {
 		let res = await checkEmployer(uid);
@@ -40,13 +63,15 @@ const NavigationAuth = () => {
 		);
 	}, [location.pathname, isEmployer]);
 	return (
-		<div>
+		<div className={classes.navContainer}>
 			<AppBar
-				postion="fixed"
-				style={{ backgroundColor: "white", color: "black" }}
+				style={{
+					backgroundColor: "white",
+					color: "black",
+				}}
 			>
 				<Toolbar>
-					<Grid justify={"space-between"} container>
+					<Grid container>
 						<Grid
 							xs={1}
 							item
@@ -98,22 +123,29 @@ const NavigationAuth = () => {
 const NavigationNonAuth = () => {
 	const location = useLocation();
 	const [value, setValue] = useState(0);
+
+	const classes = useStyles();
+
 	useEffect(() => {
 		const paths = ["/", "/signup", "/signin"];
-		setValue(
-			paths.indexOf(location.pathname.toLowerCase()) >= 0
-				? paths.indexOf(location.pathname.toLowerCase())
-				: 0
-		);
+		if (location.pathname.toLowerCase() === "/forgotpassword") {
+			setValue(2);
+		} else {
+			setValue(
+				paths.indexOf(location.pathname.toLowerCase()) >= 0
+					? paths.indexOf(location.pathname.toLowerCase())
+					: 0
+			);
+		}
 	}, [location.pathname]);
 	return (
-		<div>
+		<div className={classes.navContainer}>
 			<AppBar
-				postion="fixed"
+				className={classes.navBarNon}
 				style={{ backgroundColor: "white", color: "black" }}
 			>
 				<Toolbar>
-					<Grid justify={"space-between"} container>
+					<Grid container>
 						<Grid
 							xs={1}
 							item
