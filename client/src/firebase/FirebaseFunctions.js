@@ -134,7 +134,6 @@ async function imageUpload(uid, url) {
 	let downloadUrl = await getDownloadURL(
 		ref(storage, `profileImages/${uid}.jpg`)
 	);
-	console.log(downloadUrl);
 	const userRef = doc(db, "seekers", uid);
 	await updateDoc(userRef, {
 		imageUrl: downloadUrl,

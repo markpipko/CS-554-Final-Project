@@ -14,6 +14,8 @@ function UploadResume(props) {
 	const [loading, setLoading] = useState(false);
 	const { currentUser } = useContext(AuthContext);
 	const [resumeLink, setResumeLink] = useState("");
+	const [error, setError] = useState(false);
+	const [errorMessage, setErrorMessage] = useState("");
 
 	useEffect(() => {
 		async function fetchData() {
@@ -25,22 +27,40 @@ function UploadResume(props) {
 
 	const handleChange = async (e) => {
 		let resumeUrl = e.target.files[0];
+		if (!resumeUrl) {
+			setError(true);
+			setErrorMessage("No resume was attached. Please attach a resume.");
+			setLoading(false);
+			return;
+		}
+		if (resumeUrl.size / 1024 / 1024 > 5) {
+			setError(true);
+			setErrorMessage(
+				"The size of your resume is too big. Resumes must be < 5 MB."
+			);
+			setLoading(false);
+			return;
+		}
+		setError(false);
+		setErrorMessage("");
 		try {
 			setLoading(true);
 			let postedUrl = await resumeUpload(currentUser.uid, resumeUrl);
 			setResumeLink(postedUrl);
 			setLoading(false);
 		} catch (e) {
-			setLoading(false);
 			console.log(e);
+			setError(true);
+			setErrorMessage(e);
+			setLoading(false);
 		}
 	};
 
 	return (
 		<div>
-			<h3>Upload Resume</h3>
-			<h5>
-				Current Resume:{" "}
+			<h2>Upload Resume</h2>
+			<div>
+				{error ? errorMessage : <div></div>}
 				{resumeLink ? (
 					<div>
 						<br />
@@ -51,23 +71,25 @@ function UploadResume(props) {
 				) : (
 					<div></div>
 				)}
-			</h5>
+			</div>
 			<br />
 			{loading ? <CircularProgress /> : <div></div>}
 			<br />
 			<FormControl>
 				<FormGroup>
-					<Button variant="contained" component="label" disabled={loading}>
-						{resumeLink ? "Upload a different resume" : "Upload your resume"}
+					<label htmlFor="uploadResume">
 						<input
-							type="file"
-							id="file"
-							name="resumeUrl"
-							hidden
 							accept="application/msword, application/pdf, .docx"
+							id="uploadResume"
+							name="uploadResume"
+							type="file"
 							onChange={(e) => handleChange(e)}
+							hidden
 						/>
-					</Button>
+						<Button variant="contained" disabled={loading} component="span">
+							{resumeLink ? "Upload a different resume" : "Upload your resume"}
+						</Button>
+					</label>
 				</FormGroup>
 			</FormControl>
 		</div>
