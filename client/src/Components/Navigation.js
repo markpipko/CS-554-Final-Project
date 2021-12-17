@@ -17,7 +17,6 @@ const NavigationAuth = () => {
 	const { currentUser } = useContext(AuthContext);
 	useEffect(() => {
 		async function check() {
-			console.log("CurrentUser.uid: ", currentUser.uid);
 			let res = await checkEmp(currentUser.uid);
 			setIsEmployer(res);
 		}
@@ -26,7 +25,6 @@ const NavigationAuth = () => {
 
 	const checkEmp = async (uid) => {
 		let res = await checkEmployer(uid);
-		console.log("Is Employer: ", res);
 		return res;
 	};
 
