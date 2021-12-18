@@ -18,12 +18,12 @@ const SocialSignIn = () => {
 				alt="google signin"
 				onClick={() => socialSignOn("google")}
 			/>
-			<input
+			{/* <input
 				type="image"
 				onClick={() => socialSignOn("facebook")}
 				alt="facebook signin"
 				src="/imgs/facebook_signin.png"
-			/>
+			/> */}
 		</div>
 	);
 };
