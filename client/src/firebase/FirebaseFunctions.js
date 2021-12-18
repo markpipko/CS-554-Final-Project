@@ -4,7 +4,7 @@ import {
 	signInWithEmailAndPassword,
 	signOut,
 	GoogleAuthProvider,
-	FacebookAuthProvider,
+	// FacebookAuthProvider,
 	signInWithPopup,
 	createUserWithEmailAndPassword,
 	sendPasswordResetEmail,
@@ -69,12 +69,27 @@ async function doSignInWithEmailAndPassword(email, password) {
 
 async function doSocialSignIn(provider) {
 	let socialProvider = null;
-	if (provider === "google") {
+	// if (provider === "google") {
 		socialProvider = new GoogleAuthProvider(auth);
-	} else if (provider === "facebook") {
-		socialProvider = new FacebookAuthProvider(auth);
-	}
-	await signInWithPopup(auth, socialProvider);
+	// } else if (provider === "facebook") {
+	// 	socialProvider = new FacebookAuthProvider(auth);
+	// }
+	let user = await signInWithPopup(auth, socialProvider);
+	const docRef = doc(db, "seekers", user.user.uid);
+	const docSnap = await getDoc(docRef);
+
+	if (!docSnap.exists()) {
+		console.log('here')
+		await setDoc(doc(db, "seekers", user.user.uid), {
+			uid: user.user.uid,
+			email: user.user.email,
+			role: "seeker",
+			displayName: user.user.displayName,
+			resume: null,
+			imageUrl: "",
+			applications: [],
+		});
+	} 
 }
 
 async function doPasswordReset(email) {
@@ -110,8 +125,10 @@ async function checkSeekers(uid) {
 }
 
 async function getSeeker(uid) {
+	console.log(uid)
 	const docRef = doc(db, "seekers", uid);
 	const docSnap = await getDoc(docRef);
+	console.log(docSnap.data())
 	return docSnap.data();
 }
 

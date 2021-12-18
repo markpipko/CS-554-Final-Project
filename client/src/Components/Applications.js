@@ -73,6 +73,7 @@ function Applications() {
 				rejected: 0,
 				accepted: 0,
 			};
+			console.log(currentUserData)
 			for (let i = 0; i < currentUserData.applications.length; i++) {
 				switch (currentUserData.applications[i].status) {
 					case "Pending":
