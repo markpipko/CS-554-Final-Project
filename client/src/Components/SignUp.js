@@ -17,7 +17,11 @@ import {
 	FormLabel,
 	CircularProgress,
 	FormHelperText,
+	IconButton,
+	Collapse,
+	Alert,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 function SignUp() {
 	const { currentUser } = useContext(AuthContext);
 	const [formData, setFormData] = useState({
@@ -36,6 +40,8 @@ function SignUp() {
 	const [roleErrorMessage, setRoleErrorMessage] = useState("");
 	const [passwordError, setPasswordError] = useState(false);
 	const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+	const [error, setError] = useState(false);
+	const [errorMessage, setErrorMessage] = useState("");
 
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -106,10 +112,13 @@ function SignUp() {
 				formData.displayName
 			);
 		} catch (error) {
-			setEmailError(true);
-			setEmailErrorMessage(
-				"Email is already in use. Please use a different email."
-			);
+			console.log(error);
+			setError(true);
+			if (error.message === "Firebase: Error (auth/email-already-in-use).") {
+				setErrorMessage("Please choose a different email.");
+			} else {
+				setErrorMessage(error.message);
+			}
 			setLoading(false);
 		}
 	};
@@ -120,6 +129,30 @@ function SignUp() {
 
 	return (
 		<Container component="main" maxWidth="xs">
+			{error ? (
+				<Collapse in={error}>
+					<Alert
+						severity="error"
+						action={
+							<IconButton
+								aria-label="close"
+								color="inherit"
+								size="small"
+								onClick={() => {
+									setError(false);
+								}}
+							>
+								<CloseIcon fontSize="inherit" />
+							</IconButton>
+						}
+						sx={{ mb: 2 }}
+					>
+						{errorMessage}
+					</Alert>
+				</Collapse>
+			) : (
+				<div></div>
+			)}
 			<Box
 				sx={{
 					marginTop: 4,

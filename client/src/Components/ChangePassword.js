@@ -12,11 +12,16 @@ function ChangePassword() {
 		const { currentPassword, newPasswordOne, newPasswordTwo } =
 			event.target.elements;
 
+		if (!currentPassword || !newPasswordOne || !newPasswordTwo) {
+			setPwMatch("All fields must be supplied");
+			return false;
+		}
+
 		if (newPasswordOne.value !== newPasswordTwo.value) {
 			setPwMatch("New Passwords do not match, please try again");
 			return false;
 		}
-
+		setPwMatch("");
 		try {
 			await doChangePassword(
 				currentUser.email,
@@ -25,7 +30,11 @@ function ChangePassword() {
 			);
 			alert("Password has been changed, you will now be logged out");
 		} catch (error) {
-			alert(error);
+			if (error.message === "Firebase: Error (auth/wrong-password).") {
+				setPwMatch("Current password is incorrect.");
+			} else {
+				setPwMatch(error.message);
+			}
 		}
 	};
 	if (currentUser.providerData[0].providerId === "password") {

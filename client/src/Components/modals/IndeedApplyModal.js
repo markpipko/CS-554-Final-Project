@@ -28,7 +28,11 @@ function IndeedApplyModal(props) {
 			)
 		) {
 			window.open(url);
-			await newApplicationUpload(currentUser.uid, props.modaljob);
+			try {
+				await newApplicationUpload(currentUser.uid, props.modaljob);
+			} catch (e) {
+				alert(e.message);
+			}
 		}
 	};
 

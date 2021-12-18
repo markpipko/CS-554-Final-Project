@@ -1,5 +1,16 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Card, CardContent, Typography, Grid, Button } from "@mui/material";
+import {
+	Card,
+	CardContent,
+	Typography,
+	Grid,
+	Button,
+	Collapse,
+	IconButton,
+	Alert,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+
 import {
 	BarChart,
 	Bar,
@@ -24,7 +35,7 @@ const useStyles = makeStyles({
 		marginRight: "auto",
 	},
 	card: {
-		minWidth: 250,
+		minWidth: 350,
 		height: "auto",
 		marginLeft: "auto",
 		marginRight: "auto",
@@ -47,6 +58,9 @@ function Applications() {
 	const { currentUser } = useContext(AuthContext);
 	const [jobsData, setJobsData] = useState(undefined);
 	const [applicationData, setApplicationData] = useState(undefined);
+	const [graphError, setGraphError] = useState(false);
+	const [removeError, setRemoveError] = useState(false);
+	const [removeErrorOpen, setRemoveErrorOpen] = useState(false);
 
 	let jobsList = [];
 	let colors = {
@@ -58,39 +72,65 @@ function Applications() {
 
 	useEffect(() => {
 		async function fetchData() {
-			let currentUserData = await getSeeker(currentUser.uid);
-			let applicationObj = {
-				pending: 0,
-				rejected: 0,
-				accepted: 0,
-			};
-			for (let i = 0; i < currentUserData.applications.length; i++) {
-				switch (currentUserData.applications[i].status) {
-					case "Pending":
-						applicationObj.pending++;
-						break;
-					case "Rejected":
-						applicationObj.rejected++;
-						break;
-					case "Accepted":
-						applicationObj.accepted++;
-						break;
-					default:
-						break;
-				}
+			if (!currentUser.uid) {
+				setGraphError(true);
+				return;
 			}
-			setJobsData(currentUserData.applications);
-			setApplicationData(applicationObj);
+			try {
+				let currentUserData = await getSeeker(currentUser.uid);
+				if (!currentUserData) {
+					setGraphError(true);
+					return;
+				}
+				setGraphError(false);
+				let applicationObj = {
+					pending: 0,
+					rejected: 0,
+					accepted: 0,
+				};
+				for (let i = 0; i < currentUserData.applications.length; i++) {
+					switch (currentUserData.applications[i].status) {
+						case "Pending":
+							applicationObj.pending++;
+							break;
+						case "Rejected":
+							applicationObj.rejected++;
+							break;
+						case "Accepted":
+							applicationObj.accepted++;
+							break;
+						default:
+							break;
+					}
+				}
+				setJobsData(currentUserData.applications);
+				setApplicationData(applicationObj);
+			} catch (e) {
+				console.log(e);
+				alert(e.message);
+			}
 		}
 		fetchData();
 	}, [currentUser]);
 
 	async function removeJob(job) {
-		let jobsApplied = await removeJobAppliedFromSeeker(
-			currentUser.uid,
-			job._id
-		);
-		setJobsData(jobsApplied);
+		if (!job._id || currentUser.uid) {
+			setRemoveError(true);
+			setRemoveErrorOpen(true);
+			return;
+		}
+		setRemoveError(false);
+		try {
+			let jobsApplied = await removeJobAppliedFromSeeker(
+				currentUser.uid,
+				job._id
+			);
+			setJobsData(jobsApplied);
+		} catch (e) {
+			setRemoveError(true);
+			setRemoveErrorOpen(true);
+			return;
+		}
 	}
 
 	const buildCards = (job, index) => {
@@ -119,12 +159,7 @@ function Applications() {
 						>
 							{job.title}
 						</Typography>
-						<Typography
-							// style={{ whiteSpace: "pre-wrap" }}
-							gutterBottom
-							variant="body1"
-							component="p"
-						>
+						<Typography gutterBottom variant="body1" component="p">
 							{job.summary}
 						</Typography>
 						<Typography gutterBottom variant="body1" component="p">
@@ -178,6 +213,30 @@ function Applications() {
 	}
 	return (
 		<div>
+			{removeError ? (
+				<Collapse in={removeErrorOpen}>
+					<Alert
+						severity="error"
+						action={
+							<IconButton
+								aria-label="close"
+								color="inherit"
+								size="small"
+								onClick={() => {
+									setRemoveErrorOpen(false);
+								}}
+							>
+								<CloseIcon fontSize="inherit" />
+							</IconButton>
+						}
+						sx={{ mb: 2 }}
+					>
+						Could not remove application. Please try again.
+					</Alert>
+				</Collapse>
+			) : (
+				<div></div>
+			)}
 			<h1>Jobs Applied:</h1>
 
 			<Grid
@@ -191,34 +250,38 @@ function Applications() {
 			</Grid>
 			<br />
 			<h3>Chart:</h3>
-			<BarChart
-				className={classes.chart}
-				width={500}
-				height={300}
-				data={data}
-				margin={{
-					top: 5,
-					right: 30,
-					left: 20,
-					bottom: 5,
-				}}
-				barSize={30}
-			>
-				<CartesianGrid strokeDasharray="3 3" />
-				<XAxis dataKey="name" />
-				<YAxis type="number" domain={[0, 4]} />
-				<Tooltip />
-				<Legend
-					payload={[
-						{
-							id: "Number of Applications",
-							value: "Number of Applications",
-							color: "#706bcc",
-						},
-					]}
-				/>
-				<Bar dataKey="Number of Applications" fill="#706bcc" />
-			</BarChart>
+			{graphError ? (
+				<div>Graph could not be generated</div>
+			) : (
+				<BarChart
+					className={classes.chart}
+					width={500}
+					height={300}
+					data={data}
+					margin={{
+						top: 5,
+						right: 30,
+						left: 20,
+						bottom: 5,
+					}}
+					barSize={30}
+				>
+					<CartesianGrid strokeDasharray="3 3" />
+					<XAxis dataKey="name" />
+					<YAxis type="number" domain={[0, 4]} />
+					<Tooltip />
+					<Legend
+						payload={[
+							{
+								id: "Number of Applications",
+								value: "Number of Applications",
+								color: "#706bcc",
+							},
+						]}
+					/>
+					<Bar dataKey="Number of Applications" fill="#706bcc" />
+				</BarChart>
+			)}
 		</div>
 	);
 }

@@ -10,7 +10,7 @@ import {
 	CircularProgress,
 } from "@mui/material";
 
-function UploadResume(props) {
+function UploadResume() {
 	const [loading, setLoading] = useState(false);
 	const { currentUser } = useContext(AuthContext);
 	const [resumeLink, setResumeLink] = useState("");
@@ -46,6 +46,7 @@ function UploadResume(props) {
 		try {
 			setLoading(true);
 			let postedUrl = await resumeUpload(currentUser.uid, resumeUrl);
+
 			setResumeLink(postedUrl);
 			setLoading(false);
 		} catch (e) {

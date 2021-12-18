@@ -64,6 +64,9 @@ const JobPost = (props) => {
 	const apply = async (jobId) => {
 		setLoading(true);
 		if (!jobId) {
+			props.setErrorOpen(true);
+			props.setError(true);
+			setLoading(false);
 			return;
 		}
 		try {

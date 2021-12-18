@@ -3,7 +3,6 @@ import axios from "axios";
 import {
 	Card,
 	CardContent,
-	CardActions,
 	Typography,
 	Grid,
 	FormControl,
@@ -16,7 +15,7 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { AuthContext } from "../firebase/Auth";
-import { checkEmployer } from "../firebase/FirebaseFunctions";
+import { checkEmployer, doSignOut } from "../firebase/FirebaseFunctions";
 import IndeedApplyModal from "./modals/IndeedApplyModal";
 import { Redirect } from "react-router-dom";
 const useStyles = makeStyles({
@@ -101,6 +100,10 @@ const Jobs = (props) => {
 	}, [currentUser]);
 
 	const checkEmp = async (uid) => {
+		if (!uid) {
+			await doSignOut();
+			<Redirect to="/signin" />;
+		}
 		let res = await checkEmployer(uid);
 		return res;
 	};
