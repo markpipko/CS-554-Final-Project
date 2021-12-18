@@ -9,7 +9,7 @@ import { imageUpload } from "../firebase/FirebaseFunctions";
 import { checkForImage } from "../firebase/FirebaseFunctions";
 import { AuthContext } from "../firebase/Auth";
 import axios from "axios";
-const UploadImage = () => {
+const UploadImage = (props) => {
 	const { currentUser } = useContext(AuthContext);
 	const [image, setImage] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -50,24 +50,35 @@ const UploadImage = () => {
 					"Content-Type": `multipart/form-data; boundary=${fData._boundary}`,
 				},
 			});
+			if (!data) {
+				setError(true);
+				setErrorMessage(e.message);
+				setLoading(false);
+			}
 			setImage(data.img);
-			await imageUpload(currentUser.uid, data.img);
+			await imageUpload(currentUser.uid, props.role);
 			setLoading(false);
 		} catch (e) {
-			console.log(e);
+			console.log(e.message);
 			setError(true);
-			setErrorMessage(e);
+			setErrorMessage(e.message);
 			setLoading(false);
 		}
 	};
 
 	useEffect(() => {
 		async function check() {
-			let res = await checkForImage(currentUser.uid);
-			setImage(res);
+			try {
+				let res = await checkForImage(currentUser.uid, props.role);
+				setImage(res);
+			} catch (e) {
+				console.log(e);
+				setError(true);
+				setErrorMessage(e.message);
+			}
 		}
 		check();
-	}, [currentUser]);
+	}, [currentUser, props.role]);
 
 	return (
 		<div>
