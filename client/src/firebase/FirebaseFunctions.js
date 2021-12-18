@@ -18,19 +18,29 @@ import { getStorage, ref, getDownloadURL, uploadBytes } from "firebase/storage";
 
 const auth = getAuth(firebaseApp);
 
-// let currentUser;
-// onAuthStateChanged(auth, (user) => {
-//     currentUser = user
-//    });
-
+//
 async function doCreateUserWithEmailAndPassword(
 	email,
 	password,
 	role,
 	displayName
 ) {
-	await createUserWithEmailAndPassword(auth, email, password).then(
-		async (user) => {
+	if (!email || !email.trim()) {
+		throw new Error("Email must be provided");
+	}
+	email = email.trim();
+	if (!password) {
+		throw new Error("Password must be provided");
+	}
+	if (!role) {
+		throw new Error("Role must be provided");
+	}
+	if (!displayName || !displayName.trim()) {
+		throw new Error("Display name must be provided");
+	}
+	displayName = displayName.trim();
+	await createUserWithEmailAndPassword(auth, email, password)
+		.then(async (user) => {
 			if (role === "seeker") {
 				await setDoc(doc(db, "seekers", user.user.uid), {
 					uid: user.user.uid,
@@ -40,6 +50,9 @@ async function doCreateUserWithEmailAndPassword(
 					resume: null,
 					imageUrl: "",
 					applications: [],
+				}).catch(function (error) {
+					console.log(error);
+					throw error;
 				});
 			}
 			if (role === "employer") {
@@ -49,22 +62,47 @@ async function doCreateUserWithEmailAndPassword(
 					role: role,
 					displayName: displayName,
 					imageUrl: "",
+				}).catch(function (error) {
+					console.log(error);
+					throw error;
 				});
 			}
-			updateProfile(auth.currentUser, { displayName: displayName });
-		}
-	);
+			updateProfile(auth.currentUser, { displayName: displayName }).catch(
+				function (error) {
+					console.log(error);
+					throw error;
+				}
+			);
+		})
+		.catch(function (error) {
+			console.log(error);
+			throw error;
+		});
 }
 
+//
 async function doChangePassword(email, oldPassword, newPassword) {
 	let credential = EmailAuthProvider.credential(email, oldPassword);
-	await reauthenticateWithCredential(auth.currentUser, credential);
-	await updatePassword(auth.currentUser, newPassword);
-	await doSignOut();
+	await reauthenticateWithCredential(auth.currentUser, credential).catch(
+		function (error) {
+			throw error;
+		}
+	);
+	await updatePassword(auth.currentUser, newPassword).catch(function (error) {
+		throw error;
+	});
+	await doSignOut().catch(function (error) {
+		throw error;
+	});
 }
 
+//
 async function doSignInWithEmailAndPassword(email, password) {
-	await signInWithEmailAndPassword(auth, email, password);
+	await signInWithEmailAndPassword(auth, email, password).catch(function (
+		error
+	) {
+		throw error;
+	});
 }
 
 async function doSocialSignIn(provider) {
@@ -77,19 +115,28 @@ async function doSocialSignIn(provider) {
 	await signInWithPopup(auth, socialProvider);
 }
 
+//
 async function doPasswordReset(email) {
-	await sendPasswordResetEmail(auth, email);
+	if (!email || !email.trim()) {
+		throw new Error("Email must be provided");
+	}
+	await sendPasswordResetEmail(auth, email).catch(function (error) {
+		throw error;
+	});
 }
 
-async function doPasswordUpdate(password) {
-	await updatePassword(auth, password);
-}
-
+//
 async function doSignOut() {
-	await signOut(auth);
+	await signOut(auth).catch(function (error) {
+		throw error;
+	});
 }
 
+//
 async function checkEmployer(uid) {
+	if (!uid) {
+		await doSignOut();
+	}
 	const docRef = doc(db, "employer", uid);
 	const docSnap = await getDoc(docRef);
 	if (docSnap.exists()) {
@@ -99,7 +146,11 @@ async function checkEmployer(uid) {
 	}
 }
 
+//
 async function checkSeekers(uid) {
+	if (!uid) {
+		await doSignOut();
+	}
 	const docRef = doc(db, "seekers", uid);
 	const docSnap = await getDoc(docRef);
 	if (docSnap.exists()) {
@@ -109,43 +160,95 @@ async function checkSeekers(uid) {
 	}
 }
 
+//
 async function getSeeker(uid) {
+	if (!uid) {
+		throw new Error("No uid provided");
+	}
 	const docRef = doc(db, "seekers", uid);
 	const docSnap = await getDoc(docRef);
-	return docSnap.data();
+	if (docSnap.exists()) {
+		return docSnap.data();
+	} else {
+		return [];
+	}
 }
 
-async function checkForImage(uid) {
-	const ref = doc(db, "seekers", uid);
-	const docSnap = await getDoc(ref);
-	if (docSnap.exists()) {
-		if (docSnap.data().imageUrl) {
-			return docSnap.data().imageUrl;
+//
+async function checkForImage(uid, role) {
+	if (!uid) {
+		throw new Error("No uid provided");
+	}
+	if (role === true) {
+		const ref = doc(db, "seekers", uid);
+		const docSnap = await getDoc(ref);
+		if (docSnap.exists()) {
+			if (docSnap.data().imageUrl) {
+				return docSnap.data().imageUrl;
+			} else {
+				return "";
+			}
 		} else {
 			return "";
 		}
 	} else {
-		return "";
+		const ref = doc(db, "employer", uid);
+		const docSnap = await getDoc(ref);
+		if (docSnap.exists()) {
+			if (docSnap.data().imageUrl) {
+				return docSnap.data().imageUrl;
+			} else {
+				return "";
+			}
+		} else {
+			return "";
+		}
 	}
 }
 
-async function imageUpload(uid, url) {
+//
+async function imageUpload(uid, role) {
+	if (!uid) {
+		throw new Error("Uid not provided");
+	}
 	const storage = getStorage();
 	let downloadUrl = await getDownloadURL(
 		ref(storage, `profileImages/${uid}.jpg`)
-	);
-	const userRef = doc(db, "seekers", uid);
-	await updateDoc(userRef, {
-		imageUrl: downloadUrl,
+	).catch(function (error) {
+		throw error;
 	});
+	if (role === true) {
+		const userRef = doc(db, "seekers", uid);
+		await updateDoc(userRef, {
+			imageUrl: downloadUrl,
+		}).catch(function (error) {
+			throw error;
+		});
+	} else {
+		const userRef = doc(db, "employer", uid);
+		await updateDoc(userRef, {
+			imageUrl: downloadUrl,
+		}).catch(function (error) {
+			throw error;
+		});
+	}
+
 	return downloadUrl;
 }
 
+//
 async function resumeUpload(uid, resumeName) {
+	if (!uid || !resumeName) {
+		throw new Error("Uid or resume not provided");
+	}
 	const storage = getStorage();
 	const storageRef = ref(storage, `resumes/${uid}`);
 	await uploadBytes(storageRef, resumeName);
-	let downloadUrl = await getDownloadURL(ref(storage, `resumes/${uid}`));
+	let downloadUrl = await getDownloadURL(ref(storage, `resumes/${uid}`)).catch(
+		function (error) {
+			throw error;
+		}
+	);
 	const userRef = doc(db, "seekers", uid);
 	await updateDoc(userRef, {
 		resume: downloadUrl,
@@ -153,9 +256,16 @@ async function resumeUpload(uid, resumeName) {
 	return downloadUrl;
 }
 
+//
 async function newApplicationUpload(uid, job) {
+	if (!uid || !job) {
+		throw new Error("Uid or job not provided");
+	}
 	const userRef = doc(db, "seekers", uid);
 	const userSnap = await getDoc(userRef);
+	if (!userSnap.exists()) {
+		throw new Error("User data does not exist");
+	}
 
 	let currentApplications = userSnap.data().applications;
 
@@ -183,8 +293,15 @@ async function newApplicationUpload(uid, job) {
 }
 
 async function removeJobAppliedFromSeeker(uid, jobId) {
+	if (!uid || !jobId) {
+		throw new Error("Uid or jobId not provided");
+	}
 	const userRef = doc(db, "seekers", uid);
 	const userSnap = await getDoc(userRef);
+
+	if (!userSnap.exists()) {
+		throw new Error("User data does not exist");
+	}
 
 	let currentApplications = userSnap.data().applications;
 
@@ -196,16 +313,10 @@ async function removeJobAppliedFromSeeker(uid, jobId) {
 	return filteredApplications;
 }
 
-async function getApplicationsForSeeker(uid) {
-	const userRef = doc(db, "seekers", uid);
-	const userSnap = await getDoc(userRef);
-
-	let currentApplications = userSnap.data().applications;
-	if (currentApplications) return currentApplications;
-	else return [];
-}
-
 async function retrieveCurrentApplicants(jobUid) {
+	if (!jobUid) {
+		throw new Error("Job uid not provided");
+	}
 	const jobRef = doc(db, "posts", jobUid);
 	const jobSnap = await getDoc(jobRef);
 	if (jobSnap.exists()) {
@@ -258,6 +369,9 @@ async function getFieldNumbers() {
 }
 
 async function updateFieldNumbers(field) {
+	if (!field) {
+		throw new Error("Field not provided");
+	}
 	const postRef = doc(db, "posts", "fieldsDoc");
 	const postSnap = await getDoc(postRef);
 	if (postSnap.exists()) {
@@ -272,7 +386,6 @@ export {
 	doSocialSignIn,
 	doSignInWithEmailAndPassword,
 	doPasswordReset,
-	doPasswordUpdate,
 	doSignOut,
 	doChangePassword,
 	checkEmployer,
@@ -283,7 +396,6 @@ export {
 	resumeUpload,
 	newApplicationUpload,
 	removeJobAppliedFromSeeker,
-	getApplicationsForSeeker,
 	retrieveCurrentApplicants,
 	getFieldNumbers,
 	updateFieldNumbers,
