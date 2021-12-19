@@ -15,7 +15,11 @@ const {
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 
-router.post("/search", async (req, res, next) => {
+router.post("/search", authenticate, async (req, res, next) => {
+	let uid = await getUserById(req.headers.token);
+	if (!uid) {
+		return res.status(403).json({ error: "User is not authenticated" });
+	}
 	let searchReq = req.body;
 
 	if (
@@ -55,7 +59,11 @@ router.post("/search", async (req, res, next) => {
 	}
 });
 
-router.post("/search", async (req, res) => {
+router.post("/search", authenticate, async (req, res) => {
+	let uid = await getUserById(req.headers.token);
+	if (!uid) {
+		return res.status(403).json({ error: "User is not authenticated" });
+	}
 	let searchReq = req.body;
 
 	if (
@@ -126,11 +134,11 @@ router.post("/apply", authenticate, async (req, res) => {
 	try {
 		let companyEmail = await apply(uid, applyReq.jobUid);
 
-		// let status = await applyData.sendEmail(
-		// 	companyEmail,
-		// 	"New Application Received",
-		// 	"A user on Jobaroo has just applied to your job post. Check Jobaroo for more details"
-		// );
+		let status = await applyData.sendEmail(
+			companyEmail,
+			"New Application Received",
+			"A user on Jobaroo has just applied to your job post. Check Jobaroo for more details"
+		);
 		return res.status(200).json({ message: "success" });
 	} catch (e) {
 		console.log(e);
@@ -185,11 +193,11 @@ router.post("/changeStatus", authenticate, async (req, res) => {
 			statusReq.decision
 		);
 
-		// let status = await applyData.sendEmail(
-		// 	userEmail,
-		// 	"Application Update",
-		// 	"One of your applications recently had a status update. Check Jobaroo for more details"
-		// );
+		let status = await applyData.sendEmail(
+			userEmail,
+			"Application Update",
+			"One of your applications recently had a status update. Check Jobaroo for more details"
+		);
 		return res.status(200).json({ message: "success" });
 	} catch (e) {
 		return res.status(500).json({ error: e });

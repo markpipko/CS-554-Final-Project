@@ -67,6 +67,7 @@ const Jobs = (props) => {
 	const [zipErrorMessage, setZipErrorMessage] = useState("");
 	const [typeError, setTypeError] = useState(false);
 	const [typeErrorMessage, setTypeErrorMessage] = useState("");
+	const [token, setToken] = useState(null);
 
 	const [showIndeedApplyModal, setShowIndeedApplyModal] = useState(false);
 	const [modalJob, setModalJob] = useState({
@@ -90,6 +91,12 @@ const Jobs = (props) => {
 	};
 
 	const { currentUser } = useContext(AuthContext);
+
+	if (currentUser) {
+		currentUser.getIdToken().then((t) => {
+			setToken(t);
+		});
+	}
 
 	useEffect(() => {
 		async function check() {
@@ -153,7 +160,11 @@ const Jobs = (props) => {
 		setTypeError(false);
 		setTypeErrorMessage("");
 		try {
-			const { data } = await axios.post("/jobs/search", formData);
+			const { data } = await axios.post("/jobs/search", formData, {
+				headers: {
+					token: token,
+				},
+			});
 			setJobsData(data);
 			setTotalPages(Math.ceil(Number(data.length) / 20));
 			setLoading(false);
