@@ -104,7 +104,7 @@ router.post("/search", authenticate, async (req, res) => {
 			`query: ${searchReq.query}, zip: ${searchReq.zip}, jobType: ${searchReq.jobType}`,
 			JSON.stringify(jobsPage),
 			"EX",
-			300
+			600
 		);
 
 		return res.status(200).send(jobsPage);

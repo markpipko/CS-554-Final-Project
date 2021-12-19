@@ -114,7 +114,7 @@ function Applications() {
 	}, [currentUser]);
 
 	async function removeJob(job) {
-		if (!job._id || currentUser.uid) {
+		if (!job._id || !currentUser.uid) {
 			setRemoveError(true);
 			setRemoveErrorOpen(true);
 			return;

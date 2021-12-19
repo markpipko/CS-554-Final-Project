@@ -116,7 +116,11 @@ const JobPost = (props) => {
 			key={props.id + props.index}
 			style={{ display: "flex" }}
 		>
-			<Card className={classes.card} variant="outlined">
+			<Card
+				className={classes.card}
+				variant="outlined"
+				style={{ display: "flex", flexDirection: "column" }}
+			>
 				<CardContent>
 					<Typography
 						className={classes.titleHead}
