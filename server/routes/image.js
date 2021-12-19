@@ -33,7 +33,7 @@ const transformImage = async (image) => {
 			.resize(240, 240)
 			.toBuffer("JPG", function (err, buffer) {
 				if (err) {
-					console.log(error);
+					console.log(err);
 					reject(err);
 				} else {
 					resolve(buffer);
