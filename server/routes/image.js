@@ -25,6 +25,9 @@ const upload = multer({
 });
 
 const transformImage = async (image) => {
+	if (!image) {
+		throw "Image not provided";
+	}
 	return new Promise((resolve, reject) => {
 		gm(image)
 			.resize(240, 240)
@@ -44,17 +47,17 @@ router.post(
 	upload.single("photo"),
 	async (req, res) => {
 		if (req.file) {
-			let transformed = await transformImage(req.file.buffer);
-			let uid = await getUserById(req.headers.token);
-			if (uid) {
-				try {
+			try {
+				let transformed = await transformImage(req.file.buffer);
+				let uid = await getUserById(req.headers.token);
+				if (uid) {
 					let url = await uploadImage(uid, transformed);
 					return res.status(200).json({ img: url });
-				} catch (e) {
-					return res.status(500).json({ error: e });
+				} else {
+					return res.status(403).json({ message: "User is not authenticated" });
 				}
-			} else {
-				return res.status(403).json({ message: "User is not authenticated" });
+			} catch (e) {
+				return res.status(500).json({ error: e });
 			}
 		} else {
 			return res.status(400).json({ message: "Error: No file provided" });
