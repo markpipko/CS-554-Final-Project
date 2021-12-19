@@ -64,6 +64,9 @@ const JobPost = (props) => {
 	const apply = async (jobId) => {
 		setLoading(true);
 		if (!jobId) {
+			props.setErrorOpen(true);
+			props.setError(true);
+			setLoading(false);
 			return;
 		}
 		try {
@@ -95,6 +98,9 @@ const JobPost = (props) => {
 	};
 
 	function findLoc(zip) {
+		if (!zip) {
+			return ``;
+		}
 		try {
 			let loc = zipcodes.lookup(zip);
 			return `${loc.city}, ${loc.state}`;
@@ -113,7 +119,11 @@ const JobPost = (props) => {
 			key={props.id + props.index}
 			style={{ display: "flex" }}
 		>
-			<Card className={classes.card} variant="outlined">
+			<Card
+				className={classes.card}
+				variant="outlined"
+				style={{ display: "flex", flexDirection: "column" }}
+			>
 				<CardContent>
 					<Typography
 						className={classes.titleHead}

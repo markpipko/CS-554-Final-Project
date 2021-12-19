@@ -4,10 +4,10 @@ import { AuthContext } from "../firebase/Auth";
 import SignOutButton from "./SignOut";
 import "../App.css";
 import { AppBar, Toolbar, Grid, Tabs, Tab } from "@mui/material";
-import { checkEmployer } from "../firebase/FirebaseFunctions";
+import { checkEmployer, doSignOut } from "../firebase/FirebaseFunctions";
 import { useLocation } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
-
+import { Redirect } from "react-router";
 const useStyles = makeStyles({
 	navBarNon: {
 		"background-color": "white",
@@ -47,6 +47,10 @@ const NavigationAuth = () => {
 	const classes = useStyles();
 
 	const checkEmp = async (uid) => {
+		if (!uid) {
+			await doSignOut();
+			<Redirect to="/signin" />;
+		}
 		let res = await checkEmployer(uid);
 		return res;
 	};

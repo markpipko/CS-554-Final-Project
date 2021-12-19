@@ -6,7 +6,6 @@ import {
 	Typography,
 	Grid,
 	FormControl,
-	InputLabel,
 	TextField,
 	MenuItem,
 	Button,
@@ -16,7 +15,7 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { AuthContext } from "../firebase/Auth";
-import { checkEmployer } from "../firebase/FirebaseFunctions";
+import { checkEmployer, doSignOut } from "../firebase/FirebaseFunctions";
 import IndeedApplyModal from "./modals/IndeedApplyModal";
 import { Redirect } from "react-router-dom";
 const useStyles = makeStyles({
@@ -68,6 +67,7 @@ const Jobs = (props) => {
 	const [zipErrorMessage, setZipErrorMessage] = useState("");
 	const [typeError, setTypeError] = useState(false);
 	const [typeErrorMessage, setTypeErrorMessage] = useState("");
+	const [token, setToken] = useState(null);
 
 	const [showIndeedApplyModal, setShowIndeedApplyModal] = useState(false);
 	const [modalJob, setModalJob] = useState({
@@ -92,6 +92,12 @@ const Jobs = (props) => {
 
 	const { currentUser } = useContext(AuthContext);
 
+	if (currentUser) {
+		currentUser.getIdToken().then((t) => {
+			setToken(t);
+		});
+	}
+
 	useEffect(() => {
 		async function check() {
 			let res = await checkEmp(currentUser.uid);
@@ -101,6 +107,10 @@ const Jobs = (props) => {
 	}, [currentUser]);
 
 	const checkEmp = async (uid) => {
+		if (!uid) {
+			await doSignOut();
+			<Redirect to="/signin" />;
+		}
 		let res = await checkEmployer(uid);
 		return res;
 	};
@@ -150,7 +160,11 @@ const Jobs = (props) => {
 		setTypeError(false);
 		setTypeErrorMessage("");
 		try {
-			const { data } = await axios.post("/jobs/search", formData);
+			const { data } = await axios.post("/jobs/search", formData, {
+				headers: {
+					token: token,
+				},
+			});
 			setJobsData(data);
 			setTotalPages(Math.ceil(Number(data.length) / 20));
 			setLoading(false);
@@ -160,16 +174,6 @@ const Jobs = (props) => {
 			setLoading(false);
 		}
 	};
-
-	// const handleApply = (url) => {
-	// 	if (
-	// 		window.confirm(
-	// 			"This will take you to the job listing on Indeed. Do you wish to proceed?"
-	// 		)
-	// 	) {
-	// 		window.open(url);
-	// 	}
-	// };
 
 	const buildCards = (job, index) => {
 		return (
@@ -183,7 +187,11 @@ const Jobs = (props) => {
 				key={index}
 				style={{ display: "flex" }}
 			>
-				<Card className={classes.card} variant="outlined">
+				<Card
+					className={classes.card}
+					variant="outlined"
+					style={{ display: "flex", flexDirection: "column" }}
+				>
 					<CardContent>
 						<Typography
 							className={classes.titleHead}
@@ -193,12 +201,7 @@ const Jobs = (props) => {
 						>
 							{job.title}
 						</Typography>
-						<Typography
-							// style={{ whiteSpace: "pre-wrap" }}
-							gutterBottom
-							variant="body1"
-							component="p"
-						>
+						<Typography gutterBottom variant="body1" component="p">
 							{job.summary}
 						</Typography>
 						<Typography gutterBottom variant="body1" component="p">
@@ -209,14 +212,13 @@ const Jobs = (props) => {
 						</Typography>
 					</CardContent>
 					<CardContent style={{ marginTop: "auto" }}>
-						<button
-							className="button"
+						<Button
 							onClick={() => {
 								handleOpenIndeedApplyModal(job);
 							}}
 						>
 							See More
-						</button>
+						</Button>
 					</CardContent>
 				</Card>
 			</Grid>
@@ -237,7 +239,6 @@ const Jobs = (props) => {
 			<br />
 			<FormControl>
 				<FormGroup>
-					<InputLabel id="query" htmlFor="query"></InputLabel>
 					<TextField
 						id="query"
 						variant="outlined"
@@ -251,13 +252,11 @@ const Jobs = (props) => {
 				</FormGroup>
 				<br />
 				<FormGroup>
-					<InputLabel id="zip" htmlFor="zip"></InputLabel>
 					<TextField
 						id="outlined-basic"
 						label="Zip Code"
 						name="zip"
 						onChange={(e) => handleChange(e)}
-						pattern="[0-9]{5}"
 						required
 						error={!!zipError}
 						helperText={zipErrorMessage}
@@ -271,7 +270,6 @@ const Jobs = (props) => {
 						label="Job Type"
 						onChange={(e) => handleChange(e)}
 						name="jobType"
-						id="jobType"
 						error={!!typeError}
 						helperText={typeErrorMessage}
 					>
@@ -281,7 +279,12 @@ const Jobs = (props) => {
 					</TextField>
 				</FormGroup>
 				<br />
-				<Button type="submit" variant="contained" onClick={(e) => search(e)}>
+				<Button
+					type="submit"
+					variant="contained"
+					onClick={(e) => search(e)}
+					disabled={loading}
+				>
 					Submit
 				</Button>
 			</FormControl>
@@ -305,21 +308,24 @@ const Jobs = (props) => {
 						classes={{ ul: classes.paginator }}
 					/>
 					<br />
-					<Grid
-						container
-						className={classes.grid}
-						spacing={5}
-						alignItems="stretch"
-						style={{marginBottom:"15px", padding:"10px"}}
-					>
-						{jobsList}
-					</Grid>
+					{jobsData && jobsData.length > 0 ? (
+						<Grid
+							container
+							className={classes.grid}
+							spacing={5}
+							alignItems="stretch"
+							style={{ marginBottom: "15px", padding: "10px" }}
+						>
+							{jobsList}
+						</Grid>
+					) : (
+						<div>No search results found</div>
+					)}
 
 					<IndeedApplyModal
 						show={showIndeedApplyModal}
 						onHide={handleCloseIndeedApplyModal}
 						modaljob={modalJob}
-						//  apply = {handleApply}
 					/>
 				</div>
 			) : (
