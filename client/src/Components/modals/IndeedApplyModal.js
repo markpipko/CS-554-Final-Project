@@ -41,8 +41,9 @@ function IndeedApplyModal(props) {
 				<div>
 					{/* To see the full job listing on Indeed: <br /> */}
 					<Button
-						variant="primary"
+						
 						onClick={() => handleApply(props.modaljob.url)}
+						style={{"background-color": "#0072ee"}}
 					>
 						Apply
 					</Button>
