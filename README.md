@@ -12,3 +12,12 @@ We recommend using real emails that you have access to when signing up for eithe
 
 ## To seed the database:  
 We have already populated the Firestore DB, but you can do ```cd server``` and then ```npm run seed``` for some additional seeding.   
+
+The created seeded employers are:
+1. email: cmoon1@stevens.edu    password: cmpass     company posted: Amazon
+2. email: mpipko@stevens.edu    password: mppass    company posted: Tesla
+3. email: mkoerner@stevens.edu  password: mkpass    company posted: Microsoft
+
+The created seeded seekers are:
+1. email: eyarosla@stevens.edu  password: eypass
+2. email: mevanego@stevens.edu  password: mepass
