@@ -95,7 +95,7 @@ function ChangePassword() {
 			<div>
 				<h2>
 					You are signed in using a Social Media Provider, You cannot change
-					your password
+					your password.
 				</h2>
 			</div>
 		);
