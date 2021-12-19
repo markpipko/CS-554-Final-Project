@@ -5,9 +5,13 @@ import { Redirect } from "react-router";
 import { AuthContext } from "../firebase/Auth";
 const SignOutButton = () => {
 	const { currentUser } = useContext(AuthContext);
-	const handleSignout = () => {
-		doSignOut();
-		<Redirect to="/signin" />;
+	const handleSignout = async () => {
+		try {
+			await doSignOut();
+			<Redirect to="/signin" />;
+		} catch (e) {
+			alert(e);
+		}
 	};
 
 	return (

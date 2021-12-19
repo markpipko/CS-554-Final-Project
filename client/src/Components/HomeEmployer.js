@@ -44,6 +44,11 @@ function HomeEmployer() {
 			);
 
 			const querySnapshot = await getDocs(q);
+			if (!querySnapshot) {
+				setSearchError(true);
+				setLoading(false);
+				return;
+			}
 			setData(querySnapshot);
 
 			setLoading(false);

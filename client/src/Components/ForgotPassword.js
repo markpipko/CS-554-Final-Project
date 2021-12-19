@@ -21,7 +21,7 @@ const ForgotPassword = () => {
 	const [emailErrorMessage, setEmailErrorMessage] = useState("");
 	const [status, setStatus] = useState(false);
 	const [error, setError] = useState(false);
-	const [errorOpen, setErrorOpen] = useState(false);
+	const [errorMessage, setErrorMessage] = useState("");
 	const [infoOpen, setInfoOpen] = useState(false);
 	const { currentUser } = useContext(AuthContext);
 
@@ -33,7 +33,7 @@ const ForgotPassword = () => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 	};
 
-	const passwordReset = (e) => {
+	const passwordReset = async (e) => {
 		e.preventDefault();
 		if (!formData.email || !formData.email.trim()) {
 			setEmailError(true);
@@ -43,12 +43,17 @@ const ForgotPassword = () => {
 		setEmailError(false);
 		setEmailErrorMessage("");
 		try {
-			doPasswordReset(formData.email);
+			await doPasswordReset(formData.email.trim());
 			setInfoOpen(true);
 			setStatus(true);
 		} catch (e) {
-			setErrorOpen(true);
-			setError(true);
+			if (e.message === "Firebase: Error (auth/user-not-found).") {
+				setInfoOpen(true);
+				setStatus(true);
+			} else {
+				setErrorMessage(e.message);
+				setError(true);
+			}
 		}
 	};
 	return (
@@ -83,7 +88,7 @@ const ForgotPassword = () => {
 				<div></div>
 			)}
 			{error ? (
-				<Collapse in={errorOpen}>
+				<Collapse in={error}>
 					<Alert
 						severity="error"
 						action={
@@ -92,7 +97,7 @@ const ForgotPassword = () => {
 								color="inherit"
 								size="small"
 								onClick={() => {
-									setErrorOpen(false);
+									setError(false);
 								}}
 							>
 								<CloseIcon fontSize="inherit" />
@@ -100,7 +105,7 @@ const ForgotPassword = () => {
 						}
 						sx={{ mb: 2 }}
 					>
-						Could not process your request. Please try again.
+						{errorMessage}
 					</Alert>
 				</Collapse>
 			) : (

@@ -19,11 +19,10 @@ function Account() {
 		}
 		fetchData();
 	}, [currentUser]);
-
 	return (
 		<div>
 			<h1>Account Page</h1>
-			<UploadImage />
+			<UploadImage role={seeker} />
 			<br />
 			{seeker && <UploadResume />}
 			<br />
