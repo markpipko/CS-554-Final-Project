@@ -3,7 +3,7 @@ import { db } from "../firebase/Firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { AuthContext } from "../firebase/Auth";
 import ApplicantsModal from "./modals/ApplicantsModal";
-import { retrieveCurrentApplicants } from "../firebase/FirebaseFunctions";
+import { checkEmployer, retrieveCurrentApplicants } from "../firebase/FirebaseFunctions";
 import {
 	Collapse,
 	Alert,
@@ -13,9 +13,11 @@ import {
 	Typography,
 	Grid,
 	Button,
+	CircularProgress
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import CloseIcon from "@mui/icons-material/Close";
+import { Redirect } from "react-router";
 
 const useStyles = makeStyles({
 	chart: {
@@ -44,8 +46,9 @@ const useStyles = makeStyles({
 	},
 });
 
-function MyPosts() {
+function MyPosts(props) {
 	const { currentUser } = useContext(AuthContext);
+	const [isEmployer, setIsEmployer] = useState(undefined);
 	const [posts, setPosts] = useState(undefined);
 	const [showModal, setShowModal] = useState(false);
 	const [modalApplicants, setModalApplicants] = useState([]);
@@ -54,8 +57,21 @@ function MyPosts() {
 	const classes = useStyles();
 
 	useEffect(() => {
+		async function fetchData() {
+			let isEmployer = await checkEmployer(currentUser.uid);
+			if (!isEmployer) {
+				setIsEmployer(false);
+			}
+			else {
+				setIsEmployer(true);
+			}
+		}
+		fetchData();
+	}, []);
+
+	useEffect(() => {
 		async function postings() {
-			try {
+			try {				
 				const q = query(
 					collection(db, "posts"),
 					where("email", "==", currentUser.email)
@@ -71,6 +87,15 @@ function MyPosts() {
 
 		postings();
 	}, [currentUser]);
+	
+
+	if (isEmployer === undefined) {
+		return <CircularProgress />;
+	}
+	else if (!isEmployer) {
+		return <Redirect to="/home" />;
+	}
+
 	const handleOpenModal = async (id) => {
 		if (!id) {
 			return;

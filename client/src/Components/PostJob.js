@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
 	FormControl,
 	TextField,
@@ -15,7 +15,7 @@ import { getAuth } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase/Firebase";
 import { Redirect } from "react-router-dom";
-import { updateFieldNumbers } from "../firebase/FirebaseFunctions";
+import { checkEmployer, updateFieldNumbers } from "../firebase/FirebaseFunctions";
 const PostJob = (props) => {
 	const [formData, setFormData] = useState({
 		title: "",
@@ -25,6 +25,7 @@ const PostJob = (props) => {
 		jobType: "entry_level",
 	});
 	const { currentUser } = getAuth();
+	const [isEmployer, setIsEmployer] = useState(undefined);
 	const [status, setStatus] = useState(false);
 	const [error, setError] = useState(false);
 	const [infoOpen, setInfoOpen] = useState(false);
@@ -43,9 +44,25 @@ const PostJob = (props) => {
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 	};
+	
+	useEffect(() => {
+		async function fetchData() {
+			let employer = await checkEmployer(currentUser.uid);
+			if (!employer) {
+				setIsEmployer(false);
+			}
+			else {
+				setIsEmployer(true);
+			}
+		}
+		fetchData();
+	}, []);
 
-	if (!props.employer) {
-		<Redirect to="/home" />;
+	if (isEmployer === undefined) {
+		return <CircularProgress />;
+	}
+	else if (!isEmployer) {
+		return <Redirect to="/home" />;
 	}
 
 	const post = async (e) => {
