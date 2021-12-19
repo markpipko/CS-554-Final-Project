@@ -73,7 +73,6 @@ function Applications() {
 				rejected: 0,
 				accepted: 0,
 			};
-			console.log(currentUserData)
 			for (let i = 0; i < currentUserData.applications.length; i++) {
 				switch (currentUserData.applications[i].status) {
 					case "Pending":
@@ -182,7 +181,7 @@ function Applications() {
 	}
 	return (
 		<div>
-			<h3>Jobs Applied:</h3>
+			<h1>Jobs Applied:</h1>
 
 			<Grid
 				container
@@ -213,7 +212,7 @@ function Applications() {
 				<YAxis type="number" domain={[0, 4]} />
 				<Tooltip />
 				<Legend />
-				<Bar dataKey="Number of Applications" fill="#8884d8" />
+				<Bar dataKey="Number of Applications" fill="#706bcc" stroke="#706bcc" />
 			</BarChart>
 		</div>
 	);

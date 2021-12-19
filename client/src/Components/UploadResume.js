@@ -38,8 +38,8 @@ function UploadResume(props) {
 
 	return (
 		<div>
-			<h3>Upload Resume</h3>
-			<h5>
+			<h2>Upload Resume</h2>
+			<h3>
 				Current Resume:{" "}
 				{resumeLink ? (
 					<div>
@@ -51,7 +51,7 @@ function UploadResume(props) {
 				) : (
 					<div></div>
 				)}
-			</h5>
+			</h3>
 			<br />
 			{loading ? <CircularProgress /> : <div></div>}
 			<br />
