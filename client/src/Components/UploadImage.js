@@ -9,11 +9,13 @@ import { imageUpload } from "../firebase/FirebaseFunctions";
 import { checkForImage } from "../firebase/FirebaseFunctions";
 import { AuthContext } from "../firebase/Auth";
 import axios from "axios";
-const UploadImage = () => {
+const UploadImage = (props) => {
 	const { currentUser } = useContext(AuthContext);
 	const [image, setImage] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [token, setToken] = useState(null);
+	const [error, setError] = useState(false);
+	const [errorMessage, setErrorMessage] = useState("");
 
 	if (currentUser) {
 		currentUser.getIdToken().then((t) => {
@@ -22,6 +24,22 @@ const UploadImage = () => {
 	}
 	const handleChange = async (e) => {
 		let imageUrl = e.target.files[0];
+		if (!imageUrl) {
+			setError(true);
+			setErrorMessage("No image was attached. Please attach an image.");
+			setLoading(false);
+			return;
+		}
+		if (imageUrl.size / 1024 / 1024 > 5) {
+			setError(true);
+			setErrorMessage(
+				"The size of your profile image is too big. Images must be < 5 MB"
+			);
+			setLoading(false);
+			return;
+		}
+		setError(false);
+		setErrorMessage("");
 		try {
 			setLoading(true);
 			let fData = new FormData();
@@ -32,23 +50,35 @@ const UploadImage = () => {
 					"Content-Type": `multipart/form-data; boundary=${fData._boundary}`,
 				},
 			});
-			console.log(data);
+			if (!data) {
+				setError(true);
+				setErrorMessage(e.message);
+				setLoading(false);
+			}
 			setImage(data.img);
-			await imageUpload(currentUser.uid, data.img);
+			await imageUpload(currentUser.uid, props.role);
 			setLoading(false);
 		} catch (e) {
+			console.log(e.message);
+			setError(true);
+			setErrorMessage(e.message);
 			setLoading(false);
-			console.log(e);
 		}
 	};
 
 	useEffect(() => {
 		async function check() {
-			let res = await checkForImage(currentUser.uid);
-			setImage(res);
+			try {
+				let res = await checkForImage(currentUser.uid, props.role);
+				setImage(res);
+			} catch (e) {
+				console.log(e);
+				setError(true);
+				setErrorMessage(e.message);
+			}
 		}
 		check();
-	}, [currentUser]);
+	}, [currentUser, props.role]);
 
 	return (
 		<div>
@@ -64,21 +94,25 @@ const UploadImage = () => {
 				/>
 			)}
 			<br />
+			{error ? errorMessage : <div></div>}
 			<br />
 			{loading ? <CircularProgress /> : <div></div>}
 			<br />
 			<FormControl>
 				<FormGroup>
-					<Button variant="contained" component="label" disabled={loading}>
-						{!image ? "Upload Profile Image" : "Change Profile Image"}
+					<label htmlFor="uploadImage">
 						<input
-							type="file"
-							name="imageUrl"
-							hidden
 							accept="image/*"
+							id="uploadImage"
+							type="file"
 							onChange={(e) => handleChange(e)}
+							name="uploadImage"
+							hidden
 						/>
-					</Button>
+						<Button variant="contained" disabled={loading} component="span">
+							{!image ? "Upload Profile Image" : "Change Profile Image"}
+						</Button>
+					</label>
 				</FormGroup>
 			</FormControl>
 		</div>

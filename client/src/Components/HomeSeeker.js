@@ -2,7 +2,6 @@ import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../firebase/Auth";
 import {
 	FormControl,
-	InputLabel,
 	TextField,
 	CircularProgress,
 	FormGroup,
@@ -91,7 +90,6 @@ function HomeSeeker() {
 				jobTypes.push({ name: key, "Number of Postings": tempFields[key] });
 			}
 			setGraphData(jobTypes);
-			// console.log(graphData);
 		}
 		load();
 	}, [currentUser]);
@@ -127,6 +125,11 @@ function HomeSeeker() {
 				);
 
 				const querySnapshot = await getDocs(q);
+				if (!querySnapshot) {
+					setSearchError(true);
+					setLoading(false);
+					return;
+				}
 				setData(querySnapshot);
 
 				setLoading(false);
@@ -143,6 +146,11 @@ function HomeSeeker() {
 				);
 
 				const querySnapshot = await getDocs(q);
+				if (!querySnapshot) {
+					setSearchError(true);
+					setLoading(false);
+					return;
+				}
 				setData(querySnapshot);
 
 				setLoading(false);
@@ -159,6 +167,11 @@ function HomeSeeker() {
 				);
 
 				const querySnapshot = await getDocs(q);
+				if (!querySnapshot) {
+					setSearchError(true);
+					setLoading(false);
+					return;
+				}
 				setData(querySnapshot);
 
 				setLoading(false);
@@ -184,7 +197,6 @@ function HomeSeeker() {
 		<FormControl>
 			<Stack spacing={2} sx={{ width: 500 }}>
 				<FormGroup>
-					<InputLabel id="query" htmlFor="query"></InputLabel>
 					<TextField
 						id="query"
 						variant="outlined"

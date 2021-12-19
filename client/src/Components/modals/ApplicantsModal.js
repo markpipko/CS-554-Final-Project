@@ -1,4 +1,3 @@
-// import { Modal, Button, Table } from "react-bootstrap";
 import React, { useState } from "react";
 import ApplicantTable from "./ApplicantTable";
 import {
