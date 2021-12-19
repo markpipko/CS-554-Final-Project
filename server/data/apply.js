@@ -18,7 +18,11 @@ const exportedMethods = {
 				from: '"Jobaroo Admin" <stevensjobaroo@gmail.com>',
 				to: email,
 				subject: subject,
-				text: text,
+				text:
+					text +
+					"\n\n**This email is for a school project at Stevens Institute of Technology. " +
+					"If you believe you have received this email by mistake, please disregard this email as we may have accidently used your email for testing purposes. " +
+					"We apologize for any inconvenience.",
 			};
 
 			let info = await transporter.sendMail(mailOptions);
