@@ -38,14 +38,14 @@ async function main() {
 
     await admin.auth().createUser({
         email: seedEmployer1.email,
-        password: "cpass",
+        password: "cmpass",
         displayName: seedEmployer1.displayName,
         uid: "seedEmployer1"
     });
 
     await admin.auth().createUser({
         email: seedSeeker1.email,
-        password: "epass",
+        password: "eypass",
         displayName: seedSeeker1.displayName,
         uid: "seedSeeker1"
     });
