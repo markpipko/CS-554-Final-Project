@@ -46,7 +46,10 @@ function SignIn() {
 		setPasswordErrorMessage("");
 
 		try {
-			await doSignInWithEmailAndPassword(formData.email, formData.password);
+			await doSignInWithEmailAndPassword(
+				formData.email.trim(),
+				formData.password
+			);
 		} catch (error) {
 			setLoginError(true);
 			setEmailError(true);

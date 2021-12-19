@@ -101,10 +101,10 @@ const PostJob = (props) => {
 			await addDoc(collection(db, "posts"), {
 				company: currentUser.displayName,
 				email: currentUser.email,
-				title: formData.title,
+				title: formData.title.trim(),
 				field: formData.field,
-				summary: formData.summary,
-				zip: formData.zip,
+				summary: formData.summary.trim(),
+				zip: formData.zip.trim(),
 				jobType: formData.jobType,
 				applicants: [],
 			});

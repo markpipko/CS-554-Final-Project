@@ -98,6 +98,9 @@ const JobPost = (props) => {
 	};
 
 	function findLoc(zip) {
+		if (!zip) {
+			return ``;
+		}
 		try {
 			let loc = zipcodes.lookup(zip);
 			return `${loc.city}, ${loc.state}`;

@@ -238,16 +238,20 @@ function Applications() {
 				<div></div>
 			)}
 			<h1>Jobs Applied:</h1>
+			{jobsData && jobsData.length > 0 ? (
+				<Grid
+					container
+					className={classes.grid}
+					spacing={5}
+					alignItems="stretch"
+					style={{ marginBottom: "15px", padding: "10px" }}
+				>
+					{jobsList}
+				</Grid>
+			) : (
+				<div>No applications found. </div>
+			)}
 
-			<Grid
-				container
-				className={classes.grid}
-				spacing={5}
-				alignItems="stretch"
-				style={{ marginBottom: "15px", padding: "10px" }}
-			>
-				{jobsList}
-			</Grid>
 			<br />
 			<h3>Chart:</h3>
 			{graphError ? (
