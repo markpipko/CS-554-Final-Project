@@ -55,13 +55,18 @@ function MyPosts() {
 
 	useEffect(() => {
 		async function postings() {
-			const q = query(
-				collection(db, "posts"),
-				where("email", "==", currentUser.email)
-			);
+			try {
+				const q = query(
+					collection(db, "posts"),
+					where("email", "==", currentUser.email)
+				);
 
-			const querySnapshot = await getDocs(q);
-			setPosts(querySnapshot);
+				const querySnapshot = await getDocs(q);
+				setPosts(querySnapshot);
+			} catch (e) {
+				setError(true);
+				setErrorMessage(e.message);
+			}
 		}
 
 		postings();

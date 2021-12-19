@@ -106,10 +106,10 @@ function SignUp() {
 
 		try {
 			await doCreateUserWithEmailAndPassword(
-				formData.email,
+				formData.email.trim(),
 				formData.passwordOne,
 				formData.role,
-				formData.displayName
+				formData.displayName.trim()
 			);
 		} catch (error) {
 			console.log(error);

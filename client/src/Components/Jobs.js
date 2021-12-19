@@ -308,15 +308,19 @@ const Jobs = (props) => {
 						classes={{ ul: classes.paginator }}
 					/>
 					<br />
-					<Grid
-						container
-						className={classes.grid}
-						spacing={5}
-						alignItems="stretch"
-						style={{ marginBottom: "15px", padding: "10px" }}
-					>
-						{jobsList}
-					</Grid>
+					{jobsData && jobsData.length > 0 ? (
+						<Grid
+							container
+							className={classes.grid}
+							spacing={5}
+							alignItems="stretch"
+							style={{ marginBottom: "15px", padding: "10px" }}
+						>
+							{jobsList}
+						</Grid>
+					) : (
+						<div>No search results found</div>
+					)}
 
 					<IndeedApplyModal
 						show={showIndeedApplyModal}
