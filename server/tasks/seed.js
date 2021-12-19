@@ -9,16 +9,16 @@ admin.initializeApp({
 
 async function main() {
     let seedEmployer1 = {
-        displayName: "John Smith",
-        email: "seed@emp1.com",
+        displayName: "Christopher Moon",
+        email: "cmoon1@stevens.edu",
         role: "employer",
         uid: "seedEmployer1"
     };
 
     let seedSeeker1 = {
         applications: [],
-        displayName: "Gary Jones",
-        email: "seed@seeker1.com",
+        displayName: "Edward Yaroslavsky",
+        email: "eyarosla@stevens.edu",
         imageUrl: "",
         resume: "",
         role: "seeker",
@@ -28,7 +28,7 @@ async function main() {
     let seedPost1 = {
         applicants: [],
         company: "Amazon",
-        email: "seed@emp1.com",
+        email: "cmoon1@stevens.edu",
         field: "Business",
         jobType: "entry_level",
         summary: "entry level business job at seed company 1",
@@ -38,14 +38,14 @@ async function main() {
 
     await admin.auth().createUser({
         email: seedEmployer1.email,
-        password: "employer1",
+        password: "cmpass",
         displayName: seedEmployer1.displayName,
         uid: "seedEmployer1"
     });
 
     await admin.auth().createUser({
         email: seedSeeker1.email,
-        password: "seeker1",
+        password: "eypass",
         displayName: seedSeeker1.displayName,
         uid: "seedSeeker1"
     });
@@ -58,16 +58,16 @@ async function main() {
 
 
     let seedEmployer2 = {
-        displayName: "Craig Crawford",
-        email: "seed@emp2.com",
+        displayName: "Mark Pipko",
+        email: "mpipko@stevens.edu",
         role: "employer",
         uid: "seedEmployer2"
     };
 
     let seedSeeker2 = {
         applications: [],
-        displayName: "Dylan Ryans",
-        email: "seed@seeker2.com",
+        displayName: "Matthew Evanego",
+        email: "mevanego@stevens.edu",
         imageUrl: "",
         resume: "",
         role: "seeker",
@@ -77,7 +77,7 @@ async function main() {
     let seedPost2 = {
         applicants: [],
         company: "Tesla",
-        email: "seed@emp2.com",
+        email: "mpipko@stevens.edu",
         field: "Engineering & Computer Science",
         jobType: "entry_level",
         summary: "entry level business job at seed company 2",
@@ -87,14 +87,14 @@ async function main() {
 
     await admin.auth().createUser({
         email: seedEmployer2.email,
-        password: "employer2",
+        password: "mppass",
         displayName: seedEmployer2.displayName,
         uid: "seedEmployer2"
     });
 
     await admin.auth().createUser({
         email: seedSeeker2.email,
-        password: "seeker2",
+        password: "mepass",
         displayName: seedSeeker2.displayName,
         uid: "seedSeeker2"
     });
@@ -107,52 +107,34 @@ async function main() {
 
 
     let seedEmployer3 = {
-        displayName: "Norman Osborn",
-        email: "seed@emp3.com",
+        displayName: "Matthew Koerner",
+        email: "mkoerner@stevens.edu",
         role: "employer",
         uid: "seedEmployer3"
     };
 
-    let seedSeeker3 = {
-        applications: [],
-        displayName: "Harry Osborn",
-        email: "seed@seeker3.com",
-        imageUrl: "",
-        resume: "",
-        role: "seeker",
-        uid: "seedSeeker3"
-    };
-
     let seedPost3 = {
         applicants: [],
-        company: "Oscorp",
-        email: "seed@emp3.com",
+        company: "Microsoft",
+        email: "mkoerner@stevens.edu",
         field: "Other",
         jobType: "senior_level",
         summary: "senior level business job at seed company 3",
-        title: "Oscorp",
+        title: "Microsoft",
         zip: "10017"
     };
 
     await admin.auth().createUser({
         email: seedEmployer3.email,
-        password: "employer3",
+        password: "mkpass",
         displayName: seedEmployer3.displayName,
         uid: "seedEmployer3"
     });
 
-    await admin.auth().createUser({
-        email: seedSeeker3.email,
-        password: "seeker3",
-        displayName: seedSeeker3.displayName,
-        uid: "seedSeeker3"
-    });
-
     let seedEmployer3Ref = await admin.firestore().doc(`employer/seedEmployer3`).set(seedEmployer3);
     let seedPost3Ref = await admin.firestore().doc(`posts/seedPost3`).set(seedPost3);
-    let seedSeeker3Ref = await admin.firestore().doc(`seekers/seedSeeker3`).set(seedSeeker3);
 
-    console.log("Done seeding employer/seeker 3");
+    console.log("Done seeding employer 3");
 
     console.log("Done seeding database");
 }
