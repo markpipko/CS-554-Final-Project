@@ -3,7 +3,10 @@ import { db } from "../firebase/Firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { AuthContext } from "../firebase/Auth";
 import ApplicantsModal from "./modals/ApplicantsModal";
-import { checkEmployer, retrieveCurrentApplicants } from "../firebase/FirebaseFunctions";
+import {
+	checkEmployer,
+	retrieveCurrentApplicants,
+} from "../firebase/FirebaseFunctions";
 import {
 	Collapse,
 	Alert,
@@ -13,7 +16,7 @@ import {
 	Typography,
 	Grid,
 	Button,
-	CircularProgress
+	CircularProgress,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import CloseIcon from "@mui/icons-material/Close";
@@ -61,17 +64,16 @@ function MyPosts(props) {
 			let isEmployer = await checkEmployer(currentUser.uid);
 			if (!isEmployer) {
 				setIsEmployer(false);
-			}
-			else {
+			} else {
 				setIsEmployer(true);
 			}
 		}
 		fetchData();
-	}, []);
+	}, [currentUser]);
 
 	useEffect(() => {
 		async function postings() {
-			try {				
+			try {
 				const q = query(
 					collection(db, "posts"),
 					where("email", "==", currentUser.email)
@@ -87,12 +89,10 @@ function MyPosts(props) {
 
 		postings();
 	}, [currentUser]);
-	
 
 	if (isEmployer === undefined) {
 		return <CircularProgress />;
-	}
-	else if (!isEmployer) {
+	} else if (!isEmployer) {
 		return <Redirect to="/home" />;
 	}
 
@@ -199,15 +199,19 @@ function MyPosts(props) {
 				<div></div>
 			)}
 			<h1>My Posts</h1>
-			<Grid
-				container
-				className={classes.grid}
-				spacing={5}
-				alignItems="stretch"
-				style={{ marginBottom: "15px", padding: "10px" }}
-			>
-				{card}
-			</Grid>
+			{posts && posts.length > 0 ? (
+				<Grid
+					container
+					className={classes.grid}
+					spacing={5}
+					alignItems="stretch"
+					style={{ marginBottom: "15px", padding: "10px" }}
+				>
+					{card}
+				</Grid>
+			) : (
+				<div>No applications have been posted.</div>
+			)}
 		</div>
 	);
 }

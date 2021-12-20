@@ -15,7 +15,11 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { AuthContext } from "../firebase/Auth";
-import { checkEmployer, checkSeekers, doSignOut } from "../firebase/FirebaseFunctions";
+import {
+	checkEmployer,
+	checkSeekers,
+	doSignOut,
+} from "../firebase/FirebaseFunctions";
 import IndeedApplyModal from "./modals/IndeedApplyModal";
 import { Redirect } from "react-router-dom";
 const useStyles = makeStyles({
@@ -112,13 +116,12 @@ const Jobs = (props) => {
 			let seeker = await checkSeekers(currentUser.uid);
 			if (!seeker) {
 				setIsSeeker(false);
-			}
-			else {
+			} else {
 				setIsSeeker(true);
 			}
 		}
 		fetchData();
-	}, []);
+	}, [currentUser]);
 
 	const checkEmp = async (uid) => {
 		if (!uid) {
@@ -129,11 +132,9 @@ const Jobs = (props) => {
 		return res;
 	};
 
-
 	if (isSeeker === undefined) {
 		return <CircularProgress />;
-	}
-	else if (!isSeeker) {
+	} else if (!isSeeker) {
 		return <Redirect to="/home" />;
 	}
 

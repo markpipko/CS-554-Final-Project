@@ -15,7 +15,10 @@ import { getAuth } from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase/Firebase";
 import { Redirect } from "react-router-dom";
-import { checkEmployer, updateFieldNumbers } from "../firebase/FirebaseFunctions";
+import {
+	checkEmployer,
+	updateFieldNumbers,
+} from "../firebase/FirebaseFunctions";
 const PostJob = (props) => {
 	const [formData, setFormData] = useState({
 		title: "",
@@ -44,24 +47,22 @@ const PostJob = (props) => {
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 	};
-	
+
 	useEffect(() => {
 		async function fetchData() {
 			let employer = await checkEmployer(currentUser.uid);
 			if (!employer) {
 				setIsEmployer(false);
-			}
-			else {
+			} else {
 				setIsEmployer(true);
 			}
 		}
 		fetchData();
-	}, []);
+	}, [currentUser]);
 
 	if (isEmployer === undefined) {
 		return <CircularProgress />;
-	}
-	else if (!isEmployer) {
+	} else if (!isEmployer) {
 		return <Redirect to="/home" />;
 	}
 
