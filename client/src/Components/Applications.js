@@ -26,7 +26,7 @@ import { AuthContext } from "../firebase/Auth";
 import {
 	getSeeker,
 	removeJobAppliedFromSeeker,
-	checkSeekers
+	checkSeekers,
 } from "../firebase/FirebaseFunctions";
 import { Redirect } from "react-router";
 
@@ -85,8 +85,7 @@ function Applications() {
 			if (!seeker) {
 				setIsSeeker(false);
 				return;
-			}
-			else {
+			} else {
 				setIsSeeker(true);
 			}
 
@@ -127,11 +126,9 @@ function Applications() {
 		fetchData();
 	}, [currentUser]);
 
-
 	if (isSeeker === undefined) {
 		return <CircularProgress />;
-	}
-	else if (!isSeeker) {
+	} else if (!isSeeker) {
 		return <Redirect to="/home" />;
 	}
 
@@ -192,9 +189,13 @@ function Applications() {
 						</Typography>
 					</CardContent>
 					<CardContent style={{ marginTop: "auto" }}>
-						<Button variant="contained" color={colors[job.status]}>
-							{job.status}
-						</Button>
+						{job.status === "Pending" ? (
+							<Button variant="contained">{job.status}</Button>
+						) : (
+							<Button variant="contained" color={colors[job.status]}>
+								{job.status}
+							</Button>
+						)}
 						<br />
 						<br />
 						<Button
