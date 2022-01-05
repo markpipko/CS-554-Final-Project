@@ -15,7 +15,11 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { AuthContext } from "../firebase/Auth";
-import { checkEmployer, doSignOut } from "../firebase/FirebaseFunctions";
+import {
+	checkEmployer,
+	checkSeekers,
+	doSignOut,
+} from "../firebase/FirebaseFunctions";
 import IndeedApplyModal from "./modals/IndeedApplyModal";
 import { Redirect } from "react-router-dom";
 const useStyles = makeStyles({
@@ -91,6 +95,7 @@ const Jobs = (props) => {
 	};
 
 	const { currentUser } = useContext(AuthContext);
+	const [isSeeker, setIsSeeker] = useState(undefined);
 
 	if (currentUser) {
 		currentUser.getIdToken().then((t) => {
@@ -106,6 +111,18 @@ const Jobs = (props) => {
 		check();
 	}, [currentUser]);
 
+	useEffect(() => {
+		async function fetchData() {
+			let seeker = await checkSeekers(currentUser.uid);
+			if (!seeker) {
+				setIsSeeker(false);
+			} else {
+				setIsSeeker(true);
+			}
+		}
+		fetchData();
+	}, [currentUser]);
+
 	const checkEmp = async (uid) => {
 		if (!uid) {
 			await doSignOut();
@@ -114,6 +131,12 @@ const Jobs = (props) => {
 		let res = await checkEmployer(uid);
 		return res;
 	};
+
+	if (isSeeker === undefined) {
+		return <CircularProgress />;
+	} else if (!isSeeker) {
+		return <Redirect to="/home" />;
+	}
 
 	const handleChange = (e) => {
 		setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));

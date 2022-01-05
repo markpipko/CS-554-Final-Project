@@ -8,6 +8,7 @@ import {
 	Collapse,
 	IconButton,
 	Alert,
+	CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -25,7 +26,9 @@ import { AuthContext } from "../firebase/Auth";
 import {
 	getSeeker,
 	removeJobAppliedFromSeeker,
+	checkSeekers,
 } from "../firebase/FirebaseFunctions";
+import { Redirect } from "react-router";
 
 const useStyles = makeStyles({
 	chart: {
@@ -56,6 +59,7 @@ const useStyles = makeStyles({
 
 function Applications() {
 	const { currentUser } = useContext(AuthContext);
+	const [isSeeker, setIsSeeker] = useState(undefined);
 	const [jobsData, setJobsData] = useState(undefined);
 	const [applicationData, setApplicationData] = useState(undefined);
 	const [graphError, setGraphError] = useState(false);
@@ -76,6 +80,15 @@ function Applications() {
 				setGraphError(true);
 				return;
 			}
+
+			let seeker = await checkSeekers(currentUser.uid);
+			if (!seeker) {
+				setIsSeeker(false);
+				return;
+			} else {
+				setIsSeeker(true);
+			}
+
 			try {
 				let currentUserData = await getSeeker(currentUser.uid);
 				if (!currentUserData) {
@@ -112,6 +125,12 @@ function Applications() {
 		}
 		fetchData();
 	}, [currentUser]);
+
+	if (isSeeker === undefined) {
+		return <CircularProgress />;
+	} else if (!isSeeker) {
+		return <Redirect to="/home" />;
+	}
 
 	async function removeJob(job) {
 		if (!job._id || !currentUser.uid) {
@@ -170,9 +189,13 @@ function Applications() {
 						</Typography>
 					</CardContent>
 					<CardContent style={{ marginTop: "auto" }}>
-						<Button variant="contained" color={colors[job.status]}>
-							{job.status}
-						</Button>
+						{job.status === "Pending" ? (
+							<Button variant="contained">{job.status}</Button>
+						) : (
+							<Button variant="contained" color={colors[job.status]}>
+								{job.status}
+							</Button>
+						)}
 						<br />
 						<br />
 						<Button
