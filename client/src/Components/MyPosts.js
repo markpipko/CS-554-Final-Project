@@ -167,9 +167,36 @@ function MyPosts(props) {
 				postsArr.push(doc);
 			});
 
-		card = postsArr.map((doc) => {
-			return buildCard(doc.id, doc.data());
-		});
+		if (postsArr.length === 0) {
+			card = (
+				<Grid
+					item
+					xs={10}
+					sm={5}
+					md={5}
+					lg={4}
+					xl={3}
+					style={{ display: "flex" }}
+				>
+					<Card className={classes.card} variant="outlined">
+						<CardContent>
+							<Typography
+								className={classes.titleHead}
+								gutterBottom
+								variant="h6"
+								component="h2"
+							>
+								No posts have been found.
+							</Typography>
+						</CardContent>
+					</Card>
+				</Grid>
+			);
+		} else {
+			card = postsArr.map((doc) => {
+				return buildCard(doc.id, doc.data());
+			});
+		}
 	}
 
 	return (
@@ -199,19 +226,15 @@ function MyPosts(props) {
 				<div></div>
 			)}
 			<h1>My Posts</h1>
-			{posts && posts.length > 0 ? (
-				<Grid
-					container
-					className={classes.grid}
-					spacing={5}
-					alignItems="stretch"
-					style={{ marginBottom: "15px", padding: "10px" }}
-				>
-					{card}
-				</Grid>
-			) : (
-				<div>No applications have been posted.</div>
-			)}
+			<Grid
+				container
+				className={classes.grid}
+				spacing={5}
+				alignItems="stretch"
+				style={{ marginBottom: "15px", padding: "10px" }}
+			>
+				{card}
+			</Grid>
 		</div>
 	);
 }
